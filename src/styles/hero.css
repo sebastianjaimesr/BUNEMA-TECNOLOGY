@@ -1,0 +1,283 @@
+/* ==========================================================================
+   HERO — el producto como protagonista (mobile first)
+   El teléfono vive en el lienzo fijo (z 1). El fondo decorativo queda
+   debajo (z 0) y el texto encima (z 2): la interfaz y el 3D comparten
+   el mismo espacio en lugar de estar en columnas separadas.
+   ========================================================================== */
+
+/* Estado inicial de los elementos que revela GSAP (solo si hay JS). */
+.js [data-reveal] {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.hero {
+  position: relative;
+  /* Sin z-index propio: así sus capas internas se intercalan con el lienzo fijo. */
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  padding: calc(var(--header-h) + 1.5rem) var(--gutter) 1.5rem;
+  overflow: clip;
+}
+
+/* --------------------------------------------------------------------------
+   Fondo técnico
+   -------------------------------------------------------------------------- */
+.hero__backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--c-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--c-line) 1px, transparent 1px);
+  background-size: 25% 100%, 100% 20%;
+  background-position: center;
+  /* La cuadrícula se desvanece hacia los bordes: se intuye, no compite. */
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 52%, #000 25%, transparent 80%);
+  opacity: 0.55;
+}
+
+/* Halo de luz detrás del producto: misma posición que el teléfono 3D. */
+.hero__backdrop::after {
+  content: '';
+  position: absolute;
+  left: var(--stage-x, 50%);
+  top: var(--stage-y, 50%);
+  width: min(130vw, 900px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgb(47 107 255 / 0.18), rgb(139 92 246 / 0.06) 40%, transparent 68%);
+}
+
+.hero__monogram {
+  position: absolute;
+  left: var(--stage-x, 50%);
+  top: var(--stage-y, 50%);
+  transform: translate(-50%, -52%);
+  font-family: var(--f-display);
+  font-size: clamp(16rem, 92vw, 44rem);
+  font-weight: 700;
+  line-height: 0.8;
+  letter-spacing: -0.08em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(146 152 170 / 0.2);
+  user-select: none;
+}
+
+.hero__coord {
+  position: absolute;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgb(146 152 170 / 0.75);
+}
+
+.hero__coord--tl {
+  top: calc(var(--header-h) + 0.5rem);
+  left: var(--gutter);
+  display: none;
+}
+
+.hero__coord--tr {
+  top: calc(var(--header-h) + 0.5rem);
+  right: var(--gutter);
+  display: none;
+}
+
+.hero__coord--bl {
+  bottom: 1.6rem;
+  right: var(--gutter);
+  display: none;
+}
+
+/* Retícula de enfoque: una referencia de "laboratorio" alrededor del producto. */
+.hero__crosshair {
+  position: absolute;
+  left: var(--stage-x, 50%);
+  top: var(--stage-y, 50%);
+  width: 72vmin;
+  height: 72vmin;
+  max-width: 560px;
+  max-height: 560px;
+  transform: translate(-50%, -50%);
+  background:
+    linear-gradient(var(--c-line-strong), var(--c-line-strong)) top left / 18px 1px,
+    linear-gradient(var(--c-line-strong), var(--c-line-strong)) top left / 1px 18px,
+    linear-gradient(var(--c-line-strong), var(--c-line-strong)) top right / 18px 1px,
+    linear-gradient(var(--c-line-strong), var(--c-line-strong)) top right / 1px 18px,
+    linear-gradient(var(--c-line-strong), var(--c-line-strong)) bottom left / 18px 1px,
+    linear-gradient(var(--c-line-strong), var(--c-line-strong)) bottom left / 1px 18px,
+    linear-gradient(var(--c-line-strong), var(--c-line-strong)) bottom right / 18px 1px,
+    linear-gradient(var(--c-line-strong), var(--c-line-strong)) bottom right / 1px 18px;
+  background-repeat: no-repeat;
+}
+
+/* --------------------------------------------------------------------------
+   Contenido
+   -------------------------------------------------------------------------- */
+.hero__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.hero__content .eyebrow span {
+  color: var(--c-blue);
+}
+
+.hero__title {
+  margin-top: 0.9rem;
+  font-size: clamp(2.4rem, 11vw, 3.4rem);
+  font-weight: 500;
+  line-height: 0.96;
+}
+
+.hero__title-line {
+  display: block;
+  color: var(--c-muted);
+}
+
+.hero__lead {
+  max-width: 20rem;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: var(--c-muted);
+}
+
+/* En móvil el producto ocupa un hueco real del flujo, entre el texto y los botones.
+   Así nunca queda tapado, ni siquiera en pantallas de 320 × 568. */
+.hero__slot {
+  flex: 1;
+  min-height: clamp(15rem, 46svh, 26rem);
+}
+
+.hero__actions {
+  display: grid;
+  gap: 0.625rem;
+}
+
+/* --------------------------------------------------------------------------
+   Ficha técnica
+   -------------------------------------------------------------------------- */
+.hero__specs {
+  position: relative;
+  z-index: 2;
+  margin-top: 1rem;
+}
+
+.hero__specs dl {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  border-top: 1px solid var(--c-line);
+}
+
+.spec {
+  padding: 0.6rem 0;
+}
+
+.spec:nth-child(1),
+.spec:nth-child(4) {
+  display: none;
+}
+
+.spec dt {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.spec dd {
+  font-family: var(--f-display);
+  font-size: 0.85rem;
+  letter-spacing: -0.01em;
+}
+
+/* --------------------------------------------------------------------------
+   Indicador de exploración
+   -------------------------------------------------------------------------- */
+.hero__scroll {
+  position: relative;
+  z-index: 2;
+  display: none;
+  align-items: center;
+  gap: 1rem;
+  min-height: 44px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.hero__scroll:hover {
+  color: var(--c-text);
+}
+
+.hero__scroll-line {
+  position: relative;
+  width: 3rem;
+  height: 1px;
+  overflow: hidden;
+  background: var(--c-line-strong);
+}
+
+/* Un pulso de luz recorre la línea: invita a desplazarse sin texto extra. */
+.hero__scroll-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--c-blue);
+  transform: translateX(-100%);
+  animation: scroll-pulse 2.4s var(--ease-out) infinite;
+}
+
+.hero__scroll-index {
+  color: var(--c-blue);
+}
+
+@keyframes scroll-pulse {
+  60%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Alternativa sin WebGL
+   -------------------------------------------------------------------------- */
+.hero__fallback {
+  display: none;
+}
+
+.no-webgl .hero__fallback {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  margin: 1.5rem auto 0;
+  max-width: 22rem;
+  text-align: center;
+}
+
+.no-webgl .hero__fallback svg {
+  width: min(48vw, 200px);
+  height: auto;
+}
+
+.no-webgl .hero__fallback figcaption {
+  font-size: 0.8rem;
+  color: var(--c-muted);
+}

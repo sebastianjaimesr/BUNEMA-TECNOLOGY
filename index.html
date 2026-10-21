@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="es-CO">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Bunema X1 — BUNEMA TECHNOLOGY · Tecnología que se siente</title>
+    <meta
+      name="description"
+      content="Bunema X1: experiencia 3D interactiva del teléfono conceptual de BUNEMA TECHNOLOGY. Proyecto de portafolio construido con Three.js, GSAP y Vite."
+    />
+    <meta name="theme-color" content="#05060A" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Open Graph: cómo se ve el enlace al compartirlo. La imagen de vista previa se añadirá con capturas reales en la Fase 7. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_CO" />
+    <meta property="og:site_name" content="BUNEMA TECHNOLOGY" />
+    <meta property="og:title" content="Bunema X1 — Tecnología que se siente" />
+    <meta
+      property="og:description"
+      content="Descubre el Bunema X1 en una experiencia 3D interactiva. Marca conceptual creada como proyecto de portafolio."
+    />
+    <meta name="twitter:card" content="summary" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    />
+
+    <!-- Marca que JS está disponible antes del primer pintado: evita el parpadeo de los elementos que se revelan con GSAP. -->
+    <script>
+      document.documentElement.classList.add('js');
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+    <!-- Símbolos SVG reutilizables: el logotipo se define una vez y se usa en cabecera y pie. -->
+    <svg width="0" height="0" class="visually-hidden" aria-hidden="true" focusable="false">
+      <symbol id="bunema-mark" viewBox="0 0 32 32">
+        <path d="M4 4h24v16l-8 8H4z" fill="none" stroke="currentColor" stroke-width="2.4" />
+        <path d="M11 22 22 11" stroke="#2F6BFF" stroke-width="2.4" stroke-linecap="square" />
+      </symbol>
+    </svg>
+
+    <header class="site-header" data-header>
+      <a class="brand" href="#inicio" aria-label="BUNEMA TECHNOLOGY, ir al inicio">
+        <svg class="brand__mark" aria-hidden="true"><use href="#bunema-mark" /></svg>
+        <span class="brand__word">BUNEMA</span>
+      </a>
+
+      <button
+        class="menu-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="site-nav"
+        data-menu-toggle
+      >
+        <span class="menu-toggle__label">Menú</span>
+        <span class="menu-toggle__icon" aria-hidden="true"></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="Principal" data-nav>
+        <ol class="site-nav__list">
+          <li><a href="#x1" data-nav-link><span class="site-nav__index">01</span> Bunema X1</a></li>
+          <li><a href="#arquitectura" data-nav-link><span class="site-nav__index">02</span> Arquitectura</a></li>
+        </ol>
+        <p class="site-nav__status"><span class="status-dot" aria-hidden="true"></span> X Series · Concepto 2026</p>
+      </nav>
+    </header>
+
+    <!-- Lienzo 3D único y fijo. Se reutiliza en toda la página; las secciones con fondo opaco lo cubren al desplazarse. -->
+    <canvas class="stage-canvas" data-stage aria-hidden="true"></canvas>
+
+    <main id="contenido">
+      <section class="hero" id="inicio" aria-labelledby="hero-title" data-hero>
+        <div class="hero__backdrop" aria-hidden="true">
+          <div class="hero__grid"></div>
+          <p class="hero__monogram">X1</p>
+          <p class="hero__coord hero__coord--tl">N 07°07′ · W 73°07′</p>
+          <p class="hero__coord hero__coord--tr">SYS.ID BNM-X1-0001</p>
+          <p class="hero__coord hero__coord--bl">LAB / ESCENA 01</p>
+          <span class="hero__crosshair"></span>
+        </div>
+
+        <div class="hero__content">
+          <p class="eyebrow" data-reveal>BUNEMA <span aria-hidden="true">/</span> X SERIES</p>
+          <h1 class="hero__title" id="hero-title" data-reveal>
+            El futuro cabe <span class="hero__title-line">en tus manos.</span>
+          </h1>
+          <p class="hero__lead" data-reveal>Potencia extraordinaria. Diseño sin distracciones.</p>
+          <!-- Hueco reservado para el teléfono en móvil: el 3D se coloca sobre este espacio del flujo. -->
+          <div class="hero__slot" data-stage-slot aria-hidden="true"></div>
+          <div class="hero__actions" data-reveal>
+            <a class="btn btn--primary" href="#x1">Descubrir Bunema X1</a>
+            <a class="btn btn--ghost" href="#arquitectura">Explorar tecnología</a>
+          </div>
+        </div>
+
+        <aside class="hero__specs" aria-label="Ficha del modelo" data-reveal>
+          <dl>
+            <div class="spec">
+              <dt>Modelo</dt>
+              <dd>Bunema X1</dd>
+            </div>
+            <div class="spec">
+              <dt>Acabado</dt>
+              <dd data-current-finish>Obsidian Black · Mate</dd>
+            </div>
+            <div class="spec">
+              <dt>Dimensiones</dt>
+              <dd>154,0 × 72,0 × 8,2 mm</dd>
+            </div>
+            <div class="spec">
+              <dt>Peso</dt>
+              <dd>186 g</dd>
+            </div>
+          </dl>
+        </aside>
+
+        <!-- Alternativa sin WebGL: ilustración vectorial del mismo diseño. Solo visible si el 3D no puede iniciarse. -->
+        <figure class="hero__fallback" data-fallback>
+          <svg viewBox="0 0 220 420" role="img" aria-labelledby="fallback-title">
+            <title id="fallback-title">Ilustración de la parte trasera del Bunema X1</title>
+            <defs>
+              <linearGradient id="fb-body" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#2a2e38" />
+                <stop offset="1" stop-color="#0e1016" />
+              </linearGradient>
+            </defs>
+            <rect x="10" y="10" width="200" height="400" rx="28" fill="url(#fb-body)" stroke="#4a4e58" stroke-width="3" />
+            <path d="M28 28h78a14 14 0 0 1 14 14v58a14 14 0 0 1-14 14H54l-26-26z" fill="#0d0f14" stroke="#3a3e48" />
+            <circle cx="56" cy="52" r="18" fill="#05070d" stroke="#2a2d35" stroke-width="3" />
+            <circle cx="96" cy="52" r="13" fill="#05070d" stroke="#2a2d35" stroke-width="3" />
+            <circle cx="96" cy="94" r="13" fill="#05070d" stroke="#2a2d35" stroke-width="3" />
+            <circle cx="62" cy="88" r="5" fill="#e9e4d6" />
+            <path d="M34 98 48 112" stroke="#2F6BFF" stroke-width="2.5" />
+          </svg>
+          <figcaption>
+            Tu navegador no pudo iniciar la vista 3D (WebGL). Mostramos una ilustración del Bunema X1; el contenido de la página
+            está completo.
+          </figcaption>
+        </figure>
+
+        <p class="visually-hidden">
+          Vista 3D decorativa del Bunema X1 en color Obsidian Black: un teléfono de cantos metálicos con una placa de cámara de
+          esquina cortada a 45 grados, tres lentes y una línea de luz azul.
+        </p>
+
+        <a class="hero__scroll" href="#x1">
+          <span class="hero__scroll-line" aria-hidden="true"></span>
+          <span>Desplaza para explorar</span>
+          <span class="hero__scroll-index" aria-hidden="true">01 / 02</span>
+        </a>
+      </section>
+
+      <section class="overview" id="x1" aria-labelledby="x1-title">
+        <header class="section-head">
+          <p class="section-head__index" aria-hidden="true">01</p>
+          <p class="eyebrow">Bunema X1</p>
+          <h2 class="section-head__title" id="x1-title">Diseñado alrededor de lo que sientes, no de lo que lees en una ficha.</h2>
+        </header>
+
+        <ul class="figures" role="list">
+          <li class="figure">
+            <p class="figure__value">6,5<span>″</span></p>
+            <p class="figure__label">Pantalla LumaFlow OLED, 1–144 Hz</p>
+          </li>
+          <li class="figure">
+            <p class="figure__value">3<span>nm</span></p>
+            <p class="figure__label">Procesador BX-1 con núcleo neuronal</p>
+          </li>
+          <li class="figure">
+            <p class="figure__value">5200<span>mAh</span></p>
+            <p class="figure__label">Celda BUNEMA de silicio-carbono</p>
+          </li>
+        </ul>
+
+        <p class="overview__note">Especificaciones conceptuales de una marca ficticia, creadas para este proyecto de portafolio.</p>
+      </section>
+
+      <section class="architecture" id="arquitectura" aria-labelledby="arq-title">
+        <header class="section-head">
+          <p class="section-head__index" aria-hidden="true">02</p>
+          <p class="eyebrow">Arquitectura</p>
+          <h2 class="section-head__title" id="arq-title">Once piezas. Una sola intención.</h2>
+          <p class="section-head__lead">
+            Cada componente del X1 es un objeto independiente con su propio material. Así podrás verlo desmontarse pieza a pieza
+            en la próxima etapa de la experiencia.
+          </p>
+        </header>
+
+        <ol class="parts" role="list">
+          <li class="parts__item"><span class="parts__id">X1-01</span><h3>Vidrio protector</h3><p>Cristal endurecido de 0,4 mm con acabado antirreflejo.</p></li>
+          <li class="parts__item"><span class="parts__id">X1-02</span><h3>Pantalla frontal</h3><p>Panel OLED de bordes uniformes y perforación central.</p></li>
+          <li class="parts__item"><span class="parts__id">X1-03</span><h3>Marco metálico</h3><p>Aluminio aeroespacial con cantos biselados.</p></li>
+          <li class="parts__item"><span class="parts__id">X1-04</span><h3>Batería</h3><p>Celda de 5200 mAh que ocupa el corazón del chasis.</p></li>
+          <li class="parts__item"><span class="parts__id">X1-05</span><h3>Placa principal</h3><p>Circuito apilado que libera espacio para la batería.</p></li>
+          <li class="parts__item"><span class="parts__id">X1-06</span><h3>Procesador BX-1</h3><p>Ocho núcleos y un núcleo neuronal dedicado.</p></li>
+          <li class="parts__item"><span class="parts__id">X1-07</span><h3>Módulo de cámara</h3><p>Tres sensores alineados bajo la placa de Corte X.</p></li>
+          <li class="parts__item"><span class="parts__id">X1-08</span><h3>Lentes</h3><p>Ópticas con recubrimiento iridiscente multicapa.</p></li>
+          <li class="parts__item"><span class="parts__id">X1-09</span><h3>Carcasa trasera</h3><p>Vidrio con la placa de cámara y su línea de luz.</p></li>
+          <li class="parts__item"><span class="parts__id">X1-10</span><h3>Botones laterales</h3><p>Volumen, encendido y la Pulse Key programable.</p></li>
+          <li class="parts__item"><span class="parts__id">X1-11</span><h3>Puerto de carga</h3><p>USB-C flanqueado por las rejillas de los altavoces.</p></li>
+        </ol>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand" href="#inicio" aria-label="BUNEMA TECHNOLOGY, volver al inicio">
+        <svg class="brand__mark" aria-hidden="true"><use href="#bunema-mark" /></svg>
+        <span class="brand__word">BUNEMA</span>
+      </a>
+      <p class="site-footer__claim">Tecnología que se siente.</p>
+      <p class="site-footer__legal">
+        BUNEMA TECHNOLOGY es una marca conceptual. Sus productos, especificaciones y precios no existen comercialmente.
+        Proyecto de portafolio por Sebastián Jaimes · <span data-year>2026</span>
+      </p>
+      <a class="site-footer__top" href="#inicio">Volver al inicio <span aria-hidden="true">↑</span></a>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

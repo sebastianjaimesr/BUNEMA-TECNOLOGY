@@ -1,0 +1,216 @@
+/* ==========================================================================
+   RESPONSIVE — se amplía la experiencia desde móvil hacia escritorio
+   Rangos de referencia: 320–375 · 390–430 · 768–1024 · 1280+
+   ========================================================================== */
+
+/* Móviles muy pequeños (≤ 360 px): se compacta el título y la ficha. */
+@media (max-width: 360px) {
+  .hero__title {
+    font-size: 2.15rem;
+  }
+
+  .hero__lead {
+    font-size: 0.875rem;
+  }
+}
+
+/* Pantallas bajas en horizontal (móvil girado): prioridad al texto. */
+@media (max-height: 520px) and (orientation: landscape) {
+  .hero {
+    min-height: 32rem;
+  }
+}
+
+@media (min-width: 600px) {
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .hero__coord--tl,
+  .hero__coord--tr {
+    display: block;
+  }
+
+  .figures {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .figure {
+    padding: 2rem 1.5rem 2rem 0;
+    border-bottom: 0;
+  }
+
+  .figure + .figure {
+    padding-left: 1.5rem;
+    border-left: 1px solid var(--c-line);
+  }
+
+  .parts {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 2rem;
+  }
+}
+
+/* Tablets y escritorio: navegación en línea y composición asimétrica. */
+@media (min-width: 900px) {
+  :root {
+    --header-h: 5rem;
+  }
+
+  .menu-toggle {
+    display: none;
+  }
+
+  .site-nav {
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    gap: 2.5rem;
+    padding: 0;
+    background: none;
+    visibility: visible;
+    opacity: 1;
+    transition: none;
+  }
+
+  .site-nav__list {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .site-nav__list a {
+    gap: 0.5rem;
+    min-height: 44px;
+    align-items: center;
+    padding: 0;
+    font-family: var(--f-ui);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--c-muted);
+    transition: color 0.3s var(--ease-out);
+  }
+
+  .site-nav__list a:hover {
+    color: var(--c-text);
+  }
+
+  .site-nav__index {
+    font-size: 0.65rem;
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: 1fr auto;
+    padding-bottom: 2rem;
+  }
+
+  .hero__content {
+    grid-column: 1;
+    grid-row: 1;
+    justify-content: center;
+    max-width: min(46rem, 48vw);
+  }
+
+  .hero__slot {
+    display: none;
+  }
+
+  .hero__title {
+    font-size: clamp(3.5rem, 5.8vw, 6.25rem);
+  }
+
+  .hero__lead {
+    max-width: 24rem;
+    margin-top: 1.5rem;
+    font-size: 1.05rem;
+  }
+
+  .hero__actions {
+    margin-top: 2.5rem;
+  }
+
+  /* Ficha vertical en el borde derecho, como un panel de laboratorio. */
+  .hero__specs {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    margin-top: 0;
+  }
+
+  .hero__specs dl {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    border-top: 0;
+    border-left: 1px solid var(--c-line);
+  }
+
+  .spec {
+    padding: 0.85rem 0 0.85rem 1.25rem;
+  }
+
+  .spec:nth-child(1),
+  .spec:nth-child(4) {
+    display: block;
+  }
+
+  .spec dd {
+    font-size: 0.95rem;
+  }
+
+  .hero__scroll {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: inline-flex;
+    justify-self: start;
+  }
+
+  .hero__coord--bl {
+    bottom: 2.6rem;
+    display: block;
+  }
+
+  .no-webgl .hero__fallback {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: end;
+    align-self: center;
+    margin: 0 18rem 0 0;
+  }
+
+  /* Arquitectura: encabezado fijo a la izquierda, hoja técnica a la derecha. */
+  .architecture {
+    grid-template-columns: minmax(16rem, 5fr) 7fr;
+    align-items: start;
+  }
+
+  .architecture .section-head {
+    position: sticky;
+    top: calc(var(--header-h) + 2rem);
+  }
+
+  .site-footer {
+    grid-template-columns: auto 1fr auto;
+    align-items: end;
+    column-gap: 3rem;
+  }
+
+  .site-footer__legal {
+    grid-column: 1 / 3;
+  }
+
+  .site-footer__top {
+    grid-column: 3;
+    grid-row: 1 / 3;
+    align-self: end;
+  }
+}
+
+@media (min-width: 1280px) {
+  .hero__specs {
+    margin-right: 1rem;
+  }
+}
