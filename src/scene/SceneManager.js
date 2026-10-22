@@ -33,6 +33,19 @@ export class SceneManager {
     this.lastTime = 0; // marca de tiempo del último fotograma dibujado
     this.minAmbientInterval = 1000 / (quality.ambientFps ?? 60);
     this.frameCount = 0; // útil para medir en pruebas cuántos fotogramas se dibujan
+    this.afterRenderListeners = new Set();
+    this.activeListeners = new Set();
+
+    // Regiones de la página donde el 3D es visible (hero, ingeniería…).
+    // El trabajo 3D se pausa cuando ninguna está en pantalla.
+    this.visibleRegions = new Set();
+    this.regionObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) this.visibleRegions.add(entry.target);
+        else this.visibleRegions.delete(entry.target);
+      });
+      this.setActive(this.visibleRegions.size > 0);
+    });
 
     this.renderer = createRenderer(canvas, quality);
     this.scene = new THREE.Scene();
@@ -76,6 +89,21 @@ export class SceneManager {
     return { width: height * this.camera.aspect, height };
   }
 
+  /** Marca un elemento como región donde el 3D debe estar activo. */
+  observeRegion(element) {
+    this.regionObserver.observe(element);
+    return () => {
+      this.regionObserver.unobserve(element);
+      this.visibleRegions.delete(element);
+    };
+  }
+
+  /** Se llama después de cada fotograma dibujado (p. ej. para colocar etiquetas HTML). */
+  onAfterRender(listener) {
+    this.afterRenderListeners.add(listener);
+    return () => this.afterRenderListeners.delete(listener);
+  }
+
   onResize(listener) {
     this.resizeListeners.add(listener);
     return () => this.resizeListeners.delete(listener);
@@ -94,8 +122,16 @@ export class SceneManager {
 
   /** Pausa/reanuda el trabajo 3D (p. ej. cuando el hero sale de pantalla). */
   setActive(active) {
+    if (active === this.active) return;
     this.active = active;
+    this.activeListeners.forEach((listener) => listener(active));
     if (active) this.requestRender();
+  }
+
+  /** Avisa cuando el 3D se pausa o se reanuda. Devuelve la función que lo da de baja. */
+  onActiveChange(listener) {
+    this.activeListeners.add(listener);
+    return () => this.activeListeners.delete(listener);
   }
 
   /** Registra una función por fotograma. Devuelve la función que la elimina. */
@@ -141,11 +177,15 @@ export class SceneManager {
 
     this.renderer.render(this.scene, this.camera);
     this.frameCount += 1;
+    this.afterRenderListeners.forEach((listener) => listener());
     if (keepAnimating) this.scheduleFrame();
   }
 
   dispose() {
     this.resizeObserver.disconnect();
+    this.regionObserver.disconnect();
+    this.afterRenderListeners.clear();
+    this.activeListeners.clear();
     this.canvas.removeEventListener('webglcontextlost', this.handleContextLost);
     this.canvas.removeEventListener('webglcontextrestored', this.handleContextRestored);
     document.removeEventListener('visibilitychange', this.handleVisibility);

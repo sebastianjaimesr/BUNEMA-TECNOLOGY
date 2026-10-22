@@ -2,6 +2,7 @@ import { SceneManager } from './scene/SceneManager.js';
 import { detectQuality } from './scene/createRenderer.js';
 import { BunemaPhone } from './models/BunemaPhone.js';
 import { createHeroPresentation } from './animations/heroAnimation.js';
+import { createScrollExperience } from './animations/scrollExperience.js';
 
 /** Cede un fotograma al navegador: así la barra de carga se pinta entre etapas. */
 const nextFrame = () => new Promise((resolve) => requestAnimationFrame(() => resolve()));
@@ -22,6 +23,7 @@ export async function startExperience({ canvas, heroEl, reducedMotion, tracker, 
   const sceneManager = new SceneManager({ canvas, quality, onContextLost, onContextRestored });
   let phone = null;
   let hero = null;
+  let story = null;
   try {
     tracker.completeStep('scene');
     await nextFrame();
@@ -30,6 +32,12 @@ export async function startExperience({ canvas, heroEl, reducedMotion, tracker, 
     const anisotropy = Math.min(quality.anisotropy, sceneManager.renderer.capabilities.getMaxAnisotropy());
     phone = new BunemaPhone({ anisotropy });
     hero = createHeroPresentation({ sceneManager, phone, heroEl, reducedMotion, quality });
+    // Ingeniería en movimiento: el scroll de su sección controla el despiece.
+    const sectionEl = document.querySelector('[data-engineering]');
+    const sourceList = document.querySelector('#arquitectura');
+    if (sectionEl && sourceList) {
+      story = createScrollExperience({ sceneManager, phone, hero, sectionEl, sourceList, reducedMotion });
+    }
     tracker.completeStep('model');
     await nextFrame();
 
@@ -38,6 +46,7 @@ export async function startExperience({ canvas, heroEl, reducedMotion, tracker, 
     await tracker.run('shaders', () => sceneManager.renderer.compileAsync(sceneManager.scene, sceneManager.camera));
   } catch (error) {
     // Si algo falla después de crear el renderer, se libera la GPU antes de propagar el error.
+    story?.dispose();
     hero?.dispose();
     phone?.dispose();
     sceneManager.dispose();
@@ -48,7 +57,9 @@ export async function startExperience({ canvas, heroEl, reducedMotion, tracker, 
     sceneManager,
     phone,
     reveal: hero.reveal,
+    story,
     dispose() {
+      story?.dispose();
       hero.dispose();
       phone.dispose();
       sceneManager.dispose();

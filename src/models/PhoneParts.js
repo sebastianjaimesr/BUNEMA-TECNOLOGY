@@ -182,11 +182,12 @@ export function createFrontGlass(mat) {
 export function createDisplay(mat) {
   const o = innerOutline();
   const panelDepth = 0.05;
-  const panel = mesh(
-    new RoundedBoxGeometry(o.w - 0.04, o.h - 0.04, panelDepth, 3, 0.02),
-    mat.displayPanel,
-    'display-panel',
-  );
+  // El panel sigue el radio de las esquinas del marco: así cabe en su hueco
+  // y puede salir por delante durante el despiece sin rozarlo.
+  const panelShape = traceRoundedRect(new THREE.Shape(), o.w - 0.04, o.h - 0.04, o.r - 0.02);
+  const panelGeo = new THREE.ExtrudeGeometry(panelShape, { depth: panelDepth, bevelEnabled: false, curveSegments: 24 });
+  panelGeo.translate(0, 0, -panelDepth / 2);
+  const panel = mesh(panelGeo, mat.displayPanel, 'display-panel');
   const zPanel = HALF_DEPTH - 0.075 - panelDepth / 2;
   panel.position.z = zPanel;
 

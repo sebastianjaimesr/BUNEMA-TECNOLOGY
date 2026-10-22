@@ -1,0 +1,408 @@
+/* ==========================================================================
+   INGENIERÍA EN MOVIMIENTO — despiece controlado por scroll (mobile first)
+
+   Tres estados, según lo que el navegador puede hacer:
+   · sin clase       → sin 3D (o todavía cargando): lista de pasos en flujo normal.
+   · .has-story      → sección alta con panel fijo (sticky); el scroll recorre
+                       los 10 pasos y el lienzo 3D se ve a través de ella.
+   · .story-static   → movimiento reducido: una sola pantalla con el despiece
+                       completo y sus etiquetas, sin animación ligada al scroll.
+
+   Capas: el fondo (z 0) queda bajo el lienzo 3D (z 1); el panel con el texto
+   y las etiquetas (z 2) queda encima. La sección no tiene z-index propio para
+   que esas capas se intercalen con el lienzo, igual que en el hero.
+   ========================================================================== */
+
+.engineering {
+  position: relative;
+  border-top: 1px solid var(--c-line);
+}
+
+.engineering__sticky {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 2.5rem;
+  padding: clamp(5rem, 14vw, 8rem) var(--gutter);
+}
+
+.engineering__head {
+  display: grid;
+  gap: 1rem;
+}
+
+.engineering__title {
+  font-size: clamp(2rem, 6.4vw, 3.5rem);
+}
+
+.engineering__meter {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--f-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  color: var(--c-muted);
+}
+
+.engineering__count [data-step-count] {
+  color: var(--c-text);
+}
+
+.engineering__track {
+  position: relative;
+  flex: 0 1 9rem;
+  height: 1px;
+  background: var(--c-line-strong);
+}
+
+.engineering__track span {
+  position: absolute;
+  inset: 0;
+  background: var(--c-blue);
+  box-shadow: 0 0 8px var(--c-blue);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+/* Sin 3D, el contador y la barra no dicen nada: se ocultan. */
+html:not(.has-story) .engineering__meter {
+  display: none;
+}
+
+.engineering__steps {
+  display: grid;
+  border-top: 1px solid var(--c-line);
+}
+
+.step {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--c-line);
+}
+
+.step__index {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-blue);
+}
+
+.step h3 {
+  font-size: clamp(1.35rem, 4.2vw, 1.75rem);
+  letter-spacing: -0.025em;
+}
+
+.step p:last-child {
+  max-width: 30rem;
+  font-size: 0.95rem;
+  color: var(--c-muted);
+}
+
+.tech-labels {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Con 3D: panel fijo + recorrido por scroll
+   -------------------------------------------------------------------------- */
+.has-story .engineering {
+  /* La distancia de scroll es esta altura menos una pantalla: ~50 vh por paso. */
+  height: 560vh;
+}
+
+/* El enlace #ingenieria debe llevar al inicio exacto del recorrido (relevo completo),
+   no a la altura de la cabecera: el propio panel ya reserva su espacio arriba.
+   El margen negativo compensa el scroll-padding-top global de <html>. */
+.has-story .engineering,
+.story-static .engineering {
+  scroll-margin-top: calc(var(--header-h) * -1);
+}
+
+.has-story .engineering__backdrop,
+.story-static .engineering__backdrop {
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  height: 100vh;
+  height: 100svh;
+  /* El panel ocupa el mismo hueco: se superponen en lugar de apilarse. */
+  margin-bottom: -100vh;
+  margin-bottom: -100svh;
+  pointer-events: none;
+  background:
+    radial-gradient(42% 36% at var(--story-x, 50%) var(--story-y, 40%), rgb(47 107 255 / 0.12), rgb(139 92 246 / 0.04) 55%, transparent 75%),
+    linear-gradient(to right, var(--c-line) 1px, transparent 1px) center / 12.5% 100%,
+    linear-gradient(to bottom, var(--c-line) 1px, transparent 1px) center / 100% 12.5%;
+  mask-image: radial-gradient(ellipse 70% 65% at var(--story-x, 50%) var(--story-y, 40%), #000 20%, transparent 85%);
+  opacity: 0.6;
+}
+
+.has-story .engineering__sticky,
+.story-static .engineering__sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  grid-template-rows: auto 1fr;
+  gap: 0;
+  padding: calc(var(--header-h) + 1rem) var(--gutter) calc(1.5rem + env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+
+.has-story .engineering__title,
+.story-static .engineering__title {
+  font-size: clamp(1.6rem, 5.2vw, 3rem);
+}
+
+/* Todos los pasos ocupan la misma celda; solo el activo es visible.
+   Siguen en el árbol de accesibilidad: un lector de pantalla puede leerlos todos. */
+.has-story .engineering__steps,
+.story-static .engineering__steps {
+  grid-row: 2;
+  align-self: end;
+  display: grid;
+  border-top: 0;
+  /* Fondo para que el texto se lea aunque una pieza pase por detrás. */
+  margin: 0 calc(var(--gutter) * -1) calc(-1.5rem - env(safe-area-inset-bottom));
+  padding: 3.5rem var(--gutter) calc(1.5rem + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, rgb(5 6 10 / 0.92) 45%, transparent);
+}
+
+.has-story .step,
+.story-static .step {
+  grid-area: 1 / 1;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.45s var(--ease-out),
+    transform 0.6s var(--ease-out);
+}
+
+.has-story .step.is-active,
+.story-static .step.is-active {
+  opacity: 1;
+  transform: none;
+}
+
+.has-story .tech-labels,
+.story-static .tech-labels {
+  position: absolute;
+  inset: 0;
+  display: block;
+  pointer-events: none;
+}
+
+/* Movimiento reducido: la sección es una sola pantalla, sin recorrido. */
+.story-static .engineering {
+  height: auto;
+}
+
+.story-static .engineering__meter {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Etiqueta técnica: punto + conector + ficha
+   El elemento raíz es un punto de 0×0 que JS coloca sobre la pieza con
+   translate3d; todo lo animable vive en sus hijos para no pisar esa transformación.
+   -------------------------------------------------------------------------- */
+.tech-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  visibility: hidden;
+  transition: visibility 0s linear 0.35s;
+  will-change: transform;
+}
+
+.tech-label.is-visible {
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.tech-label__dot {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--c-blue);
+  background: var(--c-bg);
+  box-shadow: 0 0 10px rgb(47 107 255 / 0.8);
+  transform: rotate(45deg) scale(0);
+  transition: transform 0.35s var(--ease-out);
+}
+
+/* Conector: JS fija su largo (width) y su ángulo (rotate); el trazo crece con ::after. */
+.tech-label__line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 1px;
+  transform-origin: left center;
+}
+
+.tech-label__line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, var(--c-blue), rgb(146 152 170 / 0.55));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s var(--ease-out);
+}
+
+/* La ficha: JS la desplaza a su columna con la propiedad `translate`;
+   la entrada usa `transform`, así ambas se suman sin pisarse. */
+.tech-label__box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  gap: 0.1rem;
+  min-width: max-content;
+  padding: 0.45rem 0.7rem 0.5rem;
+  background: rgb(11 14 22 / 0.82);
+  box-shadow: inset 0 0 0 1px var(--c-line-strong);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%);
+  opacity: 0;
+  transform: translate(0.4rem, -50%);
+  transition:
+    opacity 0.3s var(--ease-out),
+    transform 0.45s var(--ease-out);
+}
+
+.tech-label__code {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--c-blue);
+}
+
+.tech-label__name {
+  font-family: var(--f-display);
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--c-text);
+}
+
+.tech-label__spec {
+  font-size: 0.7rem;
+  line-height: 1.3;
+  color: var(--c-muted);
+}
+
+.tech-label.is-visible .tech-label__dot {
+  transform: rotate(45deg) scale(1);
+}
+
+.tech-label.is-visible .tech-label__line::after {
+  transform: scaleX(1);
+  transition-delay: 0.08s;
+}
+
+.tech-label.is-visible .tech-label__box {
+  opacity: 1;
+  transform: translate(0, -50%);
+  transition-delay: 0.18s;
+}
+
+/* Ficha a la izquierda de la pieza: se alinea por su borde derecho. */
+.tech-label.is-left .tech-label__box {
+  left: auto;
+  right: 0;
+  text-align: right;
+  transform: translate(-0.4rem, -50%);
+}
+
+.tech-label.is-left.is-visible .tech-label__box {
+  transform: translate(0, -50%);
+}
+
+/* Compacta (móvil con todas las etiquetas): solo el identificador. */
+.tech-label.is-compact .tech-label__box {
+  padding: 0.2rem 0.4rem;
+}
+
+.tech-label.is-compact .tech-label__name,
+.tech-label.is-compact .tech-label__spec {
+  display: none;
+}
+
+/* La ficha de cada pieza en Arquitectura (también es la fuente de las etiquetas). */
+.parts__item .parts__spec {
+  grid-column: 2;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--c-text);
+  opacity: 0.7;
+}
+
+/* --------------------------------------------------------------------------
+   Escritorio: texto a la izquierda, despiece a la derecha
+   -------------------------------------------------------------------------- */
+@media (min-width: 900px) {
+  .has-story .engineering {
+    height: 640vh;
+  }
+
+  .engineering__steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2.5rem;
+  }
+
+  .has-story .engineering__sticky,
+  .story-static .engineering__sticky {
+    grid-template-columns: minmax(0, 26rem) 1fr;
+    padding-top: calc(var(--header-h) + 2.5rem);
+    padding-bottom: 3rem;
+  }
+
+  .has-story .engineering__head,
+  .story-static .engineering__head {
+    grid-column: 1;
+  }
+
+  .has-story .engineering__steps,
+  .story-static .engineering__steps {
+    grid-column: 1;
+    grid-template-columns: minmax(0, 1fr);
+    align-self: center;
+    margin: 0;
+    padding: 0;
+    background: none;
+  }
+
+  .has-story .step h3,
+  .story-static .step h3 {
+    font-size: clamp(1.75rem, 2.6vw, 2.5rem);
+  }
+
+  .tech-label__name {
+    font-size: 0.95rem;
+  }
+}
+
+/* Movimiento reducido: sin transiciones en los pasos ni en las etiquetas. */
+@media (prefers-reduced-motion: reduce) {
+  .step,
+  .tech-label,
+  .tech-label * {
+    transition: none !important;
+  }
+}
+
+/* Móvil: las fichas sueltas muestran código y nombre; la especificación queda en Arquitectura. */
+@media (max-width: 899px) {
+  .tech-label__spec {
+    display: none;
+  }
+}

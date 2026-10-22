@@ -34,6 +34,8 @@ export function createLighting(scene) {
 
   return {
     group,
+    // Las contras se exponen para que el despiece pueda atenuarlas (ver scrollExperience).
+    rims: { blue: rimBlue, violet: rimViolet },
     dispose() {
       group.traverse((obj) => obj.dispose?.());
       group.removeFromParent();

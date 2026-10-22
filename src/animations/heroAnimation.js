@@ -37,6 +37,9 @@ export function createHeroPresentation({ sceneManager, phone, heroEl, reducedMot
   // Valores que animan GSAP y el scroll. `reveal` va de 0 (oculto) a 1 (en reposo).
   const motion = { reveal: reducedMotion ? 1 : 0, exit: 0 };
   const base = { x: 0, y: 0, scale: 1, travel: 0 };
+  // Pose que impone la sección de ingeniería. `blend` 0 = pose del hero, 1 = pose de la historia.
+  const story = { blend: 0, x: 0, y: 0, scale: 1, rx: 0, ry: 0, rz: 0 };
+  const mix = (a, b) => a + (b - a) * story.blend;
   const accent = phone.materialLibrary.materials.accent;
   const accentIntensity = accent.emissiveIntensity;
 
@@ -57,17 +60,24 @@ export function createHeroPresentation({ sceneManager, phone, heroEl, reducedMot
   function apply(request = true) {
     const hidden = 1 - motion.reveal;
     const l = live.state;
+    // Durante la historia el movimiento vivo se atenúa: el despiece necesita precisión.
+    const liveAmount = 1 - story.blend * 0.75;
     pivot.rotation.set(
-      POSE.x + motion.exit * 0.25 + l.tiltX,
-      POSE.y - hidden * 0.9 + motion.exit * 0.7 + l.tiltY + l.sway,
-      POSE.z - hidden * 0.12,
+      mix(POSE.x + motion.exit * 0.25, story.rx) + l.tiltX * liveAmount,
+      mix(POSE.y - hidden * 0.9 + motion.exit * 0.7, story.ry) + (l.tiltY + l.sway) * liveAmount,
+      mix(POSE.z - hidden * 0.12, story.rz),
     );
-    pivot.position.y = -hidden * 2.4 + l.floatY;
-    stage.position.set(base.x + l.shiftX, base.y + motion.exit * base.travel, 0);
-    stage.scale.setScalar(base.scale * (0.92 + motion.reveal * 0.08));
-    // La sombra responde a la flotación: más arriba, más pequeña y tenue.
+    pivot.position.y = -hidden * 2.4 + l.floatY * (1 - story.blend);
+    stage.position.set(
+      mix(base.x + l.shiftX, story.x),
+      mix(base.y + motion.exit * base.travel, story.y),
+      0,
+    );
+    stage.scale.setScalar(mix(base.scale * (0.92 + motion.reveal * 0.08), story.scale));
+    // La sombra responde a la flotación: más arriba, más pequeña y tenue. En el despiece desaparece.
     shadow.mesh.scale.setScalar(1 - l.floatY * 0.35);
-    shadow.mesh.material.opacity = motion.reveal * (1 - motion.exit) * (1 - l.floatY * 0.6);
+    shadow.mesh.material.opacity =
+      motion.reveal * (1 - motion.exit) * (1 - l.floatY * 0.6) * (1 - story.blend);
     if (request) sceneManager.requestRender();
   }
 
@@ -135,11 +145,8 @@ export function createHeroPresentation({ sceneManager, phone, heroEl, reducedMot
         scrollTrigger: { trigger: heroEl, start: 'top top', end: 'bottom top', scrub: 0.6 },
       });
 
-  // Cuando el hero sale por completo de pantalla, el 3D deja de dibujar.
-  const visibility = new IntersectionObserver(([entry]) => sceneManager.setActive(entry.isIntersecting), {
-    threshold: 0,
-  });
-  visibility.observe(heroEl);
+  // El hero es una de las regiones donde el 3D está activo.
+  const offRegion = sceneManager.observeRegion(heroEl);
 
   let revealTimeline = null;
   if (!reducedMotion) accent.emissiveIntensity = 0;
@@ -162,16 +169,26 @@ export function createHeroPresentation({ sceneManager, phone, heroEl, reducedMot
       .call(live.start, null, 0.6);
   }
 
+  /** La sección de ingeniería escribe aquí su pose; apply() la mezcla con la del hero. */
+  function setStory(values, request = true) {
+    Object.assign(story, values);
+    apply(request);
+  }
+
   return {
     stage,
     reveal,
+    setStory,
+    get baseScale() {
+      return base.scale;
+    },
     dispose() {
       revealTimeline?.kill();
       live.dispose();
       accent.emissiveIntensity = accentIntensity;
       exitTween?.scrollTrigger?.kill();
       exitTween?.kill();
-      visibility.disconnect();
+      offRegion();
       heroObserver.disconnect();
       offResize();
       heroEl.style.removeProperty('--stage-x');

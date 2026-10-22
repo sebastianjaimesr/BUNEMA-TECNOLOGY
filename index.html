@@ -103,8 +103,9 @@
 
       <nav class="site-nav" id="site-nav" aria-label="Principal" data-nav>
         <ol class="site-nav__list">
-          <li><a href="#x1" data-nav-link><span class="site-nav__index">01</span> Bunema X1</a></li>
-          <li><a href="#arquitectura" data-nav-link><span class="site-nav__index">02</span> Arquitectura</a></li>
+          <li><a href="#ingenieria" data-nav-link><span class="site-nav__index">01</span> Ingeniería</a></li>
+          <li><a href="#x1" data-nav-link><span class="site-nav__index">02</span> Bunema X1</a></li>
+          <li><a href="#arquitectura" data-nav-link><span class="site-nav__index">03</span> Arquitectura</a></li>
         </ol>
         <p class="site-nav__status"><span class="status-dot" aria-hidden="true"></span> X Series · Concepto 2026</p>
       </nav>
@@ -140,7 +141,7 @@
           <div class="hero__slot" data-stage-slot aria-hidden="true"></div>
           <div class="hero__actions" data-reveal>
             <a class="btn btn--primary" href="#x1">Descubrir Bunema X1</a>
-            <a class="btn btn--ghost" href="#arquitectura">Explorar tecnología</a>
+            <a class="btn btn--ghost" href="#ingenieria">Explorar tecnología</a>
           </div>
         </div>
 
@@ -194,16 +195,48 @@
           esquina cortada a 45 grados, tres lentes y una línea de luz azul.
         </p>
 
-        <a class="hero__scroll" href="#x1">
+        <a class="hero__scroll" href="#ingenieria">
           <span class="hero__scroll-line" aria-hidden="true"></span>
           <span>Desplaza para explorar</span>
-          <span class="hero__scroll-index" aria-hidden="true">01 / 02</span>
+          <span class="hero__scroll-index" aria-hidden="true">01 / 03</span>
         </a>
+      </section>
+
+      <!-- Ingeniería: sección alta con un panel "sticky". El scroll recorre 10 pasos del despiece.
+           El teléfono es el mismo del hero: el lienzo fijo lo muestra a través de esta sección transparente. -->
+      <section class="engineering" id="ingenieria" aria-labelledby="eng-title" data-engineering>
+        <div class="engineering__backdrop" aria-hidden="true"></div>
+        <div class="engineering__sticky">
+          <header class="engineering__head">
+            <p class="eyebrow">01 · Ingeniería en movimiento</p>
+            <h2 class="engineering__title" id="eng-title">Así se construye el X1.</h2>
+            <div class="engineering__meter" aria-hidden="true">
+              <span class="engineering__count"><span data-step-count>01</span> / 10</span>
+              <span class="engineering__track"><span data-step-bar></span></span>
+            </div>
+          </header>
+
+          <ol class="engineering__steps" data-steps>
+            <li class="step" data-step="0"><p class="step__index">01 · Acercamiento</p><h3>Mira de cerca.</h3><p>Antes de abrirlo, el X1 se acerca: 8,2 mm de grosor y ni una pieza de más.</p></li>
+            <li class="step" data-step="1"><p class="step__index">02 · Carcasa trasera</p><h3>La carcasa se libera.</h3><p>El vidrio trasero sale en una sola pieza, con la placa Corte X y su línea de luz.</p></li>
+            <li class="step" data-step="2"><p class="step__index">03 · Cámara</p><h3>Tres sensores, tres ópticas.</h3><p>El módulo se desplaza y las lentes iridiscentes quedan suspendidas sobre sus sensores.</p></li>
+            <li class="step" data-step="3"><p class="step__index">04 · Batería</p><h3>El corazón del chasis.</h3><p>La celda de 5200 mAh ocupa más de la mitad del cuerpo.</p></li>
+            <li class="step" data-step="4"><p class="step__index">05 · Placa y procesador</p><h3>El cerebro, expuesto.</h3><p>La placa apilada libera espacio y el BX-1 de 3 nm se eleva sobre ella.</p></li>
+            <li class="step" data-step="5"><p class="step__index">06 · Marco</p><h3>La estructura cede.</h3><p>El marco de aluminio se aparta; los botones y el puerto USB-C se separan con él.</p></li>
+            <li class="step" data-step="6"><p class="step__index">07 · Pantalla</p><h3>La luz, en capas.</h3><p>El panel OLED y su vidrio de 0,4 mm se separan del conjunto por delante.</p></li>
+            <li class="step" data-step="7"><p class="step__index">08 · Despiece</p><h3>Once piezas en el aire.</h3><p>Cada componente queda en su sitio exacto, sin tocar a ningún otro.</p></li>
+            <li class="step" data-step="8"><p class="step__index">09 · Especificaciones</p><h3>Todo, de un vistazo.</h3><p>Cada pieza lleva su identificador técnico, de X1-01 a X1-11.</p></li>
+            <li class="step" data-step="9"><p class="step__index">10 · Reconstrucción</p><h3>Y vuelve a ser uno.</h3><p>Desplázate hacia atrás cuando quieras: el X1 se desmonta y se monta contigo.</p></li>
+          </ol>
+
+          <!-- Etiquetas técnicas: las genera JS a partir de la lista de Arquitectura y las ancla a cada pieza. -->
+          <div class="tech-labels" data-tech-labels aria-hidden="true"></div>
+        </div>
       </section>
 
       <section class="overview" id="x1" aria-labelledby="x1-title">
         <header class="section-head">
-          <p class="section-head__index" aria-hidden="true">01</p>
+          <p class="section-head__index" aria-hidden="true">02</p>
           <p class="eyebrow">Bunema X1</p>
           <h2 class="section-head__title" id="x1-title">Diseñado alrededor de lo que sientes, no de lo que lees en una ficha.</h2>
         </header>
@@ -228,27 +261,27 @@
 
       <section class="architecture" id="arquitectura" aria-labelledby="arq-title">
         <header class="section-head">
-          <p class="section-head__index" aria-hidden="true">02</p>
+          <p class="section-head__index" aria-hidden="true">03</p>
           <p class="eyebrow">Arquitectura</p>
           <h2 class="section-head__title" id="arq-title">Once piezas. Una sola intención.</h2>
           <p class="section-head__lead">
-            Cada componente del X1 es un objeto independiente con su propio material. Así podrás verlo desmontarse pieza a pieza
-            en la próxima etapa de la experiencia.
+            Cada componente del X1 es un objeto independiente con su propio material. Esta es la ficha completa de lo que viste
+            desmontarse en la sección de ingeniería.
           </p>
         </header>
 
         <ol class="parts" role="list">
-          <li class="parts__item"><span class="parts__id">X1-01</span><h3>Vidrio protector</h3><p>Cristal endurecido de 0,4 mm con acabado antirreflejo.</p></li>
-          <li class="parts__item"><span class="parts__id">X1-02</span><h3>Pantalla frontal</h3><p>Panel OLED de bordes uniformes y perforación central.</p></li>
-          <li class="parts__item"><span class="parts__id">X1-03</span><h3>Marco metálico</h3><p>Aluminio aeroespacial con cantos biselados.</p></li>
-          <li class="parts__item"><span class="parts__id">X1-04</span><h3>Batería</h3><p>Celda de 5200 mAh que ocupa el corazón del chasis.</p></li>
-          <li class="parts__item"><span class="parts__id">X1-05</span><h3>Placa principal</h3><p>Circuito apilado que libera espacio para la batería.</p></li>
-          <li class="parts__item"><span class="parts__id">X1-06</span><h3>Procesador BX-1</h3><p>Ocho núcleos y un núcleo neuronal dedicado.</p></li>
-          <li class="parts__item"><span class="parts__id">X1-07</span><h3>Módulo de cámara</h3><p>Tres sensores alineados bajo la placa de Corte X.</p></li>
-          <li class="parts__item"><span class="parts__id">X1-08</span><h3>Lentes</h3><p>Ópticas con recubrimiento iridiscente multicapa.</p></li>
-          <li class="parts__item"><span class="parts__id">X1-09</span><h3>Carcasa trasera</h3><p>Vidrio con la placa de cámara y su línea de luz.</p></li>
-          <li class="parts__item"><span class="parts__id">X1-10</span><h3>Botones laterales</h3><p>Volumen, encendido y la Pulse Key programable.</p></li>
-          <li class="parts__item"><span class="parts__id">X1-11</span><h3>Puerto de carga</h3><p>USB-C flanqueado por las rejillas de los altavoces.</p></li>
+          <li class="parts__item" data-part="frontGlass"><span class="parts__id">X1-01</span><h3>Vidrio protector</h3><p>Cristal endurecido de 0,4 mm con acabado antirreflejo.</p><p class="parts__spec">0,4 mm · antirreflejo</p></li>
+          <li class="parts__item" data-part="display"><span class="parts__id">X1-02</span><h3>Pantalla frontal</h3><p>Panel OLED de bordes uniformes y perforación central.</p><p class="parts__spec">6,5″ OLED · 1–144 Hz</p></li>
+          <li class="parts__item" data-part="frame"><span class="parts__id">X1-03</span><h3>Marco metálico</h3><p>Aluminio aeroespacial con cantos biselados.</p><p class="parts__spec">Aluminio serie 7000</p></li>
+          <li class="parts__item" data-part="battery"><span class="parts__id">X1-04</span><h3>Batería</h3><p>Celda de 5200 mAh que ocupa el corazón del chasis.</p><p class="parts__spec">5200 mAh · silicio-carbono</p></li>
+          <li class="parts__item" data-part="mainboard"><span class="parts__id">X1-05</span><h3>Placa principal</h3><p>Circuito apilado que libera espacio para la batería.</p><p class="parts__spec">10 capas apiladas</p></li>
+          <li class="parts__item" data-part="processor"><span class="parts__id">X1-06</span><h3>Procesador BX-1</h3><p>Ocho núcleos y un núcleo neuronal dedicado.</p><p class="parts__spec">3 nm · 8 núcleos + NPU</p></li>
+          <li class="parts__item" data-part="cameraModule"><span class="parts__id">X1-07</span><h3>Módulo de cámara</h3><p>Tres sensores alineados bajo la placa de Corte X.</p><p class="parts__spec">50 MP + 50 MP + 12 MP</p></li>
+          <li class="parts__item" data-part="lenses"><span class="parts__id">X1-08</span><h3>Lentes</h3><p>Ópticas con recubrimiento iridiscente multicapa.</p><p class="parts__spec">ƒ/1,6 · ƒ/2,2 · ƒ/3,2</p></li>
+          <li class="parts__item" data-part="backCover"><span class="parts__id">X1-09</span><h3>Carcasa trasera</h3><p>Vidrio con la placa de cámara y su línea de luz.</p><p class="parts__spec">Vidrio mate · Corte X</p></li>
+          <li class="parts__item" data-part="buttons"><span class="parts__id">X1-10</span><h3>Botones laterales</h3><p>Volumen, encendido y la Pulse Key programable.</p><p class="parts__spec">Pulse Key programable</p></li>
+          <li class="parts__item" data-part="port"><span class="parts__id">X1-11</span><h3>Puerto de carga</h3><p>USB-C flanqueado por las rejillas de los altavoces.</p><p class="parts__spec">USB-C 3.2 · 65 W</p></li>
         </ol>
       </section>
     </main>
