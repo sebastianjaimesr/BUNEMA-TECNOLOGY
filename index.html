@@ -33,10 +33,48 @@
     <!-- Marca que JS está disponible antes del primer pintado: evita el parpadeo de los elementos que se revelan con GSAP. -->
     <script>
       document.documentElement.classList.add('js');
+      // Red de seguridad: si el JavaScript principal no arranca en 6 s (navegador antiguo,
+      // error de red), se retira la intro y se muestra el contenido igualmente.
+      setTimeout(function () {
+        if (!window.__bunemaApp) document.documentElement.classList.add('boot-failed');
+      }, 6000);
     </script>
   </head>
   <body>
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+    <!-- Introducción: solo existe visualmente con JS (ver intro.css). La barra refleja la carga real. -->
+    <div class="intro" data-intro>
+      <p class="intro__coord intro__coord--tl" aria-hidden="true">BNM-X1 · SECUENCIA DE INICIO</p>
+      <p class="intro__coord intro__coord--tr" aria-hidden="true">N 07°07′ · W 73°07′</p>
+
+      <div class="intro__center">
+        <div class="intro__logo">
+          <svg class="intro__mark" aria-hidden="true"><use href="#bunema-mark" /></svg>
+          <p class="intro__word" aria-label="BUNEMA">
+            <span aria-hidden="true">B</span><span aria-hidden="true">U</span><span aria-hidden="true">N</span><span aria-hidden="true">E</span><span aria-hidden="true">M</span><span aria-hidden="true">A</span>
+          </p>
+          <span class="intro__sweep" data-intro-sweep aria-hidden="true"></span>
+        </div>
+        <p class="intro__tagline">Tecnología que se siente</p>
+      </div>
+
+      <div class="intro__footer">
+        <div
+          class="intro__meter"
+          role="progressbar"
+          aria-label="Cargando la experiencia 3D"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+          data-intro-meter
+        >
+          <span class="intro__bar" data-intro-bar></span>
+        </div>
+        <p class="intro__status" data-intro-status aria-hidden="true">Preparando · 0 %</p>
+        <button class="intro__skip" type="button" data-intro-skip>Omitir intro</button>
+      </div>
+    </div>
 
     <!-- Símbolos SVG reutilizables: el logotipo se define una vez y se usa en cabecera y pie. -->
     <svg width="0" height="0" class="visually-hidden" aria-hidden="true" focusable="false">
@@ -85,6 +123,12 @@
           <p class="hero__coord hero__coord--bl">LAB / ESCENA 01</p>
           <span class="hero__crosshair"></span>
         </div>
+
+        <!-- Progreso que queda si la intro termina antes que la carga 3D. -->
+        <p class="hero__loading" data-hero-loading role="status" hidden>
+          <span class="hero__loading-bar" aria-hidden="true"><span data-hero-loading-bar></span></span>
+          <span data-hero-loading-text>Cargando vista 3D</span>
+        </p>
 
         <div class="hero__content">
           <p class="eyebrow" data-reveal>BUNEMA <span aria-hidden="true">/</span> X SERIES</p>

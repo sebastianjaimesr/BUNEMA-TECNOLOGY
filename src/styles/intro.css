@@ -1,0 +1,247 @@
+/* ==========================================================================
+   INTRO — secuencia de inicio sobre negro puro
+   Solo se muestra con JavaScript; sin JS la página aparece directamente.
+   ========================================================================== */
+
+.intro {
+  display: none;
+}
+
+.js .intro {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto 1fr auto;
+  padding: 1.5rem var(--gutter) calc(1.5rem + env(safe-area-inset-bottom));
+  background: #000;
+  /* La cortina se abre animando este polígono hacia arriba. */
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.intro[hidden],
+.boot-failed .intro {
+  display: none !important;
+}
+
+/* Mientras la intro está activa no se desplaza lo que hay debajo. */
+.intro-active {
+  overflow: hidden;
+}
+
+.intro__coord {
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgb(146 152 170 / 0.6);
+}
+
+.intro__coord--tl {
+  grid-row: 1;
+  grid-column: 1;
+  justify-self: start;
+}
+
+.intro__coord--tr {
+  grid-row: 1;
+  grid-column: 1;
+  justify-self: end;
+  display: none;
+}
+
+.intro__center {
+  grid-row: 2;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1.25rem;
+}
+
+.intro__logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 2.5vw, 1.25rem);
+  padding: 0.75rem 0.5rem;
+  overflow: hidden; /* recorta la línea de luz al ancho del logotipo */
+}
+
+.intro__mark {
+  width: clamp(28px, 6vw, 44px);
+  height: clamp(28px, 6vw, 44px);
+  color: var(--c-text);
+}
+
+.intro__word {
+  display: flex;
+  font-family: var(--f-display);
+  font-size: clamp(1.6rem, 7vw, 3.2rem);
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  margin-right: -0.32em;
+  line-height: 1;
+}
+
+.intro__word span {
+  display: inline-block;
+}
+
+/* Aparición progresiva con CSS: empieza en el primer pintado, sin esperar al JS.
+   La regla global de movimiento reducido (base.css) la vuelve instantánea. */
+.intro__mark,
+.intro__word span,
+.intro__tagline {
+  animation: intro-rise 0.7s var(--ease-out) both;
+}
+
+.intro__mark {
+  animation-delay: 0.1s;
+}
+
+.intro__word span:nth-child(1) { animation-delay: 0.18s; }
+.intro__word span:nth-child(2) { animation-delay: 0.23s; }
+.intro__word span:nth-child(3) { animation-delay: 0.28s; }
+.intro__word span:nth-child(4) { animation-delay: 0.33s; }
+.intro__word span:nth-child(5) { animation-delay: 0.38s; }
+.intro__word span:nth-child(6) { animation-delay: 0.43s; }
+
+.intro__tagline {
+  animation-delay: 0.6s;
+}
+
+@keyframes intro-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+/* La línea luminosa: un haz estrecho con núcleo blanco y halo azul. */
+.intro__sweep {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+  background: linear-gradient(
+    100deg,
+    transparent 38%,
+    rgb(47 107 255 / 0.35) 46%,
+    rgb(245 247 255 / 0.95) 50%,
+    rgb(139 92 246 / 0.35) 54%,
+    transparent 62%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.intro__tagline {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.intro__footer {
+  grid-row: 3;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+}
+
+.intro__meter {
+  grid-column: 1 / -1;
+  height: 1px;
+  background: var(--c-line-strong);
+  overflow: hidden;
+}
+
+.intro__bar {
+  display: block;
+  height: 100%;
+  background: var(--c-blue);
+  box-shadow: 0 0 12px var(--c-blue);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--ease-out);
+}
+
+.intro__status {
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.intro__skip {
+  min-height: 44px;
+  padding: 0 0.25rem;
+  border: 0;
+  border-bottom: 1px solid var(--c-line-strong);
+  background: none;
+  color: var(--c-text);
+  font: 600 0.72rem/1 var(--f-ui);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.intro__skip:hover {
+  border-color: var(--c-text);
+}
+
+@media (min-width: 600px) {
+  .intro__coord--tr {
+    display: block;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Progreso residual en el hero (si la intro se abre antes de que el 3D esté listo)
+   -------------------------------------------------------------------------- */
+.hero__loading {
+  position: absolute;
+  left: var(--stage-x, 50%);
+  top: var(--stage-y, 50%);
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  transform: translate(-50%, -50%);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  pointer-events: none;
+}
+
+.hero__loading[hidden] {
+  display: none;
+}
+
+.hero__loading-bar {
+  width: 7rem;
+  height: 1px;
+  background: var(--c-line-strong);
+  overflow: hidden;
+}
+
+.hero__loading-bar span {
+  display: block;
+  height: 100%;
+  background: var(--c-blue);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--ease-out);
+}
+
+/* Si el JS falla (red de seguridad del <head>), el contenido revelable se muestra igualmente. */
+.boot-failed [data-reveal] {
+  visibility: visible !important;
+  opacity: 1 !important;
+}

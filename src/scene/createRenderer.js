@@ -18,6 +18,10 @@ export function detectQuality() {
     maxPixelRatio: low ? 1.75 : 2,
     antialias: !low || window.devicePixelRatio < 2,
     anisotropy: low ? 4 : 8,
+    // Animación ambiental (flotación) a 30 FPS en móvil: casi igual de suave y la mitad de batería.
+    ambientFps: low ? 30 : 60,
+    // Sin cursor fino no hay "hover": la interacción pasa a ser táctil.
+    coarsePointer: coarse,
   };
 }
 

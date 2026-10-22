@@ -13,6 +13,8 @@
 
 .hero {
   position: relative;
+  /* En pantallas táctiles, el gesto horizontal gira el teléfono y el vertical sigue siendo scroll. */
+  touch-action: pan-y;
   /* Sin z-index propio: así sus capas internas se intercalan con el lienzo fijo. */
   display: flex;
   flex-direction: column;
@@ -42,6 +44,8 @@
   /* La cuadrícula se desvanece hacia los bordes: se intuye, no compite. */
   mask-image: radial-gradient(ellipse 75% 65% at 50% 52%, #000 25%, transparent 80%);
   opacity: 0.55;
+  /* Capa más lejana todavía: se mueve menos que el monograma. */
+  transform: translate(calc(var(--pointer-x, 0) * -8px), calc(var(--pointer-y, 0) * -6px));
 }
 
 /* Halo de luz detrás del producto: misma posición que el teléfono 3D. */
@@ -60,7 +64,11 @@
   position: absolute;
   left: var(--stage-x, 50%);
   top: var(--stage-y, 50%);
-  transform: translate(-50%, -52%);
+  /* Parallax: el monograma se desplaza en sentido contrario al cursor (capa lejana). */
+  transform: translate(
+    calc(-50% - var(--pointer-x, 0) * 22px),
+    calc(-52% - var(--pointer-y, 0) * 14px)
+  );
   font-family: var(--f-display);
   font-size: clamp(16rem, 92vw, 44rem);
   font-weight: 700;

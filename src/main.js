@@ -1,10 +1,14 @@
 import './styles/base.css';
 import './styles/layout.css';
 import './styles/hero.css';
+import './styles/intro.css';
 import './styles/responsive.css';
 
 import { initNavigation } from './ui/navigation.js';
+import { bindHeroLoading } from './ui/heroLoading.js';
 import { revealInterface } from './animations/transitions.js';
+import { playIntro } from './animations/intro.js';
+import { LoadTracker } from './loading/LoadTracker.js';
 
 /**
  * Punto de entrada. Orquesta, no implementa: cada responsabilidad vive
@@ -41,26 +45,52 @@ async function boot() {
   });
 
   app.disposers.push(initNavigation().dispose);
-  revealInterface({ reducedMotion });
 
   const canvas = document.querySelector('[data-stage]');
   const heroEl = document.querySelector('[data-hero]');
 
+  // Etapas reales de carga y su peso aproximado en el tiempo total.
+  // El motor 3D pesa más porque es la descarga más grande (~170 kB gzip).
+  const tracker = new LoadTracker([
+    { id: 'fonts', label: 'Tipografías', weight: 1 },
+    { id: 'engine', label: 'Motor 3D', weight: 4 },
+    { id: 'scene', label: 'Estudio de luz', weight: 1.5 },
+    { id: 'model', label: 'Ensamblando el X1', weight: 1.5 },
+    { id: 'shaders', label: 'Compilando materiales', weight: 2 },
+  ]);
+  app.tracker = tracker;
+
+  const intro = playIntro({ overlay: document.querySelector('[data-intro]'), tracker, reducedMotion });
+  app.intro = intro;
+  app.disposers.push(bindHeroLoading({ element: heroEl.querySelector('[data-hero-loading]'), tracker, after: intro.done }));
+
+  // La interfaz se compone en cuanto se abre la cortina (o de inmediato con movimiento reducido).
+  intro.done.then(() => revealInterface({ reducedMotion }));
+
   try {
-    const [{ startExperience }] = await Promise.all([import('./experience.js'), fontsReady()]);
-    app.experience = startExperience({
+    const [{ startExperience }] = await Promise.all([
+      tracker.run('engine', () => import('./experience.js')),
+      tracker.run('fonts', fontsReady),
+    ]);
+    app.experience = await startExperience({
       canvas,
       heroEl,
       reducedMotion,
+      tracker,
       onContextLost: () => showFallback('contexto WebGL perdido'),
       onContextRestored: () => {
         root.classList.remove('no-webgl');
         root.classList.add('is-3d-ready');
       },
     });
-    root.classList.add('is-3d-ready');
     if (import.meta.env.DEV) window.__bunemaDebug = app.experience; // inspección manual en desarrollo
+
+    // El producto entra cuando la intro ya se abrió; si cargó tarde, entra en cuanto está listo.
+    await intro.done;
+    root.classList.add('is-3d-ready');
+    app.experience.reveal();
   } catch (error) {
+    tracker.fail(error);
     showFallback(error);
   }
 

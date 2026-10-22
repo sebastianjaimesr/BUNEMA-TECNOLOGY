@@ -11,6 +11,15 @@ import { createLighting } from './createLighting.js';
  * módulo que modifique algo visible llama a `requestRender()`. Varias
  * peticiones en el mismo fotograma se agrupan en un solo dibujo.
  * Con la escena quieta, el coste de GPU es cero.
+ *
+ * ANIMADORES: para movimiento continuo (flotación, seguir el cursor) un
+ * módulo registra `addAnimator(fn)`. En cada fotograma se llama
+ * `fn(dt)`; si devuelve `false` ese animador no pide más fotogramas.
+ * Cuando ningún animador pide nada, el bucle se detiene solo.
+ *
+ * Los fotogramas pedidos solo por animadores ("ambientales") respetan
+ * `quality.ambientFps` (30 en móvil); los pedidos por scroll o por
+ * GSAP se dibujan siempre de inmediato para no perder fluidez.
  */
 export class SceneManager {
   constructor({ canvas, quality, onContextLost, onContextRestored }) {
@@ -18,7 +27,12 @@ export class SceneManager {
     this.quality = quality;
     this.active = true; // false cuando el canvas no es visible
     this.frameRequested = false;
+    this.explicitRequest = false;
     this.resizeListeners = new Set();
+    this.animators = new Set();
+    this.lastTime = 0; // marca de tiempo del último fotograma dibujado
+    this.minAmbientInterval = 1000 / (quality.ambientFps ?? 60);
+    this.frameCount = 0; // útil para medir en pruebas cuántos fotogramas se dibujan
 
     this.renderer = createRenderer(canvas, quality);
     this.scene = new THREE.Scene();
@@ -84,16 +98,50 @@ export class SceneManager {
     if (active) this.requestRender();
   }
 
+  /** Registra una función por fotograma. Devuelve la función que la elimina. */
+  addAnimator(animator) {
+    this.animators.add(animator);
+    this.requestRender();
+    return () => this.animators.delete(animator);
+  }
+
   requestRender() {
+    this.explicitRequest = true;
+    this.scheduleFrame();
+  }
+
+  scheduleFrame() {
     if (this.frameRequested || !this.active) return;
     this.frameRequested = true;
     requestAnimationFrame(this.render);
   }
 
-  render() {
+  render(now = performance.now()) {
     this.frameRequested = false;
-    if (!this.active || document.hidden) return;
+    if (!this.active || document.hidden) {
+      this.lastTime = 0; // al reanudar no habrá un salto de tiempo
+      return;
+    }
+
+    // Límite de FPS solo para fotogramas ambientales.
+    if (!this.explicitRequest && this.lastTime && now - this.lastTime < this.minAmbientInterval - 2) {
+      this.scheduleFrame();
+      return;
+    }
+    this.explicitRequest = false;
+
+    // dt acotado a 50 ms: tras una pausa larga la animación no "salta".
+    const dt = this.lastTime ? Math.min((now - this.lastTime) / 1000, 0.05) : 0;
+    this.lastTime = now;
+
+    let keepAnimating = false;
+    this.animators.forEach((animator) => {
+      if (animator(dt) !== false) keepAnimating = true;
+    });
+
     this.renderer.render(this.scene, this.camera);
+    this.frameCount += 1;
+    if (keepAnimating) this.scheduleFrame();
   }
 
   dispose() {
@@ -102,6 +150,7 @@ export class SceneManager {
     this.canvas.removeEventListener('webglcontextrestored', this.handleContextRestored);
     document.removeEventListener('visibilitychange', this.handleVisibility);
     this.resizeListeners.clear();
+    this.animators.clear();
     this.lighting.dispose();
     this.scene.environment?.dispose();
     this.renderer.dispose();

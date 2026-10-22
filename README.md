@@ -3,7 +3,7 @@
 Experiencia web 3D de una marca **conceptual** de teléfonos. Proyecto de portafolio por Sebastián Jaimes.
 BUNEMA y sus productos no existen comercialmente.
 
-> Estado: **Fase 1 — Fundación y hero 3D**. La documentación completa llega en la Fase 7.
+> Estado: **Fase 2 — Introducción e interacción**. La documentación completa llega en la Fase 7.
 
 ## Ejecutar en local
 
