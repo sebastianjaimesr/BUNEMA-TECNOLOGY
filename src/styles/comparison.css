@@ -194,7 +194,7 @@ html:not(.has-lineup-3d) .lineup__views,
 }
 
 .model-pick[aria-pressed='true'] .model-pick__hint {
-  color: var(--c-blue);
+  color: var(--c-blue-text);
 }
 
 .model-pick[aria-pressed='true'] .model-pick__hint::before {
@@ -374,7 +374,7 @@ html:not(.has-lineup-3d) .lineup__views,
 .specs .is-lead .specs__value::after {
   content: ' ▲';
   font-size: 0.6em;
-  color: var(--c-blue);
+  color: var(--c-blue-text);
   vertical-align: 0.2em;
 }
 
@@ -394,12 +394,8 @@ html:not(.has-lineup-3d) .lineup__views,
   display: none;
 }
 
-/* Modelo destacado: su columna se ilumina y las demás retroceden. */
-.specs.has-highlight td[data-model]:not(.is-highlighted),
-.specs.has-highlight thead th:not(.is-highlighted) {
-  opacity: 0.5;
-}
-
+/* Modelo destacado: su columna se ilumina. Las demás NO se atenúan con opacidad:
+   el texto gris perdería el contraste mínimo (WCAG AA 4,5:1). */
 .specs .is-highlighted {
   background: rgb(47 107 255 / 0.07);
 }

@@ -49,7 +49,8 @@ export class SceneManager {
 
     this.renderer = createRenderer(canvas, quality);
     this.scene = new THREE.Scene();
-    this.scene.environment = createEnvironment(this.renderer);
+    this.environmentTarget = createEnvironment(this.renderer);
+    this.scene.environment = this.environmentTarget.texture;
     this.scene.environmentIntensity = 0.38;
     this.lighting = createLighting(this.scene);
 
@@ -68,6 +69,11 @@ export class SceneManager {
       onContextLost?.();
     };
     this.handleContextRestored = () => {
+      // Three.js vuelve a subir geometrías y texturas por su cuenta, pero el mapa de entorno es
+      // un render target: su contenido se perdió con la GPU y hay que generarlo otra vez.
+      this.environmentTarget.dispose();
+      this.environmentTarget = createEnvironment(this.renderer);
+      this.scene.environment = this.environmentTarget.texture;
       onContextRestored?.();
       this.requestRender();
     };
@@ -192,7 +198,7 @@ export class SceneManager {
     this.resizeListeners.clear();
     this.animators.clear();
     this.lighting.dispose();
-    this.scene.environment?.dispose();
+    this.environmentTarget.dispose();
     this.renderer.dispose();
   }
 }

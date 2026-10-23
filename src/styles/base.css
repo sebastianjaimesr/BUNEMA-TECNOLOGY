@@ -8,6 +8,8 @@
   --c-surface: #0b0e16;
   --c-blue: #2f6bff;
   --c-violet: #8b5cf6;
+  /* Azul para TEXTO pequeño (índices, códigos): #2f6bff sobre el fondo queda en 4,5:1 justo; este llega a 6,3:1. */
+  --c-blue-text: #5b8aff;
   --c-text: #f5f7ff;
   --c-muted: #9298aa;
   --c-line: rgb(146 152 170 / 0.16);
@@ -115,6 +117,18 @@ canvas {
   border: 0;
 }
 
+/* Aviso sin JavaScript: bajo la cabecera fija, por encima del contenido. */
+.noscript-note {
+  position: relative;
+  z-index: 30;
+  margin: var(--header-h) 0 0;
+  padding: 0.85rem var(--gutter);
+  border-bottom: 1px solid var(--c-line);
+  background: var(--c-bg);
+  font-size: 0.875rem;
+  color: var(--c-muted);
+}
+
 .skip-link {
   position: fixed;
   top: 0.75rem;
@@ -172,12 +186,13 @@ canvas {
 }
 
 .btn--primary {
-  --btn-bg: var(--c-blue);
+  /* Un punto más profundo que --c-blue: el texto blanco alcanza 5:1 de contraste (WCAG AA). */
+  --btn-bg: #2a63f5;
   color: #fff;
 }
 
 .btn--primary:hover {
-  --btn-bg: #4a7fff;
+  --btn-bg: #2457e0;
 }
 
 .btn--ghost {

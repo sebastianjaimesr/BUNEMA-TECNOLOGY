@@ -79,13 +79,14 @@
     gap: 1.25rem;
   }
 
-  /* Con seis secciones en el menú, el estado "X Series" solo aparece cuando hay sitio (≥ 1280 px). */
+  /* El estado "X Series" se oculta hasta 1440 px (ver más abajo): el menú tiene siete enlaces. */
   .site-nav__status {
     display: none;
   }
 
   .site-nav__list a {
     gap: 0.5rem;
+    white-space: nowrap;
     min-height: 44px;
     align-items: center;
     padding: 0;
@@ -199,10 +200,11 @@
     top: calc(var(--header-h) + 2rem);
   }
 
+  /* Pie: marca · secciones · redes en una fila; aviso legal y "volver arriba" debajo. */
   .site-footer {
-    grid-template-columns: auto 1fr auto;
-    align-items: end;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
     column-gap: 3rem;
+    row-gap: 3rem;
   }
 
   .site-footer__legal {
@@ -211,8 +213,19 @@
 
   .site-footer__top {
     grid-column: 3;
-    grid-row: 1 / 3;
+    justify-self: end;
     align-self: end;
+  }
+}
+
+/* 900–1099 px: siete enlaces sin numeración para que el menú respire junto a la marca. */
+@media (min-width: 900px) and (max-width: 1099px) {
+  .site-nav__list {
+    gap: 1rem;
+  }
+
+  .site-nav__list .site-nav__index {
+    display: none;
   }
 }
 
@@ -226,9 +239,12 @@
   .hero__specs {
     margin-right: 1rem;
   }
+}
 
+/* Con siete secciones, el estado "X Series" solo aparece en pantallas amplias. */
+@media (min-width: 1440px) {
   .site-nav__list {
-    gap: 2rem;
+    gap: 1.75rem;
   }
 
   .site-nav__status {

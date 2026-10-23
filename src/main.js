@@ -6,12 +6,14 @@ import './styles/engineering.css';
 import './styles/configurator.css';
 import './styles/camera.css';
 import './styles/comparison.css';
+import './styles/reservation.css';
 import './styles/responsive.css';
 
 import { initNavigation } from './ui/navigation.js';
 import { createConfigurator } from './sections/configurator.js';
 import { createComparison } from './sections/comparison.js';
 import { createCameraDemo } from './sections/cameraDemo.js';
+import { createReservation } from './sections/reservation.js';
 import { bindHeroLoading } from './ui/heroLoading.js';
 import { revealInterface } from './animations/transitions.js';
 import { playIntro } from './animations/intro.js';
@@ -46,6 +48,12 @@ async function boot() {
   if (window.__bunemaApp) return window.__bunemaApp;
   const app = { experience: null, disposers: [] };
   window.__bunemaApp = app;
+  // Definido desde el principio: la recarga en caliente puede llegar mientras el 3D aún carga.
+  app.dispose = () => {
+    app.experience?.dispose();
+    app.disposers.forEach((fn) => fn());
+    delete window.__bunemaApp;
+  };
 
   document.querySelectorAll('[data-year]').forEach((el) => {
     el.textContent = String(new Date().getFullYear());
@@ -65,6 +73,10 @@ async function boot() {
   const cameraDemo = createCameraDemo({ root: document.querySelector('[data-camera]'), reducedMotion });
   app.cameraDemo = cameraDemo;
   app.disposers.push(cameraDemo.dispose);
+  // Reserva conceptual: sin servidor; propone el modelo destacado y el color del configurador.
+  const reservation = createReservation({ root: document.querySelector('[data-reservation]'), configurator, comparison });
+  app.reservation = reservation;
+  app.disposers.push(reservation.dispose);
 
   const canvas = document.querySelector('[data-stage]');
   const heroEl = document.querySelector('[data-hero]');
@@ -116,11 +128,6 @@ async function boot() {
     showFallback(error);
   }
 
-  app.dispose = () => {
-    app.experience?.dispose();
-    app.disposers.forEach((fn) => fn());
-    delete window.__bunemaApp;
-  };
   return app;
 }
 

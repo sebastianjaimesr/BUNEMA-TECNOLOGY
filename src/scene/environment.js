@@ -9,11 +9,15 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
  * en varios niveles de desenfoque: así un metal pulido usa el nivel
  * nítido y un vidrio mate usa uno borroso, que es justo lo que hace
  * la `roughness` en un MeshPhysicalMaterial.
+ *
+ * Devuelve el render target, no solo su textura: la memoria de GPU de un
+ * render target se libera con `target.dispose()` (con `texture.dispose()`
+ * se quedaría reservada).
  */
 export function createEnvironment(renderer) {
   const pmrem = new THREE.PMREMGenerator(renderer);
   const room = new RoomEnvironment();
-  const texture = pmrem.fromScene(room, 0.04).texture;
+  const target = pmrem.fromScene(room, 0.04);
 
   // La escena temporal ya no hace falta: liberamos su memoria de inmediato.
   room.traverse((obj) => {
@@ -24,5 +28,5 @@ export function createEnvironment(renderer) {
   });
   pmrem.dispose();
 
-  return texture;
+  return target;
 }

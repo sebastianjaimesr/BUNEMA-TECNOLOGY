@@ -156,7 +156,7 @@
   font-family: var(--f-ui);
   font-size: 0.75rem;
   letter-spacing: 0.1em;
-  color: var(--c-blue);
+  color: var(--c-blue-text);
 }
 
 .site-nav__status {
@@ -197,7 +197,7 @@
 .section-head__index {
   font-family: var(--f-display);
   font-size: 0.8rem;
-  color: var(--c-blue);
+  color: var(--c-blue-text);
   letter-spacing: 0.1em;
 }
 
@@ -235,7 +235,7 @@
   margin-left: 0.15em;
   font-size: 0.28em;
   letter-spacing: 0;
-  color: var(--c-blue);
+  color: var(--c-blue-text);
   vertical-align: top;
 }
 
@@ -276,7 +276,7 @@
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.12em;
-  color: var(--c-blue);
+  color: var(--c-blue-text);
 }
 
 .parts__item h3 {
@@ -327,4 +327,59 @@
 
 .site-footer__top:hover {
   border-color: var(--c-text);
+}
+
+.site-footer__brand .site-footer__claim {
+  font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+  max-width: 16ch;
+}
+
+.site-footer__brand {
+  display: grid;
+  gap: 1rem;
+  justify-items: start;
+}
+
+.site-footer__label {
+  margin-bottom: 0.75rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.site-footer__nav ul {
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  gap: 0 2rem;
+}
+
+.site-footer__nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 0.9rem;
+  color: var(--c-muted);
+  transition: color 0.3s var(--ease-out);
+}
+
+.site-footer__nav a:hover {
+  color: var(--c-text);
+}
+
+.site-footer__social ul {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.88rem;
+}
+
+.site-footer__social span {
+  color: var(--c-muted);
+}
+
+.site-footer__hint {
+  margin-top: 0.6rem;
+  font-size: 0.72rem;
+  color: var(--c-muted);
 }

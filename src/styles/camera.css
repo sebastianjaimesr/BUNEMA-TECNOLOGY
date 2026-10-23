@@ -387,7 +387,7 @@
 
 .readout__title span {
   letter-spacing: 0.1em;
-  color: var(--c-blue);
+  color: var(--c-blue-text);
 }
 
 .readout__grid {

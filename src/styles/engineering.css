@@ -87,7 +87,7 @@ html:not(.has-story) .engineering__meter {
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--c-blue);
+  color: var(--c-blue-text);
 }
 
 .step h3 {
@@ -291,7 +291,7 @@ html:not(.has-story) .engineering__meter {
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.16em;
-  color: var(--c-blue);
+  color: var(--c-blue-text);
 }
 
 .tech-label__name {

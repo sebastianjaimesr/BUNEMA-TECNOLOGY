@@ -140,7 +140,7 @@
 }
 
 .hero__content .eyebrow span {
-  color: var(--c-blue);
+  color: var(--c-blue-text);
 }
 
 .hero__title {
@@ -252,7 +252,7 @@
 }
 
 .hero__scroll-index {
-  color: var(--c-blue);
+  color: var(--c-blue-text);
 }
 
 @keyframes scroll-pulse {
