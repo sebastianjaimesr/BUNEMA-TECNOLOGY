@@ -5,6 +5,7 @@ import { BunemaPhone } from './models/BunemaPhone.js';
 import { createHeroPresentation } from './animations/heroAnimation.js';
 import { createScrollExperience } from './animations/scrollExperience.js';
 import { createConfiguratorPresentation } from './animations/configuratorPresentation.js';
+import { createComparisonPresentation } from './animations/comparisonPresentation.js';
 
 /** Cede un fotograma al navegador: así la barra de carga se pinta entre etapas. */
 const nextFrame = () => new Promise((resolve) => requestAnimationFrame(() => resolve()));
@@ -17,7 +18,7 @@ const nextFrame = () => new Promise((resolve) => requestAnimationFrame(() => res
  * Cada etapa informa a `tracker` cuando termina de verdad. No revela el
  * teléfono: devuelve `reveal()` para que la introducción decida cuándo.
  */
-export async function startExperience({ canvas, heroEl, configurator, reducedMotion, tracker, onContextLost, onContextRestored }) {
+export async function startExperience({ canvas, heroEl, configurator, comparison, reducedMotion, tracker, onContextLost, onContextRestored }) {
   const quality = detectQuality();
 
   tracker.start('scene');
@@ -27,6 +28,7 @@ export async function startExperience({ canvas, heroEl, configurator, reducedMot
   let hero = null;
   let story = null;
   let config = null;
+  let lineup = null;
   try {
     tracker.completeStep('scene');
     await nextFrame();
@@ -46,6 +48,11 @@ export async function startExperience({ canvas, heroEl, configurator, reducedMot
     if (configEl && configurator) {
       config = createConfiguratorPresentation({ sceneManager, phone, hero, sectionEl: configEl, configurator, reducedMotion });
     }
+    // Comparador: tres modelos en la misma escena, con giro sincronizado.
+    const comparisonEl = document.querySelector('[data-comparison]');
+    if (comparisonEl && comparison) {
+      lineup = createComparisonPresentation({ sceneManager, phone, hero, sectionEl: comparisonEl, comparison, reducedMotion });
+    }
     // Cada sección cambia su altura al activarse (clases has-story, has-config-3d...). Se recalculan
     // todas las posiciones de scroll de una vez, ya con el diseño definitivo.
     ScrollTrigger.refresh();
@@ -57,6 +64,7 @@ export async function startExperience({ canvas, heroEl, configurator, reducedMot
     await tracker.run('shaders', () => sceneManager.renderer.compileAsync(sceneManager.scene, sceneManager.camera));
   } catch (error) {
     // Si algo falla después de crear el renderer, se libera la GPU antes de propagar el error.
+    lineup?.dispose();
     config?.dispose();
     story?.dispose();
     hero?.dispose();
@@ -71,7 +79,9 @@ export async function startExperience({ canvas, heroEl, configurator, reducedMot
     reveal: hero.reveal,
     story,
     config,
+    lineup,
     dispose() {
+      lineup?.dispose();
       config?.dispose();
       story?.dispose();
       hero.dispose();

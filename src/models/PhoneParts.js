@@ -51,7 +51,7 @@ export function traceRoundedRect(path, w, h, r, cx = 0, cy = 0) {
  * Rectángulo redondeado con UNA esquina cortada a 45°: el "Corte X",
  * firma visual de BUNEMA que se repite en la interfaz (botones, etiquetas).
  */
-function traceChamferedRect(path, w, h, r, chamfer, cx = 0, cy = 0) {
+export function traceChamferedRect(path, w, h, r, chamfer, cx = 0, cy = 0) {
   const x0 = cx - w / 2;
   const x1 = cx + w / 2;
   const y0 = cy - h / 2;
@@ -75,7 +75,7 @@ function circlePath(cx, cy, r) {
 }
 
 /** Las UV de ShapeGeometry vienen en unidades de mundo; las llevamos a 0..1 para poder texturizar. */
-function normalizeUVs(geometry) {
+export function normalizeUVs(geometry) {
   geometry.computeBoundingBox();
   const { min, max } = geometry.boundingBox;
   const uv = geometry.attributes.uv;

@@ -76,7 +76,12 @@
 
   .site-nav__list {
     display: flex;
-    gap: 2rem;
+    gap: 1.25rem;
+  }
+
+  /* Con seis secciones en el menú, el estado "X Series" solo aparece cuando hay sitio (≥ 1280 px). */
+  .site-nav__status {
+    display: none;
   }
 
   .site-nav__list a {
@@ -220,5 +225,13 @@
 @media (min-width: 1280px) {
   .hero__specs {
     margin-right: 1rem;
+  }
+
+  .site-nav__list {
+    gap: 2rem;
+  }
+
+  .site-nav__status {
+    display: flex;
   }
 }

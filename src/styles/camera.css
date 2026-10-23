@@ -1,0 +1,464 @@
+/* ==========================================================================
+   DEMO DE CÁMARA — "Explora la imagen" (mobile first)
+
+   Sección opaca (z 3): no usa el lienzo 3D. El visor apila dos <canvas>
+   con la misma ilustración y filtros distintos; la capa de modo noche se
+   recorta con clip-path para el barrido y el divisor de comparación.
+   ========================================================================== */
+
+.camera {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  gap: clamp(2.5rem, 6vw, 4rem);
+  padding: clamp(5rem, 14vw, 9rem) var(--gutter);
+  border-top: 1px solid var(--c-line);
+  background:
+    radial-gradient(50% 40% at 15% 0%, rgb(139 92 246 / 0.07), transparent 70%),
+    var(--c-bg);
+}
+
+.camera__layout {
+  display: grid;
+  gap: 2rem;
+}
+
+/* --------------------------------------------------------------------------
+   Visor
+   -------------------------------------------------------------------------- */
+.viewfinder {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.viewfinder__frame {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #04050b;
+  /* Corte X en la esquina inferior derecha, como la placa de cámara del X1. */
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%);
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.viewfinder__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.viewfinder__night {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 0 0 100%);
+  transition: clip-path 0.6s var(--ease-out);
+}
+
+.viewfinder__frame.is-dragging .viewfinder__night {
+  transition: none;
+}
+
+/* Grano de ISO alto: solo sobre la capa estándar (la nocturna queda encima y lo tapa). */
+.viewfinder__grain {
+  position: absolute;
+  inset: -40px;
+  background-size: 140px 140px;
+  mix-blend-mode: screen;
+  opacity: 0.3;
+  pointer-events: none;
+  animation: vf-grain 0.6s steps(5) infinite;
+  animation-play-state: paused;
+}
+
+.is-live .viewfinder__grain {
+  animation-play-state: running;
+}
+
+@keyframes vf-grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-23px, 11px); }
+  40% { transform: translate(17px, -29px); }
+  60% { transform: translate(-9px, 31px); }
+  80% { transform: translate(29px, 7px); }
+  100% { transform: translate(0, 0); }
+}
+
+.viewfinder__fallback {
+  position: absolute;
+  inset: auto 1rem 1rem;
+  color: var(--c-muted);
+  font-size: 0.85rem;
+}
+
+.has-camera-demo .viewfinder__fallback {
+  display: none;
+}
+
+.camera:not(.has-camera-demo) .viewfinder__hud,
+.camera:not(.has-camera-demo) .camera__panel {
+  display: none;
+}
+
+.viewfinder__caption {
+  font-size: 0.78rem;
+  color: var(--c-muted);
+}
+
+/* HUD: esquinas de encuadre, etiqueta de simulación, lente, zoom y retículo. */
+.viewfinder__hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  font-family: var(--f-display);
+  color: var(--c-text);
+  text-shadow: 0 1px 6px rgb(0 0 0 / 0.7);
+}
+
+.viewfinder__hud::before {
+  content: '';
+  position: absolute;
+  inset: 0.9rem;
+  --c: rgb(245 247 255 / 0.55);
+  background:
+    linear-gradient(var(--c), var(--c)) top left / 18px 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) top left / 1px 18px no-repeat,
+    linear-gradient(var(--c), var(--c)) top right / 18px 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) top right / 1px 18px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom left / 18px 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom left / 1px 18px no-repeat;
+}
+
+.hud__tag {
+  position: absolute;
+  top: 1.4rem;
+  left: 1.4rem;
+  padding: 0.15rem 0.45rem;
+  font-family: var(--f-ui);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  background: rgb(5 6 10 / 0.6);
+  box-shadow: inset 0 0 0 1px var(--c-blue);
+}
+
+.hud__lens {
+  position: absolute;
+  bottom: 1.4rem;
+  left: 1.4rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hud__lens.is-switching {
+  animation: hud-switch 0.6s var(--ease-out);
+}
+
+@keyframes hud-switch {
+  0% { color: var(--c-blue); transform: translateY(6px); opacity: 0; }
+  100% { transform: none; opacity: 1; }
+}
+
+.hud__zoom {
+  position: absolute;
+  bottom: 1.1rem;
+  left: 50%;
+  translate: -50% 0;
+  min-width: 3.4rem;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  background: rgb(5 6 10 / 0.55);
+  box-shadow: inset 0 0 0 1px rgb(245 247 255 / 0.25);
+}
+
+/* Retículo de enfoque: se "cierra" en azul cuando la imagen se asienta. */
+.hud__reticle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3.5rem;
+  height: 3.5rem;
+  translate: -50% -50%;
+  --c: rgb(245 247 255 / 0.7);
+  background:
+    linear-gradient(var(--c), var(--c)) top left / 10px 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) top left / 1px 10px no-repeat,
+    linear-gradient(var(--c), var(--c)) top right / 10px 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) top right / 1px 10px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom left / 10px 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom left / 1px 10px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom right / 10px 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom right / 1px 10px no-repeat;
+  transition: transform 0.4s var(--ease-out);
+  transform: scale(1.25);
+}
+
+.hud__reticle span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  translate: -50% -50%;
+  background: var(--c);
+}
+
+.hud__reticle.is-locked {
+  --c: var(--c-blue);
+  transform: scale(1);
+}
+
+/* Comparación: divisor con asa y etiquetas a cada lado. */
+.hud__divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  display: none;
+  width: 1px;
+  background: rgb(245 247 255 / 0.85);
+  box-shadow: 0 0 12px rgb(47 107 255 / 0.8);
+}
+
+.hud__handle {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  translate: -50% -50%;
+  background: rgb(5 6 10 / 0.75);
+  box-shadow: inset 0 0 0 1px var(--c-text);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+}
+
+.hud__handle::before {
+  content: '‹ ›';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+}
+
+.hud__label {
+  position: absolute;
+  top: 1.4rem;
+  display: none;
+  font-family: var(--f-ui);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.hud__label--std {
+  left: 1.4rem;
+  top: 3.2rem;
+}
+
+.hud__label--night {
+  right: 1.4rem;
+  color: #9db8ff;
+}
+
+.is-compare .hud__divider,
+.is-compare .hud__label {
+  display: block;
+}
+
+.is-compare .viewfinder__frame {
+  cursor: ew-resize;
+}
+
+/* --------------------------------------------------------------------------
+   Panel de control
+   -------------------------------------------------------------------------- */
+.camera__panel {
+  display: grid;
+  align-content: start;
+  gap: 1.75rem;
+}
+
+.camera__group {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.camera__group legend {
+  margin-bottom: 0.75rem;
+  padding: 0;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.zoom-levels,
+.light-modes {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.light-modes {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.zoom-level,
+.light-mode {
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  padding: 0 0.25rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-muted);
+  box-shadow: inset 0 0 0 1px var(--c-line-strong);
+  cursor: pointer;
+  transition: color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out), background-color 0.3s var(--ease-out);
+}
+
+.zoom-level:hover,
+.light-mode:hover {
+  color: var(--c-text);
+}
+
+.zoom-level:has(input:checked),
+.light-mode:has(input:checked) {
+  color: var(--c-text);
+  background: rgb(47 107 255 / 0.12);
+  box-shadow: inset 0 0 0 1px var(--c-blue);
+}
+
+.zoom-level:has(input:focus-visible),
+.light-mode:has(input:focus-visible) {
+  outline: 2px solid var(--c-text);
+  outline-offset: 2px;
+}
+
+.camera__range {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--c-muted);
+}
+
+.camera__range[hidden] {
+  display: none;
+}
+
+.camera__range input {
+  width: 100%;
+  min-height: 32px;
+  margin: 0;
+  accent-color: var(--c-blue);
+  cursor: pointer;
+}
+
+/* Lectura técnica: rejilla de datos con números tabulares (no "bailan" al cambiar). */
+.readout {
+  display: grid;
+  gap: 1rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--c-line);
+}
+
+.readout__title {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.readout__title span {
+  letter-spacing: 0.1em;
+  color: var(--c-blue);
+}
+
+.readout__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem 0.75rem;
+}
+
+.readout__grid dt {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.readout__grid dd {
+  margin: 0;
+  font-family: var(--f-display);
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.3;
+}
+
+.histogram {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.histogram__canvas {
+  width: 100%;
+  height: 48px;
+  box-shadow: inset 0 -1px 0 var(--c-line-strong);
+}
+
+.histogram__label,
+.camera__note {
+  font-size: 0.72rem;
+  color: var(--c-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Escritorio: visor grande a la izquierda, panel a la derecha
+   -------------------------------------------------------------------------- */
+@media (min-width: 900px) {
+  .camera__layout {
+    grid-template-columns: minmax(0, 1fr) minmax(19rem, 23rem);
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: start;
+  }
+
+  .viewfinder__frame {
+    aspect-ratio: 16 / 10;
+  }
+
+  .hud__reticle {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+}
+
+/* Móvil: el zoom pasa a la derecha para no chocar con el nombre de la lente. */
+@media (max-width: 899px) {
+  .hud__zoom {
+    left: auto;
+    right: 2rem;
+    translate: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viewfinder__grain {
+    animation: none;
+  }
+}

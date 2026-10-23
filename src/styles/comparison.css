@@ -1,0 +1,451 @@
+/* ==========================================================================
+   COMPARADOR — "Encuentra tu modelo" (mobile first)
+
+   Tres franjas con capas distintas:
+   · intro y tabla: opacas (z 3), cubren el lienzo 3D como el resto de secciones.
+   · vitrina (.lineup): transparente. Su fondo (z 0) queda bajo el lienzo (z 1)
+     y las fichas de cada modelo (z 2) encima. La sección no tiene z-index
+     propio para que esas capas se intercalen con el lienzo.
+   ========================================================================== */
+
+.comparison {
+  position: relative;
+  border-top: 1px solid var(--c-line);
+}
+
+.comparison__intro,
+.comparison__table {
+  position: relative;
+  z-index: 3;
+  background: var(--c-bg);
+  padding: 0 var(--gutter);
+}
+
+.comparison__intro {
+  padding-top: clamp(5rem, 14vw, 9rem);
+  padding-bottom: clamp(1.5rem, 4vw, 3rem);
+}
+
+.comparison__table {
+  display: grid;
+  gap: 1rem;
+  padding-bottom: clamp(5rem, 12vw, 8rem);
+}
+
+/* --------------------------------------------------------------------------
+   Vitrina
+   -------------------------------------------------------------------------- */
+.lineup {
+  position: relative;
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem var(--gutter) 1.5rem;
+  touch-action: pan-y; /* el gesto horizontal gira los modelos; el vertical sigue desplazando la página */
+}
+
+/* Suelo de estudio bajo los tres modelos: halo azul, retícula fina y línea de horizonte. */
+.lineup::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(50% 42% at 50% 62%, rgb(47 107 255 / 0.1), transparent 75%),
+    linear-gradient(to bottom, transparent calc(var(--floor, 70%) - 1px), var(--c-line-strong) var(--floor, 70%), transparent calc(var(--floor, 70%) + 1px)),
+    linear-gradient(to right, var(--c-line) 1px, transparent 1px) center / 8.33% 100%;
+  mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+  opacity: 0.7;
+}
+
+.has-lineup-3d .lineup {
+  cursor: grab;
+}
+
+.lineup.is-dragging {
+  cursor: grabbing;
+}
+
+.lineup__readout,
+.lineup__models,
+.lineup__views {
+  position: relative;
+  z-index: 2;
+}
+
+.lineup__readout {
+  justify-self: end;
+  font-family: var(--f-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  color: var(--c-muted);
+  text-transform: uppercase;
+}
+
+.lineup__readout [data-lineup-angle] {
+  color: var(--c-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.lineup__models {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.lineup__slot {
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 0.5rem;
+}
+
+/* El hueco donde se coloca cada teléfono 3D (o su ilustración sin WebGL). */
+.lineup__stage {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: clamp(13rem, 42vh, 22rem);
+  padding-bottom: 6%;
+}
+
+.lineup__fallback {
+  width: auto;
+  height: 86%;
+  filter: drop-shadow(0 18px 24px rgb(0 0 0 / 0.6));
+}
+
+/* El alto de cada ilustración sigue la escala real de cada modelo (154, 151 y 147 mm). */
+.lineup__slot[data-lineup-slot='pro'] .lineup__fallback {
+  height: calc(86% * 151 / 154);
+}
+
+.lineup__slot[data-lineup-slot='lite'] .lineup__fallback {
+  height: calc(86% * 147 / 154);
+}
+
+.has-lineup-3d .lineup__fallback {
+  visibility: hidden;
+}
+
+.no-webgl .lineup__fallback {
+  visibility: visible;
+}
+
+html:not(.has-lineup-3d) .lineup__readout,
+html:not(.has-lineup-3d) .lineup__views,
+.no-webgl .lineup__readout,
+.no-webgl .lineup__views {
+  display: none;
+}
+
+/* Ficha de cada modelo: es también el botón que lo destaca en la tabla. */
+.model-pick {
+  display: grid;
+  gap: 0.1rem;
+  min-height: 44px;
+  padding: 0.75rem 0 0;
+  border: 0;
+  border-top: 1px solid var(--c-line-strong);
+  background: none;
+  color: var(--c-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.3s var(--ease-out);
+}
+
+.model-pick__tier {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.model-pick__name {
+  font-family: var(--f-display);
+  font-size: clamp(1rem, 3.6vw, 1.6rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.model-pick__price {
+  font-size: 0.78rem;
+  color: var(--c-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.model-pick__hint {
+  margin-top: 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.model-pick:hover {
+  border-top-color: var(--c-text);
+}
+
+.model-pick[aria-pressed='true'] {
+  border-top: 2px solid var(--c-blue);
+}
+
+.model-pick[aria-pressed='true'] .model-pick__hint {
+  color: var(--c-blue);
+}
+
+.model-pick[aria-pressed='true'] .model-pick__hint::before {
+  content: '■ ';
+}
+
+.lineup__views {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   Tabla
+   -------------------------------------------------------------------------- */
+.specs-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.toggle-btn {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 0;
+  background: none;
+  color: var(--c-muted);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px var(--c-line-strong);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+  cursor: pointer;
+  transition: color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+}
+
+.toggle-btn:hover {
+  color: var(--c-text);
+}
+
+.toggle-btn[aria-pressed='true'] {
+  color: var(--c-text);
+  box-shadow: inset 0 0 0 1px var(--c-blue);
+}
+
+.toggle-btn:focus-visible {
+  outline-offset: -4px;
+}
+
+.specs-toolbar__hint {
+  display: none;
+  margin-left: auto;
+  font-size: 0.72rem;
+  color: var(--c-muted);
+}
+
+.specs-overflow .specs-toolbar__hint {
+  display: block;
+}
+
+.specs-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  border-top: 1px solid var(--c-line);
+}
+
+.specs-scroll:focus-visible {
+  outline-offset: 2px;
+}
+
+.specs {
+  width: 100%;
+  min-width: 38rem; /* en móvil, tres columnas legibles: el contenedor se desplaza en horizontal */
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.specs th,
+.specs td {
+  padding: 0.85rem 0.75rem;
+  border-bottom: 1px solid var(--c-line);
+  text-align: left;
+  vertical-align: top;
+  transition: background-color 0.3s var(--ease-out), opacity 0.3s var(--ease-out);
+}
+
+.specs thead th,
+.specs td {
+  scroll-snap-align: end;
+}
+
+/* Primera columna fija: la etiqueta de la fila sigue visible al desplazar. */
+.specs th[scope='row'],
+.specs__corner {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  width: 7.5rem;
+  background: var(--c-bg);
+  box-shadow: 1px 0 0 var(--c-line);
+}
+
+.specs th[scope='row'] {
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.specs__corner {
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  color: var(--c-muted);
+  vertical-align: bottom;
+}
+
+.specs thead th {
+  vertical-align: bottom;
+}
+
+.specs__model {
+  display: block;
+  font-family: var(--f-display);
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.specs__tier {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.specs__same {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.specs__value {
+  display: block;
+  color: var(--c-text);
+}
+
+/* Barra comparativa: 1 px de pista con el valor relativo de la fila. */
+.specs__meter {
+  position: relative;
+  display: block;
+  height: 2px;
+  margin-top: 0.55rem;
+  background: var(--c-line);
+}
+
+.specs__meter::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--v, 0) * 100%);
+  background: var(--c-muted);
+}
+
+.specs .is-lead .specs__meter::after {
+  background: var(--c-blue);
+  box-shadow: 0 0 8px rgb(47 107 255 / 0.7);
+}
+
+.specs .is-lead .specs__value::after {
+  content: ' ▲';
+  font-size: 0.6em;
+  color: var(--c-blue);
+  vertical-align: 0.2em;
+}
+
+.specs__detail {
+  display: none;
+  margin-top: 0.4rem;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--c-muted);
+}
+
+.show-details .specs__detail {
+  display: block;
+}
+
+.only-diff .specs .is-same {
+  display: none;
+}
+
+/* Modelo destacado: su columna se ilumina y las demás retroceden. */
+.specs.has-highlight td[data-model]:not(.is-highlighted),
+.specs.has-highlight thead th:not(.is-highlighted) {
+  opacity: 0.5;
+}
+
+.specs .is-highlighted {
+  background: rgb(47 107 255 / 0.07);
+}
+
+.specs thead th.is-highlighted {
+  box-shadow: inset 0 2px 0 var(--c-blue);
+}
+
+.comparison__note {
+  font-size: 0.78rem;
+  color: var(--c-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Escritorio
+   -------------------------------------------------------------------------- */
+@media (min-width: 900px) {
+  .lineup {
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+  }
+
+  .lineup__models {
+    gap: clamp(1rem, 4vw, 4rem);
+  }
+
+  .lineup__stage {
+    height: clamp(20rem, 54vh, 32rem);
+  }
+
+  .specs {
+    min-width: 0;
+    font-size: 0.92rem;
+  }
+
+  .specs th[scope='row'],
+  .specs__corner {
+    width: 14rem;
+  }
+
+  .specs th,
+  .specs td {
+    padding: 1rem 1.25rem;
+  }
+
+  .specs__model {
+    font-size: 1.35rem;
+  }
+}

@@ -4,10 +4,14 @@ import './styles/hero.css';
 import './styles/intro.css';
 import './styles/engineering.css';
 import './styles/configurator.css';
+import './styles/camera.css';
+import './styles/comparison.css';
 import './styles/responsive.css';
 
 import { initNavigation } from './ui/navigation.js';
 import { createConfigurator } from './sections/configurator.js';
+import { createComparison } from './sections/comparison.js';
+import { createCameraDemo } from './sections/cameraDemo.js';
 import { bindHeroLoading } from './ui/heroLoading.js';
 import { revealInterface } from './animations/transitions.js';
 import { playIntro } from './animations/intro.js';
@@ -53,6 +57,14 @@ async function boot() {
   const configurator = createConfigurator({ root: document.querySelector('[data-configurator]') });
   app.configurator = configurator;
   app.disposers.push(configurator.dispose);
+  // Lo mismo con el comparador: la tabla funciona sola y la vitrina 3D se suscribe después.
+  const comparison = createComparison({ root: document.querySelector('[data-comparison]') });
+  app.comparison = comparison;
+  app.disposers.push(comparison.dispose);
+  // La demo de cámara es 2D (Canvas): no depende de WebGL y funciona también sin 3D.
+  const cameraDemo = createCameraDemo({ root: document.querySelector('[data-camera]'), reducedMotion });
+  app.cameraDemo = cameraDemo;
+  app.disposers.push(cameraDemo.dispose);
 
   const canvas = document.querySelector('[data-stage]');
   const heroEl = document.querySelector('[data-hero]');
@@ -84,6 +96,7 @@ async function boot() {
       canvas,
       heroEl,
       configurator,
+      comparison,
       reducedMotion,
       tracker,
       onContextLost: () => showFallback('contexto WebGL perdido'),

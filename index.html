@@ -107,6 +107,8 @@
           <li><a href="#configurador" data-nav-link><span class="site-nav__index">02</span> Configurador</a></li>
           <li><a href="#x1" data-nav-link><span class="site-nav__index">03</span> Bunema X1</a></li>
           <li><a href="#arquitectura" data-nav-link><span class="site-nav__index">04</span> Arquitectura</a></li>
+          <li><a href="#camara" data-nav-link><span class="site-nav__index">05</span> Cámara</a></li>
+          <li><a href="#modelos" data-nav-link><span class="site-nav__index">06</span> Modelos</a></li>
         </ol>
         <p class="site-nav__status"><span class="status-dot" aria-hidden="true"></span> X Series · Concepto 2026</p>
       </nav>
@@ -199,7 +201,7 @@
         <a class="hero__scroll" href="#ingenieria">
           <span class="hero__scroll-line" aria-hidden="true"></span>
           <span>Desplaza para explorar</span>
-          <span class="hero__scroll-index" aria-hidden="true">01 / 04</span>
+          <span class="hero__scroll-index" aria-hidden="true">01 / 06</span>
         </a>
       </section>
 
@@ -355,6 +357,145 @@
           <li class="parts__item" data-part="buttons"><span class="parts__id">X1-10</span><h3>Botones laterales</h3><p>Volumen, encendido y la Pulse Key programable.</p><p class="parts__spec">Pulse Key programable</p></li>
           <li class="parts__item" data-part="port"><span class="parts__id">X1-11</span><h3>Puerto de carga</h3><p>USB-C flanqueado por las rejillas de los altavoces.</p><p class="parts__spec">USB-C 3.2 · 65 W</p></li>
         </ol>
+      </section>
+
+      <!-- Demo de cámara: ilustración generada en el navegador. No usa la cámara del dispositivo. -->
+      <section class="camera" id="camara" aria-labelledby="cam-title" data-camera>
+        <header class="section-head">
+          <p class="section-head__index" aria-hidden="true">05</p>
+          <p class="eyebrow">Explora la imagen</p>
+          <h2 class="section-head__title" id="cam-title">Acércate a lo que el ojo no alcanza.</h2>
+          <p class="section-head__lead">
+            Recorre los cinco niveles de ampliación del sistema triple del X1 y compara una escena nocturna con y sin modo noche.
+            Es una simulación visual: la escena se dibuja en tu navegador.
+          </p>
+        </header>
+
+        <div class="camera__layout">
+          <figure class="viewfinder" aria-labelledby="vf-caption">
+            <div class="viewfinder__frame" data-vf-frame>
+              <canvas class="viewfinder__canvas" data-vf-standard aria-hidden="true"></canvas>
+              <span class="viewfinder__grain" aria-hidden="true"></span>
+              <div class="viewfinder__night" data-vf-night aria-hidden="true">
+                <canvas class="viewfinder__canvas" data-vf-night-canvas></canvas>
+              </div>
+
+              <!-- Interfaz del visor (decorativa: los mismos datos están en el panel en texto). -->
+              <div class="viewfinder__hud" aria-hidden="true">
+                <span class="hud__tag">Simulación</span>
+                <span class="hud__lens" data-hud-lens>Principal · 1×</span>
+                <span class="hud__reticle" data-hud-reticle><span></span></span>
+                <span class="hud__zoom" data-hud-zoom>1,0×</span>
+                <span class="hud__label hud__label--std">Estándar</span>
+                <span class="hud__label hud__label--night">Modo noche</span>
+                <span class="hud__divider" data-vf-divider><span class="hud__handle"></span></span>
+              </div>
+              <p class="viewfinder__fallback">
+                La demo interactiva necesita JavaScript. Muestra una escena nocturna ilustrada con cinco niveles de zoom y modo noche.
+              </p>
+            </div>
+            <figcaption class="viewfinder__caption" id="vf-caption">
+              Ilustración original generada por código: un valle de noche con una torre de comunicaciones. No es una fotografía
+              ni usa la cámara de tu dispositivo.
+            </figcaption>
+          </figure>
+
+          <div class="camera__panel">
+            <fieldset class="camera__group">
+              <legend>Nivel de zoom</legend>
+              <div class="zoom-levels" data-zoom-levels></div>
+              <label class="camera__range">
+                <span>Zoom continuo</span>
+                <input type="range" min="0" max="1000" step="1" value="231" data-zoom-range />
+              </label>
+            </fieldset>
+
+            <fieldset class="camera__group">
+              <legend>Iluminación</legend>
+              <div class="light-modes" data-light-modes>
+                <label class="light-mode"><input class="visually-hidden" type="radio" name="bunema-light" value="standard" checked /><span>Estándar</span></label>
+                <label class="light-mode"><input class="visually-hidden" type="radio" name="bunema-light" value="night" /><span>Modo noche</span></label>
+                <label class="light-mode"><input class="visually-hidden" type="radio" name="bunema-light" value="compare" /><span>Comparar</span></label>
+              </div>
+              <label class="camera__range" data-compare-control hidden>
+                <span>Divisor de la comparación</span>
+                <input type="range" min="0" max="100" step="1" value="50" data-compare-range />
+              </label>
+            </fieldset>
+
+            <div class="readout">
+              <p class="readout__title">Lectura del sistema <span>· valores simulados</span></p>
+              <dl class="readout__grid">
+                <div><dt>Lente</dt><dd data-readout="lens">Principal</dd></div>
+                <div><dt>Focal equiv.</dt><dd data-readout="focal">24 mm</dd></div>
+                <div><dt>Apertura</dt><dd data-readout="aperture">ƒ/1,6</dd></div>
+                <div><dt>ISO</dt><dd data-readout="iso">3200</dd></div>
+                <div><dt>Obturación</dt><dd data-readout="shutter">1/30 s</dd></div>
+                <div><dt>Ruido</dt><dd data-readout="noise">Alto</dd></div>
+              </dl>
+              <div class="histogram">
+                <canvas class="histogram__canvas" data-histogram aria-hidden="true"></canvas>
+                <p class="histogram__label">Histograma de luminancia de la escena</p>
+              </div>
+            </div>
+
+            <p class="visually-hidden" aria-live="polite" data-camera-status></p>
+            <p class="camera__note">
+              Los niveles, la exposición y el modo noche se simulan con filtros visuales sobre una ilustración. El sitio no controla
+              ninguna cámara ni realiza fotografía computacional.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Comparador: la tabla y la vitrina se generan desde src/data/products.js. -->
+      <section class="comparison" id="modelos" aria-labelledby="cmp-title" data-comparison>
+        <div class="comparison__intro">
+          <header class="section-head">
+            <p class="section-head__index" aria-hidden="true">06</p>
+            <p class="eyebrow">Encuentra tu modelo</p>
+            <h2 class="section-head__title" id="cmp-title">Tres formas de llevar el futuro.</h2>
+            <p class="section-head__lead">
+              X1, Pro y Lite comparten el mismo lenguaje de diseño: el Corte X, la línea de luz y la Pulse Key. Cambian el tamaño,
+              la cámara y lo que hay dentro.
+            </p>
+          </header>
+        </div>
+
+        <!-- Vitrina: el lienzo 3D se ve a través de esta zona. Arrastra para girar los tres modelos a la vez. -->
+        <div class="lineup" data-lineup>
+          <span class="lineup__readout" aria-hidden="true"><span>Giro sincronizado</span> <span data-lineup-angle>000°</span></span>
+          <div class="lineup__models" role="group" aria-label="Destacar un modelo en la tabla" data-lineup-models>
+            <p>Bunema X1 (gama alta), Bunema Pro (gama media-alta) y Bunema Lite (gama media).</p>
+          </div>
+          <div class="lineup__views" role="group" aria-label="Vista de los tres modelos 3D">
+            <button class="view-btn" type="button" data-lineup-view="back" aria-pressed="true">Trasera</button>
+            <button class="view-btn" type="button" data-lineup-view="side" aria-pressed="false">Lateral</button>
+            <button class="view-btn" type="button" data-lineup-view="front" aria-pressed="false">Frontal</button>
+            <button class="view-btn view-btn--spin" type="button" data-lineup-spin aria-pressed="false">
+              <span class="view-btn__icon" aria-hidden="true"></span>
+              <span class="view-btn__label">Rotación automática</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="comparison__table">
+          <div class="specs-toolbar">
+            <button class="toggle-btn" type="button" data-specs-details aria-pressed="false">Ver detalles</button>
+            <button class="toggle-btn" type="button" data-specs-diff aria-pressed="false">Solo diferencias</button>
+            <p class="specs-toolbar__hint" aria-hidden="true">Desliza para ver los tres modelos →</p>
+          </div>
+          <div class="specs-scroll" role="region" aria-labelledby="specs-caption" tabindex="0" data-specs-scroll>
+            <table class="specs" data-specs>
+              <caption id="specs-caption">Especificaciones conceptuales de Bunema X1, Bunema Pro y Bunema Lite</caption>
+            </table>
+          </div>
+          <p class="visually-hidden" aria-live="polite" data-specs-status></p>
+          <p class="comparison__note">
+            Modelos, especificaciones y precios ficticios de una marca conceptual. Los precios en pesos colombianos (COP) son
+            ilustrativos y no corresponden a una oferta comercial.
+          </p>
+        </div>
       </section>
     </main>
 
