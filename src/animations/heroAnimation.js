@@ -37,9 +37,24 @@ export function createHeroPresentation({ sceneManager, phone, heroEl, reducedMot
   // Valores que animan GSAP y el scroll. `reveal` va de 0 (oculto) a 1 (en reposo).
   const motion = { reveal: reducedMotion ? 1 : 0, exit: 0 };
   const base = { x: 0, y: 0, scale: 1, travel: 0 };
-  // Pose que impone la sección de ingeniería. `blend` 0 = pose del hero, 1 = pose de la historia.
-  const story = { blend: 0, x: 0, y: 0, scale: 1, rx: 0, ry: 0, rz: 0 };
-  const mix = (a, b) => a + (b - a) * story.blend;
+  /**
+   * Capas de pose que imponen otras secciones, en orden: ingeniería y luego configurador.
+   * Cada capa tiene su `blend` (0 = no influye, 1 = manda por completo) y se mezcla sobre
+   * el resultado de la anterior. Así cada sección solo conoce su propia pose.
+   */
+  const LAYER_ORDER = ['story', 'config'];
+  const layers = Object.fromEntries(
+    LAYER_ORDER.map((name) => [name, { blend: 0, x: 0, y: 0, scale: 1, rx: 0, ry: 0, rz: 0 }]),
+  );
+  const pose = { x: 0, y: 0, scale: 1, rx: 0, ry: 0, rz: 0 };
+  // Cuánto atenúa cada capa las luces de contorno (azul, violeta). En el despiece la carcasa
+  // queda de frente a ellas y se teñiría de violeta; en el configurador el color debe verse fiel.
+  const RIM_DIM = { story: { blue: 0.35, violet: 0.8 }, config: { blue: 0.6, violet: 0.7 } };
+  const { rims } = sceneManager.lighting;
+  const rimBase = { blue: rims.blue.intensity, violet: rims.violet.intensity };
+  const TAU = Math.PI * 2;
+  // Diferencia angular más corta (−π..π): una capa con varias vueltas acumuladas no hace girar de más al mezclar.
+  const shortest = (from, to) => from + ((((to - from + Math.PI) % TAU) + TAU) % TAU) - Math.PI;
   const accent = phone.materialLibrary.materials.accent;
   const accentIntensity = accent.emissiveIntensity;
 
@@ -60,24 +75,48 @@ export function createHeroPresentation({ sceneManager, phone, heroEl, reducedMot
   function apply(request = true) {
     const hidden = 1 - motion.reveal;
     const l = live.state;
-    // Durante la historia el movimiento vivo se atenúa: el despiece necesita precisión.
-    const liveAmount = 1 - story.blend * 0.75;
-    pivot.rotation.set(
-      mix(POSE.x + motion.exit * 0.25, story.rx) + l.tiltX * liveAmount,
-      mix(POSE.y - hidden * 0.9 + motion.exit * 0.7, story.ry) + (l.tiltY + l.sway) * liveAmount,
-      mix(POSE.z - hidden * 0.12, story.rz),
-    );
-    pivot.position.y = -hidden * 2.4 + l.floatY * (1 - story.blend);
-    stage.position.set(
-      mix(base.x + l.shiftX, story.x),
-      mix(base.y + motion.exit * base.travel, story.y),
-      0,
-    );
-    stage.scale.setScalar(mix(base.scale * (0.92 + motion.reveal * 0.08), story.scale));
-    // La sombra responde a la flotación: más arriba, más pequeña y tenue. En el despiece desaparece.
+
+    // 1. Pose propia del hero (entrada + salida por scroll).
+    pose.rx = POSE.x + motion.exit * 0.25;
+    pose.ry = POSE.y - hidden * 0.9 + motion.exit * 0.7;
+    pose.rz = POSE.z - hidden * 0.12;
+    pose.x = base.x + l.shiftX;
+    pose.y = base.y + motion.exit * base.travel;
+    pose.scale = base.scale * (0.92 + motion.reveal * 0.08);
+
+    // 2. Capas de las secciones, una sobre otra.
+    let presence = 0; // cuánto mandan las secciones en conjunto (0..1)
+    let rimBlue = rimBase.blue;
+    let rimViolet = rimBase.violet;
+    LAYER_ORDER.forEach((name) => {
+      const layer = layers[name];
+      const t = layer.blend;
+      if (t <= 0) return;
+      rimBlue *= 1 - RIM_DIM[name].blue * t;
+      rimViolet *= 1 - RIM_DIM[name].violet * t;
+      pose.rx += (layer.rx - pose.rx) * t;
+      pose.ry += (shortest(pose.ry, layer.ry) - pose.ry) * t;
+      pose.rz += (layer.rz - pose.rz) * t;
+      pose.x += (layer.x - pose.x) * t;
+      pose.y += (layer.y - pose.y) * t;
+      pose.scale += (layer.scale - pose.scale) * t;
+      presence = 1 - (1 - presence) * (1 - t);
+    });
+
+    rims.blue.intensity = rimBlue;
+    rims.violet.intensity = rimViolet;
+    // Con una sección al mando, la flotación no se ve: su bucle deja de pedir fotogramas.
+    live.setIdle(presence > 0.999);
+
+    // 3. Movimiento vivo encima: se atenúa en las secciones, que necesitan precisión.
+    const liveAmount = 1 - presence * 0.75;
+    pivot.rotation.set(pose.rx + l.tiltX * liveAmount, pose.ry + (l.tiltY + l.sway) * liveAmount, pose.rz);
+    pivot.position.y = -hidden * 2.4 + l.floatY * (1 - presence);
+    stage.position.set(pose.x, pose.y, 0);
+    stage.scale.setScalar(pose.scale);
+    // La sombra responde a la flotación: más arriba, más pequeña y tenue. En las secciones desaparece.
     shadow.mesh.scale.setScalar(1 - l.floatY * 0.35);
-    shadow.mesh.material.opacity =
-      motion.reveal * (1 - motion.exit) * (1 - l.floatY * 0.6) * (1 - story.blend);
+    shadow.mesh.material.opacity = motion.reveal * (1 - motion.exit) * (1 - l.floatY * 0.6) * (1 - presence);
     if (request) sceneManager.requestRender();
   }
 
@@ -169,16 +208,16 @@ export function createHeroPresentation({ sceneManager, phone, heroEl, reducedMot
       .call(live.start, null, 0.6);
   }
 
-  /** La sección de ingeniería escribe aquí su pose; apply() la mezcla con la del hero. */
-  function setStory(values, request = true) {
-    Object.assign(story, values);
+  /** Una sección escribe aquí su pose (`'story'` o `'config'`); apply() la mezcla con la del hero. */
+  function setLayer(name, values, request = true) {
+    Object.assign(layers[name], values);
     apply(request);
   }
 
   return {
     stage,
     reveal,
-    setStory,
+    setLayer,
     get baseScale() {
       return base.scale;
     },
@@ -186,6 +225,8 @@ export function createHeroPresentation({ sceneManager, phone, heroEl, reducedMot
       revealTimeline?.kill();
       live.dispose();
       accent.emissiveIntensity = accentIntensity;
+      rims.blue.intensity = rimBase.blue;
+      rims.violet.intensity = rimBase.violet;
       exitTween?.scrollTrigger?.kill();
       exitTween?.kill();
       offRegion();

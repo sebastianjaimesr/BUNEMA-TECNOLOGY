@@ -24,6 +24,7 @@ export function createHeroMotion({ sceneManager, heroEl, dragEl, reducedMotion, 
   const amplitude = coarsePointer ? 0.65 : 1;
   let elapsed = 0;
   let enabled = false;
+  let idle = false; // ver setIdle()
   let removeAnimator = null;
   let lastCss = '';
 
@@ -91,13 +92,13 @@ export function createHeroMotion({ sceneManager, heroEl, dragEl, reducedMotion, 
 
     onUpdate(state);
 
-    // Con movimiento reducido, el bucle se detiene en cuanto todo está en reposo.
+    // Con movimiento reducido (o en pausa), el bucle se detiene en cuanto todo está en reposo.
     const settled =
       Math.abs(pointer.x - pointer.tx) < 0.001 &&
       Math.abs(pointer.y - pointer.ty) < 0.001 &&
       Math.abs(drag.value - drag.target) < 0.001 &&
       !drag.active;
-    if (reducedMotion && settled) {
+    if ((reducedMotion || idle) && settled) {
       removeAnimator?.();
       removeAnimator = null;
       return false;
@@ -125,6 +126,15 @@ export function createHeroMotion({ sceneManager, heroEl, dragEl, reducedMotion, 
 
   return {
     state,
+    /**
+     * En pausa, la flotación automática deja de pedir fotogramas (las secciones
+     * que toman el control del teléfono la anulan). El cursor sigue respondiendo.
+     */
+    setIdle(value) {
+      if (value === idle) return;
+      idle = value;
+      if (!idle) wake();
+    },
     /** Empieza a moverse (tras la entrada del producto). */
     start() {
       enabled = true;

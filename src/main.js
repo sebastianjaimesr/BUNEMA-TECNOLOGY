@@ -3,9 +3,11 @@ import './styles/layout.css';
 import './styles/hero.css';
 import './styles/intro.css';
 import './styles/engineering.css';
+import './styles/configurator.css';
 import './styles/responsive.css';
 
 import { initNavigation } from './ui/navigation.js';
+import { createConfigurator } from './sections/configurator.js';
 import { bindHeroLoading } from './ui/heroLoading.js';
 import { revealInterface } from './animations/transitions.js';
 import { playIntro } from './animations/intro.js';
@@ -47,6 +49,11 @@ async function boot() {
 
   app.disposers.push(initNavigation().dispose);
 
+  // El configurador funciona desde el primer momento, con o sin 3D: el modelo se suscribe cuando está listo.
+  const configurator = createConfigurator({ root: document.querySelector('[data-configurator]') });
+  app.configurator = configurator;
+  app.disposers.push(configurator.dispose);
+
   const canvas = document.querySelector('[data-stage]');
   const heroEl = document.querySelector('[data-hero]');
 
@@ -76,6 +83,7 @@ async function boot() {
     app.experience = await startExperience({
       canvas,
       heroEl,
+      configurator,
       reducedMotion,
       tracker,
       onContextLost: () => showFallback('contexto WebGL perdido'),

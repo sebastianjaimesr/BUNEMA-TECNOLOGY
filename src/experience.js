@@ -1,8 +1,10 @@
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SceneManager } from './scene/SceneManager.js';
 import { detectQuality } from './scene/createRenderer.js';
 import { BunemaPhone } from './models/BunemaPhone.js';
 import { createHeroPresentation } from './animations/heroAnimation.js';
 import { createScrollExperience } from './animations/scrollExperience.js';
+import { createConfiguratorPresentation } from './animations/configuratorPresentation.js';
 
 /** Cede un fotograma al navegador: así la barra de carga se pinta entre etapas. */
 const nextFrame = () => new Promise((resolve) => requestAnimationFrame(() => resolve()));
@@ -15,7 +17,7 @@ const nextFrame = () => new Promise((resolve) => requestAnimationFrame(() => res
  * Cada etapa informa a `tracker` cuando termina de verdad. No revela el
  * teléfono: devuelve `reveal()` para que la introducción decida cuándo.
  */
-export async function startExperience({ canvas, heroEl, reducedMotion, tracker, onContextLost, onContextRestored }) {
+export async function startExperience({ canvas, heroEl, configurator, reducedMotion, tracker, onContextLost, onContextRestored }) {
   const quality = detectQuality();
 
   tracker.start('scene');
@@ -24,6 +26,7 @@ export async function startExperience({ canvas, heroEl, reducedMotion, tracker, 
   let phone = null;
   let hero = null;
   let story = null;
+  let config = null;
   try {
     tracker.completeStep('scene');
     await nextFrame();
@@ -38,6 +41,14 @@ export async function startExperience({ canvas, heroEl, reducedMotion, tracker, 
     if (sectionEl && sourceList) {
       story = createScrollExperience({ sceneManager, phone, hero, sectionEl, sourceList, reducedMotion });
     }
+    // Configurador: el mismo modelo cambia de material y de pose; no se crea otra escena.
+    const configEl = document.querySelector('[data-configurator]');
+    if (configEl && configurator) {
+      config = createConfiguratorPresentation({ sceneManager, phone, hero, sectionEl: configEl, configurator, reducedMotion });
+    }
+    // Cada sección cambia su altura al activarse (clases has-story, has-config-3d...). Se recalculan
+    // todas las posiciones de scroll de una vez, ya con el diseño definitivo.
+    ScrollTrigger.refresh();
     tracker.completeStep('model');
     await nextFrame();
 
@@ -46,6 +57,7 @@ export async function startExperience({ canvas, heroEl, reducedMotion, tracker, 
     await tracker.run('shaders', () => sceneManager.renderer.compileAsync(sceneManager.scene, sceneManager.camera));
   } catch (error) {
     // Si algo falla después de crear el renderer, se libera la GPU antes de propagar el error.
+    config?.dispose();
     story?.dispose();
     hero?.dispose();
     phone?.dispose();
@@ -58,7 +70,9 @@ export async function startExperience({ canvas, heroEl, reducedMotion, tracker, 
     phone,
     reveal: hero.reveal,
     story,
+    config,
     dispose() {
+      config?.dispose();
       story?.dispose();
       hero.dispose();
       phone.dispose();

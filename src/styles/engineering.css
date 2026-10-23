@@ -121,16 +121,23 @@ html:not(.has-story) .engineering__meter {
   scroll-margin-top: calc(var(--header-h) * -1);
 }
 
+/* Fondo y panel comparten la misma celda de una rejilla: se superponen sin márgenes negativos
+   (un margen de −100svh puede resolverse tarde y desplazar las medidas de scroll). */
+.has-story .engineering,
+.story-static .engineering {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+}
+
 .has-story .engineering__backdrop,
 .story-static .engineering__backdrop {
+  grid-area: 1 / 1;
   position: sticky;
   top: 0;
   z-index: 0;
   height: 100vh;
   height: 100svh;
-  /* El panel ocupa el mismo hueco: se superponen en lugar de apilarse. */
-  margin-bottom: -100vh;
-  margin-bottom: -100svh;
   pointer-events: none;
   background:
     radial-gradient(42% 36% at var(--story-x, 50%) var(--story-y, 40%), rgb(47 107 255 / 0.12), rgb(139 92 246 / 0.04) 55%, transparent 75%),
@@ -142,6 +149,7 @@ html:not(.has-story) .engineering__meter {
 
 .has-story .engineering__sticky,
 .story-static .engineering__sticky {
+  grid-area: 1 / 1;
   position: sticky;
   top: 0;
   height: 100vh;

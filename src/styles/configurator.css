@@ -1,0 +1,484 @@
+/* ==========================================================================
+   CONFIGURADOR — "Personaliza tu Bunema" (mobile first)
+
+   Composición propia: en escritorio el producto ocupa el lado izquierdo y
+   el panel de control queda a la derecha (al revés que en Ingeniería).
+   En móvil, el teléfono arriba y el panel abajo, dentro de una pantalla.
+
+   Mismas capas que Ingeniería: fondo (z 0) bajo el lienzo 3D (z 1) y el
+   panel (z 2) encima. La zona `stage` es transparente: deja ver el 3D.
+   ========================================================================== */
+
+.configurator {
+  position: relative;
+  /* Fondo y panel en la misma celda: se superponen sin márgenes negativos. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  border-top: 1px solid var(--c-line);
+}
+
+/* Con 3D: un poco de recorrido extra para que el usuario se detenga a configurar. */
+.has-config-3d .configurator {
+  height: 170vh;
+}
+
+.configurator__backdrop {
+  grid-area: 1 / 1;
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  height: 100vh;
+  height: 100svh;
+  pointer-events: none;
+  /* Suelo de estudio: un halo bajo el producto y una línea de horizonte. */
+  background:
+    radial-gradient(38% 30% at var(--cfg-x, 50%) var(--cfg-y, 34%), rgb(47 107 255 / 0.1), transparent 72%),
+    linear-gradient(to bottom, transparent calc(var(--cfg-floor, 58%) - 1px), var(--c-line) var(--cfg-floor, 58%), transparent calc(var(--cfg-floor, 58%) + 1px));
+}
+
+.configurator__sticky {
+  grid-area: 1 / 1;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  height: 100vh;
+  height: 100svh;
+  padding: calc(var(--header-h) + 0.5rem) var(--gutter) calc(1.25rem + env(safe-area-inset-bottom));
+}
+
+/* El ancla #configurador lleva al inicio exacto de la sección (compensa scroll-padding-top). */
+.configurator {
+  scroll-margin-top: calc(var(--header-h) * -1);
+}
+
+/* --------------------------------------------------------------------------
+   Zona del producto
+   -------------------------------------------------------------------------- */
+.configurator__stage {
+  position: relative;
+  min-height: 9rem;
+  overflow: hidden;
+  /* Horizontal gira el teléfono; vertical sigue siendo scroll. */
+  touch-action: pan-y;
+}
+
+.has-config-3d .configurator__stage {
+  cursor: grab;
+}
+
+.configurator__stage.is-dragging {
+  cursor: grabbing;
+}
+
+.configurator__readout {
+  position: absolute;
+  top: 0.25rem;
+  left: 0;
+  display: flex;
+  gap: 0.6rem;
+  font-family: var(--f-display);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.configurator__readout [data-config-angle] {
+  color: var(--c-text);
+  font-variant-numeric: tabular-nums;
+}
+
+html:not(.has-config-3d) .configurator__readout {
+  display: none;
+}
+
+/* Barrido de luz al cambiar de opción. */
+.configurator__sweep {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent 40%, rgb(47 107 255 / 0.16) 50%, transparent 60%);
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.configurator__sweep.is-active {
+  animation: cfg-sweep 0.9s var(--ease-out);
+}
+
+@keyframes cfg-sweep {
+  0% {
+    opacity: 1;
+    transform: translateX(-100%);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+/* Ilustración: solo cuando no hay 3D (sin WebGL o mientras se decide). */
+.configurator__fallback {
+  position: absolute;
+  inset: 8% 0;
+  width: 100%;
+  height: 84%;
+  visibility: hidden;
+}
+
+.no-webgl .configurator__fallback,
+html:not(.js) .configurator__fallback {
+  visibility: visible;
+}
+
+.cfg-body {
+  fill: var(--cfg-body, #101218);
+  stroke: var(--cfg-frame, #4a4e58);
+  stroke-width: 3;
+  transition: fill 0.6s var(--ease-out), stroke 0.6s var(--ease-out);
+}
+
+.cfg-plate {
+  fill: var(--cfg-plate, #0d0f14);
+  stroke: rgb(255 255 255 / 0.12);
+  transition: fill 0.6s var(--ease-out);
+}
+
+/* --------------------------------------------------------------------------
+   Panel de control
+   -------------------------------------------------------------------------- */
+.configurator__panel {
+  display: grid;
+  gap: 0.9rem;
+  /* Legible aunque el teléfono gire por detrás. */
+  margin: 0 calc(var(--gutter) * -1) calc(-1.25rem - env(safe-area-inset-bottom));
+  padding: 1.25rem var(--gutter) calc(1.25rem + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, rgb(5 6 10 / 0.94) 70%, rgb(5 6 10 / 0));
+}
+
+.configurator__head {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.configurator__title {
+  font-size: clamp(1.75rem, 6vw, 3.25rem);
+}
+
+.configurator__current {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.configurator__code {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--c-blue);
+}
+
+.configurator__selection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-family: var(--f-display);
+  font-size: 1.15rem;
+}
+
+.configurator__selection strong {
+  font-weight: 500;
+}
+
+.configurator__selection span {
+  color: var(--c-muted);
+}
+
+.configurator__description {
+  max-width: 30rem;
+  font-size: 0.85rem;
+  color: var(--c-muted);
+}
+
+.configurator__group {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.configurator__group legend {
+  margin-bottom: 0.5rem;
+  padding: 0;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+/* Muestras de color: radio nativo oculto + muestra con el "Corte X". */
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.swatch {
+  display: grid;
+  justify-items: start;
+  gap: 0.4rem;
+  min-height: 44px; /* área táctil */
+  cursor: pointer;
+}
+
+.swatch__chip {
+  width: 100%;
+  max-width: 4.5rem;
+  aspect-ratio: 1.6;
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 0.22), transparent 45%),
+    var(--swatch);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+  transition: box-shadow 0.3s var(--ease-out), transform 0.3s var(--ease-out);
+}
+
+.swatch__name {
+  font-size: 0.72rem;
+  line-height: 1.25;
+  color: var(--c-muted);
+  transition: color 0.3s var(--ease-out);
+}
+
+.swatch:hover .swatch__chip {
+  transform: translateY(-2px);
+}
+
+/* Activo: anillo azul + nombre en blanco. Nunca solo el color: también cambia el texto. */
+.swatch:has(input:checked) .swatch__chip {
+  box-shadow:
+    inset 0 0 0 2px var(--c-blue),
+    inset 0 0 0 4px var(--c-bg);
+}
+
+.swatch:has(input:checked) .swatch__name {
+  color: var(--c-text);
+}
+
+.swatch:has(input:focus-visible) .swatch__chip,
+.finish:has(input:focus-visible) {
+  outline: 2px solid var(--c-text);
+  outline-offset: 3px;
+}
+
+/* clip-path recorta el outline: en la muestra con foco se quita el recorte. */
+.swatch:has(input:focus-visible) .swatch__chip {
+  clip-path: none;
+}
+
+/* Acabados: dos opciones a modo de interruptor técnico. */
+.finishes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.finish {
+  display: grid;
+  gap: 0.15rem;
+  min-height: 44px;
+  padding: 0.6rem 0.75rem;
+  box-shadow: inset 0 0 0 1px var(--c-line-strong);
+  cursor: pointer;
+  transition: box-shadow 0.3s var(--ease-out), background-color 0.3s var(--ease-out);
+}
+
+.finish__name {
+  font-family: var(--f-display);
+  font-size: 0.95rem;
+}
+
+.finish__detail {
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: var(--c-muted);
+}
+
+.finish:hover {
+  box-shadow: inset 0 0 0 1px var(--c-text);
+}
+
+.finish:has(input:checked) {
+  background: rgb(47 107 255 / 0.1);
+  box-shadow: inset 0 0 0 1px var(--c-blue), inset 3px 0 0 var(--c-blue);
+}
+
+/* Vistas y rotación automática (solo con 3D). */
+.configurator__views {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+}
+
+html:not(.has-config-3d) .configurator__views {
+  display: none;
+}
+
+.view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.8rem;
+  color: var(--c-muted);
+  cursor: pointer;
+  box-shadow: inset 0 -1px 0 transparent;
+  transition: color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+}
+
+.view-btn:hover {
+  color: var(--c-text);
+}
+
+.view-btn[aria-pressed='true'] {
+  color: var(--c-text);
+  box-shadow: inset 0 -2px 0 var(--c-blue);
+}
+
+.view-btn--spin {
+  margin-left: auto;
+}
+
+.view-btn__icon {
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 1.5px solid currentcolor;
+  border-right-color: transparent;
+  border-radius: 50%;
+}
+
+.view-btn--spin[aria-pressed='true'] .view-btn__icon {
+  border-color: var(--c-blue);
+  border-right-color: transparent;
+  animation: cfg-spin 1.2s linear infinite;
+}
+
+@keyframes cfg-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.configurator__note {
+  font-size: 0.7rem;
+  color: var(--c-muted);
+}
+
+/* Móvil: el teléfono necesita sitio. El detalle de cada acabado ya está en la descripción. */
+@media (max-width: 899px) {
+  .finish__detail,
+  .configurator__note {
+    display: none;
+  }
+
+  .configurator__panel {
+    gap: 0.7rem;
+  }
+}
+
+/* Pantallas bajas (móvil pequeño, horizontal): también se oculta la descripción. */
+@media (max-height: 720px) and (max-width: 899px) {
+  .configurator__description {
+    display: none;
+  }
+}
+
+/* Muy bajas (p. ej. 320 × 568): lo imprescindible. Los nombres siguen ahí para lectores de pantalla. */
+@media (max-height: 640px) and (max-width: 899px) {
+  .configurator__head .eyebrow,
+  .configurator__code {
+    display: none;
+  }
+
+  .configurator__title {
+    font-size: 1.5rem;
+  }
+
+  .configurator__panel {
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+  }
+
+  .swatch__name,
+  .view-btn__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .swatch__chip {
+    aspect-ratio: 2;
+  }
+
+  .view-btn--spin {
+    min-width: 44px;
+    justify-content: center;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Escritorio: producto a la izquierda, panel a la derecha
+   -------------------------------------------------------------------------- */
+@media (min-width: 900px) {
+  .configurator__sticky {
+    grid-template-columns: minmax(0, 1fr) minmax(22rem, 27rem);
+    grid-template-rows: minmax(0, 1fr);
+    column-gap: clamp(2rem, 5vw, 5rem);
+    padding-top: calc(var(--header-h) + 1.5rem);
+    padding-bottom: 2.5rem;
+  }
+
+  .configurator__stage {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .configurator__panel {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    gap: 1.4rem;
+    margin: 0;
+    padding: 0;
+    background: none;
+  }
+
+  .configurator__title {
+    font-size: clamp(2.5rem, 4.4vw, 4rem);
+  }
+
+  .configurator__selection {
+    font-size: 1.4rem;
+  }
+
+  .swatch__name {
+    font-size: 0.78rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .configurator__sweep {
+    display: none;
+  }
+}

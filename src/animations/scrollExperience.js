@@ -37,9 +37,6 @@ export function createScrollExperience({ sceneManager, phone, hero, sectionEl, s
     source: sourceList,
     getBounds: () => bounds,
   });
-  // En el despiece las contras se atenúan: de frente a la carcasa teñirían todo de violeta.
-  const { rims } = sceneManager.lighting;
-  const rimBase = { blue: rims.blue.intensity, violet: rims.violet.intensity };
 
   // Con movimiento reducido no hay animación ligada al scroll: se muestra
   // una composición estática del despiece completo con todas las etiquetas.
@@ -124,7 +121,8 @@ export function createScrollExperience({ sceneManager, phone, hero, sectionEl, s
     phone.root.position.z = -EXPLODED_CENTER_Z * seq.explode;
 
     // 3. Pose: el hero mezcla su propia pose con esta según `blend`.
-    hero.setStory(
+    hero.setLayer(
+      'story',
       {
         blend: blend.current,
         x: layout.x,
@@ -159,8 +157,6 @@ export function createScrollExperience({ sceneManager, phone, hero, sectionEl, s
       });
     }
 
-    rims.blue.intensity = rimBase.blue * (1 - blend.current * 0.35);
-    rims.violet.intensity = rimBase.violet * (1 - blend.current * 0.8);
   }
 
   /** Un fotograma: el progreso real persigue al objetivo con amortiguación. */
@@ -265,8 +261,6 @@ export function createScrollExperience({ sceneManager, phone, hero, sectionEl, s
       offResize();
       labels.dispose();
       root.classList.remove('has-story', 'story-static');
-      rims.blue.intensity = rimBase.blue;
-      rims.violet.intensity = rimBase.violet;
       // Devuelve todas las piezas a su reposo exacto.
       BunemaPhone.PART_ORDER.forEach((key) => {
         const piece = phone.parts[key];

@@ -5,9 +5,10 @@ import { BUNEMA_X1, findColorway, findFinish } from '../data/products.js';
  * Biblioteca de materiales del Bunema X1.
  *
  * Todas las piezas comparten estas instancias. Compartir materiales
- * reduce cambios de estado en la GPU y, sobre todo, permite que en la
- * Fase 4 el configurador cambie color o acabado modificando UNA
- * propiedad (p. ej. `materials.back.color`) sin reconstruir la escena.
+ * reduce cambios de estado en la GPU y, sobre todo, permite que el
+ * configurador cambie color o acabado modificando unas pocas
+ * propiedades (p. ej. `materials.back.color`) sin reconstruir la escena:
+ * cada pieza que usa ese material cambia a la vez.
  *
  * Regla de diseño: `MeshPhysicalMaterial` solo donde aporta algo
  * (clearcoat del vidrio, iridiscencia de las lentes). Para piezas
@@ -23,7 +24,7 @@ export function createPhoneMaterials(textures) {
       name: 'frame',
       color: colorway.frame,
       metalness: 1,
-      roughness: 0.3,
+      roughness: finish.frameRoughness,
       clearcoat: 0.25,
       clearcoatRoughness: 0.2,
     }),
@@ -76,7 +77,7 @@ export function createPhoneMaterials(textures) {
     logo: new THREE.MeshStandardMaterial({
       name: 'logo',
       map: textures.backLogo,
-      color: '#b4bac8',
+      color: colorway.logo,
       metalness: 0.6,
       roughness: 0.3,
       transparent: true,

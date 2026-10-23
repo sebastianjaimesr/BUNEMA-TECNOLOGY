@@ -104,8 +104,9 @@
       <nav class="site-nav" id="site-nav" aria-label="Principal" data-nav>
         <ol class="site-nav__list">
           <li><a href="#ingenieria" data-nav-link><span class="site-nav__index">01</span> Ingeniería</a></li>
-          <li><a href="#x1" data-nav-link><span class="site-nav__index">02</span> Bunema X1</a></li>
-          <li><a href="#arquitectura" data-nav-link><span class="site-nav__index">03</span> Arquitectura</a></li>
+          <li><a href="#configurador" data-nav-link><span class="site-nav__index">02</span> Configurador</a></li>
+          <li><a href="#x1" data-nav-link><span class="site-nav__index">03</span> Bunema X1</a></li>
+          <li><a href="#arquitectura" data-nav-link><span class="site-nav__index">04</span> Arquitectura</a></li>
         </ol>
         <p class="site-nav__status"><span class="status-dot" aria-hidden="true"></span> X Series · Concepto 2026</p>
       </nav>
@@ -191,14 +192,14 @@
         </figure>
 
         <p class="visually-hidden">
-          Vista 3D decorativa del Bunema X1 en color Obsidian Black: un teléfono de cantos metálicos con una placa de cámara de
+          Vista 3D decorativa del Bunema X1 en color <span data-current-color>Obsidian Black</span>: un teléfono de cantos metálicos con una placa de cámara de
           esquina cortada a 45 grados, tres lentes y una línea de luz azul.
         </p>
 
         <a class="hero__scroll" href="#ingenieria">
           <span class="hero__scroll-line" aria-hidden="true"></span>
           <span>Desplaza para explorar</span>
-          <span class="hero__scroll-index" aria-hidden="true">01 / 03</span>
+          <span class="hero__scroll-index" aria-hidden="true">01 / 04</span>
         </a>
       </section>
 
@@ -234,9 +235,80 @@
         </div>
       </section>
 
+      <!-- Configurador: el mismo teléfono 3D cambia de color y acabado. Los controles los genera JS desde src/data/products.js. -->
+      <section class="configurator" id="configurador" aria-labelledby="cfg-title" data-configurator>
+        <div class="configurator__backdrop" aria-hidden="true"></div>
+        <div class="configurator__sticky">
+          <!-- Zona del teléfono: el lienzo 3D se ve a través de ella y se puede arrastrar para girarlo. -->
+          <div class="configurator__stage" data-config-stage>
+            <span class="configurator__readout" aria-hidden="true">
+              <span>Vista</span> <span data-config-angle>000°</span>
+            </span>
+            <span class="configurator__sweep" aria-hidden="true" data-config-sweep></span>
+            <!-- Sin WebGL: ilustración vectorial que toma los colores de la selección. -->
+            <svg class="configurator__fallback" viewBox="0 0 220 420" role="img" aria-labelledby="cfg-fallback-title">
+              <title id="cfg-fallback-title">Ilustración del Bunema X1 con el color seleccionado</title>
+              <rect class="cfg-body" x="10" y="10" width="200" height="400" rx="28" />
+              <path class="cfg-plate" d="M28 28h78a14 14 0 0 1 14 14v58a14 14 0 0 1-14 14H54l-26-26z" />
+              <circle cx="56" cy="52" r="18" fill="#05070d" stroke="#2a2d35" stroke-width="3" />
+              <circle cx="96" cy="52" r="13" fill="#05070d" stroke="#2a2d35" stroke-width="3" />
+              <circle cx="96" cy="94" r="13" fill="#05070d" stroke="#2a2d35" stroke-width="3" />
+              <circle cx="62" cy="88" r="5" fill="#e9e4d6" />
+              <path d="M34 98 48 112" stroke="#2F6BFF" stroke-width="2.5" />
+            </svg>
+          </div>
+
+          <div class="configurator__panel">
+            <header class="configurator__head">
+              <p class="eyebrow">02 · Personaliza tu Bunema</p>
+              <h2 class="configurator__title" id="cfg-title">Hazlo tuyo.</h2>
+            </header>
+
+            <div class="configurator__current">
+              <p class="configurator__code" data-config-code>BNM-X1-OB-M</p>
+              <p class="configurator__selection">
+                <strong data-config-name>Obsidian Black</strong>
+                <span aria-hidden="true">·</span>
+                <span data-config-finish-name>Mate</span>
+              </p>
+              <p class="configurator__description" data-config-description>
+                Negro profundo con marco de grafito. Vidrio grabado al ácido: suave al tacto y sin huellas.
+              </p>
+            </div>
+
+            <fieldset class="configurator__group">
+              <legend>Color</legend>
+              <div class="swatches" data-config-colors>
+                <p>Disponible en Obsidian Black, Glacier Silver, Electric Blue y Nebula Violet.</p>
+              </div>
+            </fieldset>
+
+            <fieldset class="configurator__group">
+              <legend>Acabado</legend>
+              <div class="finishes" data-config-finishes>
+                <p>Acabado mate o brillante.</p>
+              </div>
+            </fieldset>
+
+            <div class="configurator__views" role="group" aria-label="Vista del modelo 3D" data-config-views>
+              <button class="view-btn" type="button" data-view="back" aria-pressed="true">Trasera</button>
+              <button class="view-btn" type="button" data-view="side" aria-pressed="false">Lateral</button>
+              <button class="view-btn" type="button" data-view="front" aria-pressed="false">Frontal</button>
+              <button class="view-btn view-btn--spin" type="button" data-config-spin aria-pressed="false">
+                <span class="view-btn__icon" aria-hidden="true"></span>
+                <span class="view-btn__label">Rotación automática</span>
+              </button>
+            </div>
+
+            <p class="visually-hidden" aria-live="polite" data-config-status></p>
+            <p class="configurator__note">Colores y acabados conceptuales de una marca ficticia.</p>
+          </div>
+        </div>
+      </section>
+
       <section class="overview" id="x1" aria-labelledby="x1-title">
         <header class="section-head">
-          <p class="section-head__index" aria-hidden="true">02</p>
+          <p class="section-head__index" aria-hidden="true">03</p>
           <p class="eyebrow">Bunema X1</p>
           <h2 class="section-head__title" id="x1-title">Diseñado alrededor de lo que sientes, no de lo que lees en una ficha.</h2>
         </header>
@@ -261,7 +333,7 @@
 
       <section class="architecture" id="arquitectura" aria-labelledby="arq-title">
         <header class="section-head">
-          <p class="section-head__index" aria-hidden="true">03</p>
+          <p class="section-head__index" aria-hidden="true">04</p>
           <p class="eyebrow">Arquitectura</p>
           <h2 class="section-head__title" id="arq-title">Once piezas. Una sola intención.</h2>
           <p class="section-head__lead">
