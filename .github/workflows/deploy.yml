@@ -1,0 +1,61 @@
+# Build y despliegue en GitHub Pages.
+#
+# Cada push a `main` instala las dependencias exactas del lockfile, genera
+# `dist/` con Vite y lo publica con el flujo oficial de Pages (sin rama gh-pages).
+# En los pull requests solo se ejecuta el build: así un cambio que rompe la
+# compilación se detecta antes de fusionarlo, sin publicar nada.
+#
+# Requisito único en el repositorio: Settings → Pages → Source: "GitHub Actions".
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Permisos mínimos: leer el código y, solo para desplegar, escribir en Pages.
+permissions:
+  contents: read
+
+# Un solo despliegue a la vez; un push nuevo no cancela uno que ya está publicando.
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      # `npm ci` respeta package-lock.json: el build usa las mismas versiones que en local.
+      - run: npm ci
+
+      - run: npm run build
+
+      - uses: actions/upload-pages-artifact@v4
+        if: github.event_name != 'pull_request'
+        with:
+          path: dist
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
