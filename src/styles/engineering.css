@@ -399,6 +399,43 @@ html:not(.has-story) .engineering__meter {
   }
 }
 
+/* Móvil en horizontal (p. ej. 844 × 390): misma idea que en escritorio, compacta.
+   Uno sobre otro, el despiece quedaría reducido a una franja entre el título y el texto. */
+@media (max-width: 899px) and (max-height: 520px) and (orientation: landscape) {
+  .has-story .engineering__sticky,
+  .story-static .engineering__sticky {
+    grid-template-columns: minmax(0, 21rem) 1fr;
+    column-gap: 1.5rem;
+    padding-top: calc(var(--header-h) + 0.75rem);
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+
+  .has-story .engineering__head,
+  .story-static .engineering__head {
+    grid-column: 1;
+    gap: 0.6rem;
+  }
+
+  .has-story .engineering__title,
+  .story-static .engineering__title {
+    font-size: clamp(1.4rem, 3.4vw, 1.9rem);
+  }
+
+  .has-story .engineering__steps,
+  .story-static .engineering__steps {
+    grid-column: 1;
+    align-self: center;
+    margin: 0;
+    padding: 0;
+    background: none;
+  }
+
+  .has-story .step h3,
+  .story-static .step h3 {
+    font-size: 1.3rem;
+  }
+}
+
 /* Movimiento reducido: sin transiciones en los pasos ni en las etiquetas. */
 @media (prefers-reduced-motion: reduce) {
   .step,

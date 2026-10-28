@@ -21,6 +21,10 @@ gsap.registerPlugin(ScrollTrigger);
 
 const damp = (current, target, k, dt) => current + (target - current) * (1 - Math.exp(-k * dt));
 const desktopQuery = window.matchMedia('(min-width: 900px)');
+// Móvil en horizontal: no cabe título + despiece + paso uno sobre otro, así que se compone
+// como en escritorio (texto a la izquierda, despiece a la derecha).
+const landscapeQuery = window.matchMedia('(max-width: 899px) and (max-height: 520px) and (orientation: landscape)');
+const sideBySide = () => desktopQuery.matches || landscapeQuery.matches;
 
 export function createScrollExperience({ sceneManager, phone, hero, sectionEl, sourceList, reducedMotion }) {
   const root = document.documentElement;
@@ -61,6 +65,20 @@ export function createScrollExperience({ sceneManager, phone, hero, sectionEl, s
       layout.x = view.width * 0.16;
       layout.y = -view.height * 0.02;
       layout.scale = (view.height * 0.56) / phoneH;
+    } else if (landscapeQuery.matches) {
+      // Horizontal: el despiece se centra en el espacio libre a la derecha del texto.
+      const canvasW = sceneManager.canvas.clientWidth;
+      const canvasH = sceneManager.canvas.clientHeight;
+      const pxToWorld = view.height / canvasH;
+      // Los límites son relativos al panel fijo, que al quedar anclado ocupa todo el lienzo.
+      const centerX = (bounds.left + bounds.right) / 2;
+      const centerY = (bounds.top + bounds.bottom) / 2;
+      layout.x = (centerX - canvasW / 2) * pxToWorld;
+      layout.y = (canvasH / 2 - centerY) * pxToWorld;
+      layout.scale = Math.min(
+        ((bounds.bottom - bounds.top) * 0.8 * pxToWorld) / phoneH,
+        ((bounds.right - bounds.left) * 0.9 * pxToWorld) / 9,
+      );
     } else {
       // Móvil: el despiece ocupa el hueco libre entre el título y el texto del paso.
       // Píxeles → mundo con el alto del lienzo (el panel y el lienzo empiezan arriba del todo).
@@ -85,7 +103,7 @@ export function createScrollExperience({ sceneManager, phone, hero, sectionEl, s
     const head = headEl.getBoundingClientRect();
     const pad = 12;
     bounds.right = box.width - pad;
-    if (desktopQuery.matches) {
+    if (sideBySide()) {
       const steps = sectionEl.querySelector('.engineering__steps').getBoundingClientRect();
       bounds.left = Math.max(head.right, steps.right) - box.left + 24;
       bounds.top = head.top - box.top;

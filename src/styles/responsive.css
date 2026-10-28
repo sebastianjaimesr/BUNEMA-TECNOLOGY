@@ -21,6 +21,31 @@
   }
 }
 
+/* Móvil en horizontal: el teléfono no cabe debajo del texto (quedaba cortado por abajo).
+   Sin el hueco del flujo, heroAnimation lo coloca a la derecha, como en escritorio. */
+@media (max-width: 899px) and (max-height: 520px) and (orientation: landscape) {
+  .hero__slot {
+    display: none;
+  }
+
+  .hero__content,
+  .hero__specs {
+    max-width: 52%;
+  }
+
+  .hero__content {
+    justify-content: center;
+  }
+
+  .hero__title {
+    font-size: clamp(2.2rem, 6vw, 3rem);
+  }
+
+  .hero__actions {
+    margin-top: 1.25rem;
+  }
+}
+
 @media (min-width: 600px) {
   .hero__actions {
     display: flex;

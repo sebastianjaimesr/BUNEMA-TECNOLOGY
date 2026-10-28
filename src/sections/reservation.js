@@ -49,11 +49,12 @@ export function createReservation({ root, configurator, comparison }) {
   const done = root.querySelector('[data-reservation-done]');
   const resetBtn = root.querySelector('[data-reservation-reset]');
   const cta = root.querySelector('[data-reservation-cta]');
+  const submitBtn = form.querySelector('[type="submit"]');
   const fields = Object.fromEntries(
     Object.keys(RULES).map((name) => [name, { input: form.elements[name], error: root.querySelector(`#res-${name}-error`) }]),
   );
 
-  const state = { reservations: [], touched: new Set(), userPickedModel: false, userPickedColor: false };
+  const state = { reservations: [], touched: new Set(), userPickedModel: false, userPickedColor: false, pressingSubmit: false };
 
   /* Opciones desde products.js ----------------------------------------- */
   modelSelect.append(
@@ -101,7 +102,24 @@ export function createReservation({ root, configurator, comparison }) {
     const { name } = event.target;
     if (!RULES[name]) return;
     state.touched.add(name);
+    // Si el foco se va porque el usuario está pulsando "Reservar ahora", no se valida aquí:
+    // el mensaje nuevo empujaría el botón hacia abajo antes de soltar y el clic (o el toque)
+    // caería fuera de él. El envío valida todos los campos de todas formas.
+    if (state.pressingSubmit) return;
     check(name);
+  }
+
+  // pointerdown llega antes que el blur, con ratón y con toque (también en iOS, donde los botones no reciben foco).
+  function onSubmitPress() {
+    state.pressingSubmit = true;
+  }
+
+  // En táctil, pointerup llega ANTES del blur y del click; por eso se libera al terminar el click
+  // y, si el dedo o el ratón se soltó fuera del botón (no hay click), tras un segundo.
+  function onSubmitRelease(event) {
+    setTimeout(() => {
+      state.pressingSubmit = false;
+    }, event.type === 'click' ? 0 : 1000);
   }
 
   function onInput(event) {
@@ -229,6 +247,10 @@ export function createReservation({ root, configurator, comparison }) {
   form.addEventListener('input', onInput);
   form.addEventListener('change', onChange);
   form.addEventListener('submit', onSubmit);
+  submitBtn.addEventListener('pointerdown', onSubmitPress);
+  submitBtn.addEventListener('pointerup', onSubmitRelease);
+  submitBtn.addEventListener('pointercancel', onSubmitRelease);
+  submitBtn.addEventListener('click', onSubmitRelease);
   resetBtn.addEventListener('click', onReset);
   cta.addEventListener('click', onCta);
 
@@ -243,6 +265,10 @@ export function createReservation({ root, configurator, comparison }) {
       form.removeEventListener('input', onInput);
       form.removeEventListener('change', onChange);
       form.removeEventListener('submit', onSubmit);
+      submitBtn.removeEventListener('pointerdown', onSubmitPress);
+      submitBtn.removeEventListener('pointerup', onSubmitRelease);
+      submitBtn.removeEventListener('pointercancel', onSubmitRelease);
+      submitBtn.removeEventListener('click', onSubmitRelease);
       resetBtn.removeEventListener('click', onReset);
       cta.removeEventListener('click', onCta);
     },
