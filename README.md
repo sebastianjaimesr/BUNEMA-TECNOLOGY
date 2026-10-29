@@ -4,7 +4,7 @@
 
 Proyecto de portafolio por **Sebastián Jaimes**. BUNEMA, sus productos, especificaciones y precios no existen comercialmente.
 
-> **Sitio publicado:** pendiente de verificación · **Repositorio:** pendiente de verificación
+> **Sitio publicado:** [sebastianjaimesr.github.io/BUNEMA-TECNOLOGY](https://sebastianjaimesr.github.io/BUNEMA-TECNOLOGY/) · **Repositorio:** [github.com/sebastianjaimesr/BUNEMA-TECNOLOGY](https://github.com/sebastianjaimesr/BUNEMA-TECNOLOGY)
 
 ![Hero del Bunema X1: el teléfono 3D junto al titular «El futuro cabe en tus manos.»](docs/capturas/hero.jpg)
 
@@ -57,8 +57,8 @@ No hay más dependencias de ejecución que `three` y `gsap`.
 Requisitos: [Node.js](https://nodejs.org/) 20 o superior. Comandos para Windows PowerShell:
 
 ```powershell
-git clone <URL-del-repositorio>
-cd bunema-technology
+git clone https://github.com/sebastianjaimesr/BUNEMA-TECNOLOGY.git
+cd BUNEMA-TECNOLOGY
 npm install
 npm run dev        # http://localhost:5173
 ```
