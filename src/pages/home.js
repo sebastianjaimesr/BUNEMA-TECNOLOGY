@@ -13,6 +13,7 @@ import { channelsConfigured, whatsappLink } from '../services/contactService.js'
  * cifras del 18 Pro, recorrido por generaciones y llamada a la tienda.
  */
 const HERO_ID = 'iphone-18-pro-max';
+const THREE_DEG = (deg) => (deg * Math.PI) / 180;
 
 export async function render({ root }) {
   const hero = getProduct(HERO_ID);
@@ -167,31 +168,23 @@ async function setupHero(root, product) {
     viewer = new PhoneViewer(viewerEl, { product, colorId: 'plata', interactive: false, distance: 54, fov: 26 });
   }
 
-  // Entrada
-  ctx.add(() => {
-    if (reduced) return;
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-    tl.from('[data-hero-in]', { autoAlpha: 0, y: 30, duration: 1.1, stagger: 0.12 }, 0.1).from('[data-hero-actions]', { autoAlpha: 0, y: 20, duration: 0.9 }, 0.5);
-    if (viewer) {
-      const s = viewer.stage;
-      tl.from(s.position, { y: -16, duration: 1.8, ease: 'expo.out', onUpdate: () => viewer.invalidate() }, 0).from(
-        s.rotation,
-        { y: -2.6, duration: 2.2, ease: 'expo.out', onUpdate: () => viewer.invalidate() },
-        0,
-      );
-    } else {
-      tl.from('.hero__fallback svg', { autoAlpha: 0, y: 60, duration: 1.4, stagger: 0.15 }, 0);
-    }
-  });
-
   if (viewer) {
     const s = viewer.stage;
-    const compact = () => window.innerWidth < 720;
+    // Coloca el teléfono en el espacio libre bajo el texto, sea cual sea el tamaño de pantalla.
+    const copyEl = root.querySelector('[data-hero-copy]');
+    const sticky = root.querySelector('.hero__sticky');
     const place = () => {
-      s.position.set(0, compact() ? -9.6 : -4.3, 0);
-      s.scale.setScalar(compact() ? 1 : 0.62);
+      const vh = sticky.clientHeight || window.innerHeight;
+      const top = Math.min(0.7, (copyEl.getBoundingClientRect().bottom - sticky.getBoundingClientRect().top + 18) / vh);
+      const bottom = 0.94;
+      const visible = (2 * viewer.camera.position.z * Math.tan(THREE_DEG(viewer.camera.fov / 2))) / (viewer.camera.zoom || 1);
+      const avail = Math.max(0.24, bottom - top) * visible;
+      const scale = Math.min(1, avail / viewer.model.size.H);
+      s.scale.setScalar(scale);
+      s.position.set(0, (0.5 - (top + bottom) / 2) * visible, 0);
       s.rotation.set(0.06, -0.55, 0);
     };
+    viewer.resize();
     place();
     viewer.invalidate();
 
@@ -226,7 +219,8 @@ async function setupHero(root, product) {
         gsap.set(callouts, { autoAlpha: 0, y: 20 });
         const tl = gsap.timeline({
           defaults: { ease: 'none' },
-          scrollTrigger: { trigger: section, start: 'top top', end: 'bottom bottom', scrub: 0.8, onUpdate: () => viewer.invalidate() },
+          onUpdate: () => viewer.invalidate(),
+          scrollTrigger: { trigger: section, start: 'top top', end: 'bottom bottom', scrub: 0.8, invalidateOnRefresh: true },
         });
         tl.to('[data-hero-copy], [data-scroll-cue]', { autoAlpha: 0, y: -40, duration: 0.12 }, 0)
           .to(s.position, { y: 0, duration: 0.2 }, 0)
@@ -250,6 +244,23 @@ async function setupHero(root, product) {
       section.classList.add('is-static');
     }
   }
+
+  // Entrada
+  ctx.add(() => {
+    if (reduced) return;
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl.from('[data-hero-in]', { autoAlpha: 0, y: 30, duration: 1.1, stagger: 0.12 }, 0.1).from('[data-hero-actions]', { autoAlpha: 0, y: 20, duration: 0.9 }, 0.5);
+    if (viewer) {
+      const s = viewer.stage;
+      tl.from(s.position, { y: -16, duration: 1.8, ease: 'expo.out', onUpdate: () => viewer.invalidate() }, 0).from(
+        s.rotation,
+        { y: -2.6, duration: 2.2, ease: 'expo.out', onUpdate: () => viewer.invalidate() },
+        0,
+      );
+    } else {
+      tl.from('.hero__fallback svg', { autoAlpha: 0, y: 60, duration: 1.4, stagger: 0.15 }, 0);
+    }
+  });
 
   return {
     dispose() {

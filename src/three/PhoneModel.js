@@ -292,7 +292,7 @@ export class PhoneModel {
     const targets = [
       [this.backMat.color, color.hex],
       [this.frameMat.color, frame],
-      [this.plateMat.color, shade(color.hex, luminance(color.hex) > 0.5 ? -0.03 : 0.05)],
+      [this.plateMat.color, shade(color.hex, luminance(color.hex) > 0.5 ? -0.03 : -0.01)],
       [this.ringMat.color, shade(frame, -0.05)],
     ];
     targets.forEach(([target, hex]) => {

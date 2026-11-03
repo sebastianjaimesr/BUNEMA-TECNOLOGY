@@ -566,3 +566,13 @@
   gap: 6px;
   word-break: break-word;
 }
+
+.menu-open .compare-tray,
+.filters-open .compare-tray {
+  visibility: hidden;
+}
+.product-card__badges .badge {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

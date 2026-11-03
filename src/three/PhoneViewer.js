@@ -114,12 +114,12 @@ export class PhoneViewer {
     });
     pmrem.dispose();
     this.scene.environment = this.envTarget.texture;
-    this.scene.environmentIntensity = 0.32;
+    this.scene.environmentIntensity = 0.24;
   }
 
   buildLights() {
     this.lights = new THREE.Group();
-    const key = new THREE.DirectionalLight('#fff4e8', 1.9);
+    const key = new THREE.DirectionalLight('#fff4e8', 1.25);
     key.position.set(-6, 10, 10);
     const rim = new THREE.DirectionalLight('#2463ff', 5.5);
     rim.position.set(12, 3, -10);
@@ -127,7 +127,7 @@ export class PhoneViewer {
     rim2.position.set(-12, -3, -8);
     this.sweep = new THREE.PointLight('#9fb8ff', 0, 40, 1.6);
     this.sweep.position.set(-14, 4, 8);
-    const fill = new THREE.HemisphereLight('#dbe3ff', '#050507', 0.25);
+    const fill = new THREE.HemisphereLight('#dbe3ff', '#050507', 0.12);
     this.lights.add(key, rim, rim2, this.sweep, fill);
     this.scene.add(this.lights);
   }

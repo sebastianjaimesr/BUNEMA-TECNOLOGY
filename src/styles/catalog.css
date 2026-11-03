@@ -279,6 +279,22 @@
     font-size: 0.6rem;
   }
 }
+@media (max-width: 560px) {
+  .catalog__toolbar {
+    flex-wrap: wrap;
+  }
+  .catalog__sort {
+    flex: 1 1 100%;
+    order: 3;
+  }
+  .catalog__sort .select {
+    width: 100%;
+  }
+  .catalog .badge {
+    font-size: 0.64rem;
+    padding: 3px 7px;
+  }
+}
 @media (max-width: 340px) {
   .catalog .product-grid {
     grid-template-columns: 1fr;
