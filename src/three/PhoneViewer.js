@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { gsap } from 'gsap';
 import { PhoneModel } from './PhoneModel.js';
 
@@ -40,8 +39,9 @@ export class PhoneViewer {
     this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: !low || devicePixelRatio < 2, alpha: true, powerPreference: 'high-performance' });
     this.renderer.setPixelRatio(Math.min(devicePixelRatio, low ? 1.75 : 2));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.05;
+    // Tono neutro (Khronos PBR Neutral): conserva los colores reales de los acabados.
+    this.renderer.toneMapping = THREE.NeutralToneMapping;
+    this.renderer.toneMappingExposure = 1;
 
     this.scene = new THREE.Scene();
     this.buildEnvironment();
@@ -101,33 +101,78 @@ export class PhoneViewer {
     onReady?.(this);
   }
 
+  /**
+   * Estudio fotográfico virtual para los reflejos: fondo oscuro, una caja de
+   * luz cenital, tiras verticales a los lados y un panel con degradado frente
+   * al teléfono. El metal y el vidrio reflejan estas formas, como en una foto
+   * de producto.
+   */
   buildEnvironment() {
     const pmrem = new THREE.PMREMGenerator(this.renderer);
-    const room = new RoomEnvironment();
+    const studio = new THREE.Scene();
+    const disposables = [];
+    const add = (geo, mat) => {
+      disposables.push(geo, mat);
+      const mesh = new THREE.Mesh(geo, mat);
+      studio.add(mesh);
+      return mesh;
+    };
+    const glow = (hex, k) => new THREE.MeshBasicMaterial({ color: new THREE.Color(hex).multiplyScalar(k), side: THREE.DoubleSide });
+    add(new THREE.BoxGeometry(60, 40, 60), new THREE.MeshBasicMaterial({ color: '#0a0b10', side: THREE.BackSide }));
+    // Degradado vertical para las caras planas (frente y espalda).
+    const c = document.createElement('canvas');
+    c.width = 4;
+    c.height = 256;
+    const g = c.getContext('2d');
+    const grad = g.createLinearGradient(0, 0, 0, 256);
+    grad.addColorStop(0, '#ffffff');
+    grad.addColorStop(0.35, '#8a8d96');
+    grad.addColorStop(0.7, '#34363e');
+    grad.addColorStop(1, '#121318');
+    g.fillStyle = grad;
+    g.fillRect(0, 0, 4, 256);
+    const gradTex = new THREE.CanvasTexture(c);
+    gradTex.colorSpace = THREE.SRGBColorSpace;
+    disposables.push(gradTex);
+    const front = add(new THREE.PlaneGeometry(30, 22), new THREE.MeshBasicMaterial({ map: gradTex, color: new THREE.Color(1.6, 1.6, 1.6), side: THREE.DoubleSide }));
+    front.position.set(0, 2, 22);
+    const back = add(new THREE.PlaneGeometry(30, 22), new THREE.MeshBasicMaterial({ map: gradTex, color: new THREE.Color(1.1, 1.1, 1.2), side: THREE.DoubleSide }));
+    back.position.set(0, 2, -22);
+    const top = add(new THREE.PlaneGeometry(18, 10), glow('#ffffff', 5));
+    top.position.set(0, 18, 4);
+    top.rotation.x = Math.PI / 2;
+    const left = add(new THREE.PlaneGeometry(3, 26), glow('#fff6ec', 9));
+    left.position.set(-18, 0, 8);
+    left.rotation.y = Math.PI / 2;
+    const left2 = add(new THREE.PlaneGeometry(1.2, 26), glow('#ffffff', 6));
+    left2.position.set(-14, 0, -12);
+    left2.rotation.y = Math.PI / 3;
+    const right = add(new THREE.PlaneGeometry(3, 26), glow('#5b8bff', 6));
+    right.position.set(18, 0, 2);
+    right.rotation.y = -Math.PI / 2;
+    const right2 = add(new THREE.PlaneGeometry(1.4, 26), glow('#ffffff', 4));
+    right2.position.set(14, 0, 14);
+    right2.rotation.y = -Math.PI / 4;
+
     this.envTarget?.dispose();
-    this.envTarget = pmrem.fromScene(room, 0.04);
-    room.traverse((o) => {
-      if (o.isMesh) {
-        o.geometry.dispose();
-        o.material.dispose();
-      }
-    });
+    this.envTarget = pmrem.fromScene(studio, 0.02);
+    disposables.forEach((d) => d.dispose());
     pmrem.dispose();
     this.scene.environment = this.envTarget.texture;
-    this.scene.environmentIntensity = 0.24;
+    this.scene.environmentIntensity = 1;
   }
 
   buildLights() {
     this.lights = new THREE.Group();
-    const key = new THREE.DirectionalLight('#fff4e8', 1.25);
+    const key = new THREE.DirectionalLight('#fff4e8', 0.9);
     key.position.set(-6, 10, 10);
-    const rim = new THREE.DirectionalLight('#2463ff', 5.5);
+    const rim = new THREE.DirectionalLight('#2463ff', 4);
     rim.position.set(12, 3, -10);
     const rim2 = new THREE.DirectionalLight('#c9cdd5', 2.2);
     rim2.position.set(-12, -3, -8);
     this.sweep = new THREE.PointLight('#9fb8ff', 0, 40, 1.6);
     this.sweep.position.set(-14, 4, 8);
-    const fill = new THREE.HemisphereLight('#dbe3ff', '#050507', 0.12);
+    const fill = new THREE.HemisphereLight('#dbe3ff', '#050507', 0.2);
     this.lights.add(key, rim, rim2, this.sweep, fill);
     this.scene.add(this.lights);
   }
@@ -149,7 +194,9 @@ export class PhoneViewer {
       new THREE.MeshBasicMaterial({ map: this.shadowTex, transparent: true, depthWrite: false, opacity: 0.8 }),
     );
     this.shadow.rotation.x = -Math.PI / 2;
-    this.scene.add(this.shadow);
+    this.shadow.renderOrder = -1;
+    // Dentro de `stage`: crece y se mueve con el teléfono, así nunca lo atraviesa.
+    this.stage.add(this.shadow);
   }
 
   setProduct(product, colorId) {
