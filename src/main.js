@@ -1,139 +1,104 @@
+import './styles/tokens.css';
 import './styles/base.css';
 import './styles/layout.css';
-import './styles/hero.css';
-import './styles/intro.css';
-import './styles/engineering.css';
-import './styles/configurator.css';
-import './styles/camera.css';
-import './styles/comparison.css';
-import './styles/reservation.css';
-import './styles/responsive.css';
+import './styles/components.css';
 
-import { initNavigation } from './ui/navigation.js';
-import { createConfigurator } from './sections/configurator.js';
-import { createComparison } from './sections/comparison.js';
-import { createCameraDemo } from './sections/cameraDemo.js';
-import { createReservation } from './sections/reservation.js';
-import { bindHeroLoading } from './ui/heroLoading.js';
-import { revealInterface } from './animations/transitions.js';
-import { playIntro } from './animations/intro.js';
-import { LoadTracker } from './loading/LoadTracker.js';
+import { gsap } from 'gsap';
+import { parseHash, match } from './router.js';
+import { SITE } from './config/site.config.js';
+import { loadStore, hasDraft, onStoreChange } from './services/storeService.js';
+import { getCart, onCartChange } from './services/cartService.js';
+import { initHeader, setActiveNav } from './components/header.js';
 
 /**
- * Punto de entrada. Orquesta, no implementa: cada responsabilidad vive
- * en su módulo y aquí solo se conectan.
+ * Punto de entrada de la tienda: carga los datos de negocio, prepara la
+ * cabecera y delega cada ruta en su página (cargada bajo demanda).
  */
+const app = document.getElementById('app');
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let current = null; // { dispose }
+let renderId = 0;
+let lastPath = null;
 
-const root = document.documentElement;
-const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-function showFallback(reason) {
-  root.classList.add('no-webgl');
-  root.classList.remove('is-3d-ready');
-  console.warn('[BUNEMA] Vista 3D no disponible:', reason);
+function updateCartBadge() {
+  const { count } = getCart();
+  const badge = document.querySelector('[data-cart-count]');
+  const link = document.querySelector('[data-cart-link]');
+  badge.textContent = String(count);
+  badge.hidden = count === 0;
+  link.setAttribute('aria-label', `Carrito, ${count} ${count === 1 ? 'producto' : 'productos'}`);
 }
 
-/** Espera las fuentes (las texturas de la pantalla las usan), sin bloquear más de 1,5 s. */
-function fontsReady() {
-  if (!document.fonts) return Promise.resolve();
-  const wanted = Promise.all([
-    document.fonts.load('500 40px "Space Grotesk"'),
-    document.fonts.load('500 20px "Inter"'),
-  ]);
-  return Promise.race([wanted, new Promise((r) => setTimeout(r, 1500))]).catch(() => {});
+function updateDraftBanner() {
+  document.querySelector('[data-draft-banner]').hidden = !hasDraft();
+}
+
+async function render() {
+  const { path, query } = parseHash();
+  // Un hash sin "#/" (p. ej. el enlace para saltar al contenido) no cambia de página.
+  if (location.hash && !location.hash.startsWith('#/')) return;
+  // Cambios solo de consulta (?filtros) en la misma página: la página los maneja.
+  if (path === lastPath && current?.onQuery) {
+    current.onQuery(query);
+    return;
+  }
+  lastPath = path;
+  const id = ++renderId;
+  const { route, params } = match(path);
+  setActiveNav(route.name, params);
+  document.documentElement.dataset.route = route.name;
+
+  let mod;
+  try {
+    mod = await route.load();
+  } catch (error) {
+    console.error(error);
+    app.innerHTML = `<section class="page page--narrow"><h1>No se pudo cargar esta sección</h1><p>Revisa tu conexión y vuelve a intentarlo.</p><a class="btn btn--primary" href="#/">Volver al inicio</a></section>`;
+    return;
+  }
+  if (id !== renderId) return; // el usuario ya navegó a otra ruta
+
+  current?.dispose?.();
+  current = null;
+  app.innerHTML = '';
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  const page = await mod.render({ root: app, params, query });
+  if (id !== renderId) {
+    page?.dispose?.();
+    return;
+  }
+  current = page || null;
+  document.title = page?.title ? `${page.title} · BUNEMA` : 'BUNEMA — The iPhone Experience · Technology Beyond Limits';
+  const desc = document.querySelector('meta[name="description"]');
+  if (page?.description) desc.setAttribute('content', page.description);
+  if (!reduced) gsap.fromTo(app, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.55, ease: 'power3.out', clearProps: 'transform,opacity,visibility' });
+  // Foco al contenido nuevo para lectores de pantalla (sin desplazar la vista).
+  if (renderId > 1) app.focus({ preventScroll: true });
 }
 
 async function boot() {
-  // Evita una segunda inicialización (p. ej. si el módulo se evalúa dos veces).
-  if (window.__bunemaApp) return window.__bunemaApp;
-  const app = { experience: null, disposers: [] };
-  window.__bunemaApp = app;
-  // Definido desde el principio: la recarga en caliente puede llegar mientras el 3D aún carga.
-  app.dispose = () => {
-    app.experience?.dispose();
-    app.disposers.forEach((fn) => fn());
-    delete window.__bunemaApp;
-  };
-
-  document.querySelectorAll('[data-year]').forEach((el) => {
-    el.textContent = String(new Date().getFullYear());
+  document.querySelectorAll('[data-year]').forEach((el) => (el.textContent = String(new Date().getFullYear())));
+  document.querySelectorAll('[data-disclaimer]').forEach((el) => (el.textContent = SITE.disclaimer));
+  document.querySelector('[data-skip]').addEventListener('click', (e) => {
+    e.preventDefault();
+    app.focus();
   });
-
-  app.disposers.push(initNavigation().dispose);
-
-  // El configurador funciona desde el primer momento, con o sin 3D: el modelo se suscribe cuando está listo.
-  const configurator = createConfigurator({ root: document.querySelector('[data-configurator]') });
-  app.configurator = configurator;
-  app.disposers.push(configurator.dispose);
-  // Lo mismo con el comparador: la tabla funciona sola y la vitrina 3D se suscribe después.
-  const comparison = createComparison({ root: document.querySelector('[data-comparison]') });
-  app.comparison = comparison;
-  app.disposers.push(comparison.dispose);
-  // La demo de cámara es 2D (Canvas): no depende de WebGL y funciona también sin 3D.
-  const cameraDemo = createCameraDemo({ root: document.querySelector('[data-camera]'), reducedMotion });
-  app.cameraDemo = cameraDemo;
-  app.disposers.push(cameraDemo.dispose);
-  // Reserva conceptual: sin servidor; propone el modelo destacado y el color del configurador.
-  const reservation = createReservation({ root: document.querySelector('[data-reservation]'), configurator, comparison });
-  app.reservation = reservation;
-  app.disposers.push(reservation.dispose);
-
-  const canvas = document.querySelector('[data-stage]');
-  const heroEl = document.querySelector('[data-hero]');
-
-  // Etapas reales de carga y su peso aproximado en el tiempo total.
-  // El motor 3D pesa más porque es la descarga más grande (~170 kB gzip).
-  const tracker = new LoadTracker([
-    { id: 'fonts', label: 'Tipografías', weight: 1 },
-    { id: 'engine', label: 'Motor 3D', weight: 4 },
-    { id: 'scene', label: 'Estudio de luz', weight: 1.5 },
-    { id: 'model', label: 'Ensamblando el X1', weight: 1.5 },
-    { id: 'shaders', label: 'Compilando materiales', weight: 2 },
-  ]);
-  app.tracker = tracker;
-
-  const intro = playIntro({ overlay: document.querySelector('[data-intro]'), tracker, reducedMotion });
-  app.intro = intro;
-  app.disposers.push(bindHeroLoading({ element: heroEl.querySelector('[data-hero-loading]'), tracker, after: intro.done }));
-
-  // La interfaz se compone en cuanto se abre la cortina (o de inmediato con movimiento reducido).
-  intro.done.then(() => revealInterface({ reducedMotion }));
-
-  try {
-    const [{ startExperience }] = await Promise.all([
-      tracker.run('engine', () => import('./experience.js')),
-      tracker.run('fonts', fontsReady),
-    ]);
-    app.experience = await startExperience({
-      canvas,
-      heroEl,
-      configurator,
-      comparison,
-      reducedMotion,
-      tracker,
-      onContextLost: () => showFallback('contexto WebGL perdido'),
-      onContextRestored: () => {
-        root.classList.remove('no-webgl');
-        root.classList.add('is-3d-ready');
-      },
-    });
-    if (import.meta.env.DEV) window.__bunemaDebug = app.experience; // inspección manual en desarrollo
-
-    // El producto entra cuando la intro ya se abrió; si cargó tarde, entra en cuanto está listo.
-    await intro.done;
-    root.classList.add('is-3d-ready');
-    app.experience.reveal();
-  } catch (error) {
-    tracker.fail(error);
-    showFallback(error);
-  }
-
-  return app;
+  initHeader();
+  await loadStore();
+  updateCartBadge();
+  updateDraftBanner();
+  onCartChange(updateCartBadge);
+  onStoreChange(() => {
+    updateDraftBanner();
+    updateCartBadge();
+  });
+  window.addEventListener('storage', () => {
+    updateCartBadge();
+    updateDraftBanner();
+  });
+  window.addEventListener('hashchange', render);
+  await render();
+  document.documentElement.classList.add('is-ready');
 }
 
 boot();
-
-// Recarga en caliente de Vite: limpia la instancia anterior antes de crear otra.
-if (import.meta.hot) {
-  import.meta.hot.dispose(() => window.__bunemaApp?.dispose?.());
-}

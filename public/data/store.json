@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "updatedAt": "2026-11-02",
+  "settings": {
+    "whatsappNumber": "",
+    "contactEmail": "",
+    "contactEndpoint": "",
+    "city": "",
+    "payment": { "provider": null, "publicKey": "" },
+    "adminPinHash": ""
+  },
+  "inventory": [],
+  "productOverrides": {},
+  "customProducts": []
+}

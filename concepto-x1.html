@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="es-CO">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Concepto Bunema X1 — BUNEMA Lab</title>
+    <meta
+      name="description"
+      content="Bunema X1: experiencia 3D interactiva del teléfono conceptual de BUNEMA TECHNOLOGY. Proyecto de portafolio construido con Three.js, GSAP y Vite."
+    />
+    <meta name="theme-color" content="#05060A" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link rel="canonical" href="https://sebastianjaimesr.github.io/BUNEMA-TECNOLOGY/concepto-x1.html" />
+    <meta name="robots" content="noindex" />
+
+    <!-- Open Graph: cómo se ve el enlace al compartirlo. La imagen es una captura real del hero (1200 × 630). -->
+    <meta property="og:url" content="https://sebastianjaimesr.github.io/BUNEMA-TECNOLOGY/concepto-x1.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_CO" />
+    <meta property="og:site_name" content="BUNEMA TECHNOLOGY" />
+    <meta property="og:title" content="Bunema X1 — Tecnología que se siente" />
+    <meta
+      property="og:description"
+      content="Descubre el Bunema X1 en una experiencia 3D interactiva. Marca conceptual creada como proyecto de portafolio."
+    />
+    <meta property="og:image" content="https://sebastianjaimesr.github.io/BUNEMA-TECNOLOGY/og-concepto-x1.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="El Bunema X1 en 3D junto al titular «El futuro cabe en tus manos.»" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://sebastianjaimesr.github.io/BUNEMA-TECNOLOGY/og-concepto-x1.jpg" />
+    <meta name="twitter:title" content="Bunema X1 — Tecnología que se siente" />
+    <meta
+      name="twitter:description"
+      content="Descubre el Bunema X1 en una experiencia 3D interactiva. Marca conceptual creada como proyecto de portafolio."
+    />
+    <meta name="author" content="Sebastián Jaimes" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    />
+
+    <!-- Marca que JS está disponible antes del primer pintado: evita el parpadeo de los elementos que se revelan con GSAP. -->
+    <script>
+      document.documentElement.classList.add('js');
+      // Red de seguridad: si el JavaScript principal no arranca en 6 s (navegador antiguo,
+      // error de red), se retira la intro y se muestra el contenido igualmente.
+      setTimeout(function () {
+        if (!window.__bunemaApp) document.documentElement.classList.add('boot-failed');
+      }, 6000);
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <p style="position:relative;z-index:100;margin:0;padding:.55rem 1rem;background:#0b1640;color:#dfe6ff;font:500 13px/1.4 Inter,system-ui,sans-serif;text-align:center">BUNEMA Lab · Bunema X1 es un <strong>teléfono conceptual</strong> (no es un producto real). <a href="./index.html" style="color:#8fb0ff">Volver a The iPhone Experience</a></p>
+    <noscript>
+      <p class="noscript-note">
+        JavaScript está desactivado: puedes leer todo el contenido, pero el modelo 3D, el configurador, la demo de
+        cámara y la reserva necesitan JavaScript.
+      </p>
+    </noscript>
+
+    <!-- Introducción: solo existe visualmente con JS (ver intro.css). La barra refleja la carga real. -->
+    <div class="intro" data-intro>
+      <p class="intro__coord intro__coord--tl" aria-hidden="true">BNM-X1 · SECUENCIA DE INICIO</p>
+      <p class="intro__coord intro__coord--tr" aria-hidden="true">N 07°07′ · W 73°07′</p>
+
+      <div class="intro__center">
+        <div class="intro__logo">
+          <svg class="intro__mark" aria-hidden="true"><use href="#bunema-mark" /></svg>
+          <p class="intro__word" aria-label="BUNEMA">
+            <span aria-hidden="true">B</span><span aria-hidden="true">U</span><span aria-hidden="true">N</span><span aria-hidden="true">E</span><span aria-hidden="true">M</span><span aria-hidden="true">A</span>
+          </p>
+          <span class="intro__sweep" data-intro-sweep aria-hidden="true"></span>
+        </div>
+        <p class="intro__tagline">Tecnología que se siente</p>
+      </div>
+
+      <div class="intro__footer">
+        <div
+          class="intro__meter"
+          role="progressbar"
+          aria-label="Cargando la experiencia 3D"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+          data-intro-meter
+        >
+          <span class="intro__bar" data-intro-bar></span>
+        </div>
+        <p class="intro__status" data-intro-status aria-hidden="true">Preparando · 0 %</p>
+        <button class="intro__skip" type="button" data-intro-skip>Omitir intro</button>
+      </div>
+    </div>
+
+    <!-- Símbolos SVG reutilizables: el logotipo se define una vez y se usa en cabecera y pie. -->
+    <svg width="0" height="0" class="visually-hidden" aria-hidden="true" focusable="false">
+      <symbol id="bunema-mark" viewBox="0 0 32 32">
+        <path d="M4 4h24v16l-8 8H4z" fill="none" stroke="currentColor" stroke-width="2.4" />
+        <path d="M11 22 22 11" stroke="#2F6BFF" stroke-width="2.4" stroke-linecap="square" />
+      </symbol>
+    </svg>
+
+    <header class="site-header" data-header>
+      <a class="brand" href="#inicio" aria-label="BUNEMA TECHNOLOGY, ir al inicio">
+        <svg class="brand__mark" aria-hidden="true"><use href="#bunema-mark" /></svg>
+        <span class="brand__word">BUNEMA</span>
+      </a>
+
+      <button
+        class="menu-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="site-nav"
+        data-menu-toggle
+      >
+        <span class="menu-toggle__label">Menú</span>
+        <span class="menu-toggle__icon" aria-hidden="true"></span>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="Principal" data-nav>
+        <ol class="site-nav__list">
+          <li><a href="#ingenieria" data-nav-link><span class="site-nav__index">01</span> Ingeniería</a></li>
+          <li><a href="#configurador" data-nav-link><span class="site-nav__index">02</span> Configurador</a></li>
+          <li><a href="#x1" data-nav-link><span class="site-nav__index">03</span> Bunema X1</a></li>
+          <li><a href="#arquitectura" data-nav-link><span class="site-nav__index">04</span> Arquitectura</a></li>
+          <li><a href="#camara" data-nav-link><span class="site-nav__index">05</span> Cámara</a></li>
+          <li><a href="#modelos" data-nav-link><span class="site-nav__index">06</span> Modelos</a></li>
+          <li><a href="#reserva" data-nav-link><span class="site-nav__index">07</span> Reserva</a></li>
+        </ol>
+        <p class="site-nav__status"><span class="status-dot" aria-hidden="true"></span> X Series · Concepto 2026</p>
+      </nav>
+    </header>
+
+    <!-- Lienzo 3D único y fijo. Se reutiliza en toda la página; las secciones con fondo opaco lo cubren al desplazarse. -->
+    <canvas class="stage-canvas" data-stage aria-hidden="true"></canvas>
+
+    <main id="contenido">
+      <section class="hero" id="inicio" aria-labelledby="hero-title" data-hero>
+        <div class="hero__backdrop" aria-hidden="true">
+          <div class="hero__grid"></div>
+          <p class="hero__monogram">X1</p>
+          <p class="hero__coord hero__coord--tl">N 07°07′ · W 73°07′</p>
+          <p class="hero__coord hero__coord--tr">SYS.ID BNM-X1-0001</p>
+          <p class="hero__coord hero__coord--bl">LAB / ESCENA 01</p>
+          <span class="hero__crosshair"></span>
+        </div>
+
+        <!-- Progreso que queda si la intro termina antes que la carga 3D. -->
+        <p class="hero__loading" data-hero-loading role="status" hidden>
+          <span class="hero__loading-bar" aria-hidden="true"><span data-hero-loading-bar></span></span>
+          <span data-hero-loading-text>Cargando vista 3D</span>
+        </p>
+
+        <div class="hero__content">
+          <p class="eyebrow" data-reveal>BUNEMA <span aria-hidden="true">/</span> X SERIES</p>
+          <h1 class="hero__title" id="hero-title" data-reveal>
+            El futuro cabe <span class="hero__title-line">en tus manos.</span>
+          </h1>
+          <p class="hero__lead" data-reveal>Potencia extraordinaria. Diseño sin distracciones.</p>
+          <!-- Hueco reservado para el teléfono en móvil: el 3D se coloca sobre este espacio del flujo. -->
+          <div class="hero__slot" data-stage-slot aria-hidden="true"></div>
+          <div class="hero__actions" data-reveal>
+            <a class="btn btn--primary" href="#x1">Descubrir Bunema X1</a>
+            <a class="btn btn--ghost" href="#ingenieria">Explorar tecnología</a>
+          </div>
+        </div>
+
+        <div class="hero__specs" role="group" aria-label="Ficha del modelo" data-reveal>
+          <dl>
+            <div class="spec">
+              <dt>Modelo</dt>
+              <dd>Bunema X1</dd>
+            </div>
+            <div class="spec">
+              <dt>Acabado</dt>
+              <dd data-current-finish>Obsidian Black · Mate</dd>
+            </div>
+            <div class="spec">
+              <dt>Dimensiones</dt>
+              <dd>154,0 × 72,0 × 8,2 mm</dd>
+            </div>
+            <div class="spec">
+              <dt>Peso</dt>
+              <dd>186 g</dd>
+            </div>
+          </dl>
+        </div>
+
+        <!-- Alternativa sin WebGL: ilustración vectorial del mismo diseño. Solo visible si el 3D no puede iniciarse. -->
+        <figure class="hero__fallback" data-fallback>
+          <svg viewBox="0 0 220 420" role="img" aria-labelledby="fallback-title">
+            <title id="fallback-title">Ilustración de la parte trasera del Bunema X1</title>
+            <defs>
+              <linearGradient id="fb-body" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#2a2e38" />
+                <stop offset="1" stop-color="#0e1016" />
+              </linearGradient>
+            </defs>
+            <rect x="10" y="10" width="200" height="400" rx="28" fill="url(#fb-body)" stroke="#4a4e58" stroke-width="3" />
+            <path d="M28 28h78a14 14 0 0 1 14 14v58a14 14 0 0 1-14 14H54l-26-26z" fill="#0d0f14" stroke="#3a3e48" />
+            <circle cx="56" cy="52" r="18" fill="#05070d" stroke="#2a2d35" stroke-width="3" />
+            <circle cx="96" cy="52" r="13" fill="#05070d" stroke="#2a2d35" stroke-width="3" />
+            <circle cx="96" cy="94" r="13" fill="#05070d" stroke="#2a2d35" stroke-width="3" />
+            <circle cx="62" cy="88" r="5" fill="#e9e4d6" />
+            <path d="M34 98 48 112" stroke="#2F6BFF" stroke-width="2.5" />
+          </svg>
+          <figcaption>
+            Tu navegador no pudo iniciar la vista 3D (WebGL). Mostramos una ilustración del Bunema X1; el contenido de la página
+            está completo.
+          </figcaption>
+        </figure>
+
+        <p class="visually-hidden">
+          Vista 3D decorativa del Bunema X1 en color <span data-current-color>Obsidian Black</span>: un teléfono de cantos metálicos con una placa de cámara de
+          esquina cortada a 45 grados, tres lentes y una línea de luz azul.
+        </p>
+
+        <a class="hero__scroll" href="#ingenieria">
+          <span class="hero__scroll-line" aria-hidden="true"></span>
+          <span>Desplaza para explorar</span>
+          <span class="hero__scroll-index" aria-hidden="true">01 / 07</span>
+        </a>
+      </section>
+
+      <!-- Ingeniería: sección alta con un panel "sticky". El scroll recorre 10 pasos del despiece.
+           El teléfono es el mismo del hero: el lienzo fijo lo muestra a través de esta sección transparente. -->
+      <section class="engineering" id="ingenieria" aria-labelledby="eng-title" data-engineering>
+        <div class="engineering__backdrop" aria-hidden="true"></div>
+        <div class="engineering__sticky">
+          <header class="engineering__head">
+            <p class="eyebrow">01 · Ingeniería en movimiento</p>
+            <h2 class="engineering__title" id="eng-title">Así se construye el X1.</h2>
+            <div class="engineering__meter" aria-hidden="true">
+              <span class="engineering__count"><span data-step-count>01</span> / 10</span>
+              <span class="engineering__track"><span data-step-bar></span></span>
+            </div>
+          </header>
+
+          <ol class="engineering__steps" data-steps>
+            <li class="step" data-step="0"><p class="step__index">01 · Acercamiento</p><h3>Mira de cerca.</h3><p>Antes de abrirlo, el X1 se acerca: 8,2 mm de grosor y ni una pieza de más.</p></li>
+            <li class="step" data-step="1"><p class="step__index">02 · Carcasa trasera</p><h3>La carcasa se libera.</h3><p>El vidrio trasero sale en una sola pieza, con la placa Corte X y su línea de luz.</p></li>
+            <li class="step" data-step="2"><p class="step__index">03 · Cámara</p><h3>Tres sensores, tres ópticas.</h3><p>El módulo se desplaza y las lentes iridiscentes quedan suspendidas sobre sus sensores.</p></li>
+            <li class="step" data-step="3"><p class="step__index">04 · Batería</p><h3>El corazón del chasis.</h3><p>La celda de 5200 mAh ocupa más de la mitad del cuerpo.</p></li>
+            <li class="step" data-step="4"><p class="step__index">05 · Placa y procesador</p><h3>El cerebro, expuesto.</h3><p>La placa apilada libera espacio y el BX-1 de 3 nm se eleva sobre ella.</p></li>
+            <li class="step" data-step="5"><p class="step__index">06 · Marco</p><h3>La estructura cede.</h3><p>El marco de aluminio se aparta; los botones y el puerto USB-C se separan con él.</p></li>
+            <li class="step" data-step="6"><p class="step__index">07 · Pantalla</p><h3>La luz, en capas.</h3><p>El panel OLED y su vidrio de 0,4 mm se separan del conjunto por delante.</p></li>
+            <li class="step" data-step="7"><p class="step__index">08 · Despiece</p><h3>Once piezas en el aire.</h3><p>Cada componente queda en su sitio exacto, sin tocar a ningún otro.</p></li>
+            <li class="step" data-step="8"><p class="step__index">09 · Especificaciones</p><h3>Todo, de un vistazo.</h3><p>Cada pieza lleva su identificador técnico, de X1-01 a X1-11.</p></li>
+            <li class="step" data-step="9"><p class="step__index">10 · Reconstrucción</p><h3>Y vuelve a ser uno.</h3><p>Desplázate hacia atrás cuando quieras: el X1 se desmonta y se monta contigo.</p></li>
+          </ol>
+
+          <!-- Etiquetas técnicas: las genera JS a partir de la lista de Arquitectura y las ancla a cada pieza. -->
+          <div class="tech-labels" data-tech-labels aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <!-- Configurador: el mismo teléfono 3D cambia de color y acabado. Los controles los genera JS desde src/data/products.js. -->
+      <section class="configurator" id="configurador" aria-labelledby="cfg-title" data-configurator>
+        <div class="configurator__backdrop" aria-hidden="true"></div>
+        <div class="configurator__sticky">
+          <!-- Zona del teléfono: el lienzo 3D se ve a través de ella y se puede arrastrar para girarlo. -->
+          <div class="configurator__stage" data-config-stage>
+            <span class="configurator__readout" aria-hidden="true">
+              <span>Vista</span> <span data-config-angle>000°</span>
+            </span>
+            <span class="configurator__sweep" aria-hidden="true" data-config-sweep></span>
+            <!-- Sin WebGL: ilustración vectorial que toma los colores de la selección. -->
+            <svg class="configurator__fallback" viewBox="0 0 220 420" role="img" aria-labelledby="cfg-fallback-title">
+              <title id="cfg-fallback-title">Ilustración del Bunema X1 con el color seleccionado</title>
+              <rect class="cfg-body" x="10" y="10" width="200" height="400" rx="28" />
+              <path class="cfg-plate" d="M28 28h78a14 14 0 0 1 14 14v58a14 14 0 0 1-14 14H54l-26-26z" />
+              <circle cx="56" cy="52" r="18" fill="#05070d" stroke="#2a2d35" stroke-width="3" />
+              <circle cx="96" cy="52" r="13" fill="#05070d" stroke="#2a2d35" stroke-width="3" />
+              <circle cx="96" cy="94" r="13" fill="#05070d" stroke="#2a2d35" stroke-width="3" />
+              <circle cx="62" cy="88" r="5" fill="#e9e4d6" />
+              <path d="M34 98 48 112" stroke="#2F6BFF" stroke-width="2.5" />
+            </svg>
+          </div>
+
+          <div class="configurator__panel">
+            <header class="configurator__head">
+              <p class="eyebrow">02 · Personaliza tu Bunema</p>
+              <h2 class="configurator__title" id="cfg-title">Hazlo tuyo.</h2>
+            </header>
+
+            <div class="configurator__current">
+              <p class="configurator__code" data-config-code>BNM-X1-OB-M</p>
+              <p class="configurator__selection">
+                <strong data-config-name>Obsidian Black</strong>
+                <span aria-hidden="true">·</span>
+                <span data-config-finish-name>Mate</span>
+              </p>
+              <p class="configurator__description" data-config-description>
+                Negro profundo con marco de grafito. Vidrio grabado al ácido: suave al tacto y sin huellas.
+              </p>
+            </div>
+
+            <fieldset class="configurator__group">
+              <legend>Color</legend>
+              <div class="swatches" data-config-colors>
+                <p>Disponible en Obsidian Black, Glacier Silver, Electric Blue y Nebula Violet.</p>
+              </div>
+            </fieldset>
+
+            <fieldset class="configurator__group">
+              <legend>Acabado</legend>
+              <div class="finishes" data-config-finishes>
+                <p>Acabado mate o brillante.</p>
+              </div>
+            </fieldset>
+
+            <div class="configurator__views" role="group" aria-label="Vista del modelo 3D" data-config-views>
+              <button class="view-btn" type="button" data-view="back" aria-pressed="true">Trasera</button>
+              <button class="view-btn" type="button" data-view="side" aria-pressed="false">Lateral</button>
+              <button class="view-btn" type="button" data-view="front" aria-pressed="false">Frontal</button>
+              <button class="view-btn view-btn--spin" type="button" data-config-spin aria-pressed="false">
+                <span class="view-btn__icon" aria-hidden="true"></span>
+                <span class="view-btn__label">Rotación automática</span>
+              </button>
+            </div>
+
+            <p class="visually-hidden" aria-live="polite" data-config-status></p>
+            <p class="configurator__note">Colores y acabados conceptuales de una marca ficticia.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="overview" id="x1" aria-labelledby="x1-title">
+        <header class="section-head">
+          <p class="section-head__index" aria-hidden="true">03</p>
+          <p class="eyebrow">Bunema X1</p>
+          <h2 class="section-head__title" id="x1-title">Diseñado alrededor de lo que sientes, no de lo que lees en una ficha.</h2>
+        </header>
+
+        <ul class="figures" role="list">
+          <li class="figure">
+            <p class="figure__value">6,5<span>″</span></p>
+            <p class="figure__label">Pantalla LumaFlow OLED, 1–144 Hz</p>
+          </li>
+          <li class="figure">
+            <p class="figure__value">3<span>nm</span></p>
+            <p class="figure__label">Procesador BX-1 con núcleo neuronal</p>
+          </li>
+          <li class="figure">
+            <p class="figure__value">5200<span>mAh</span></p>
+            <p class="figure__label">Celda BUNEMA de silicio-carbono</p>
+          </li>
+        </ul>
+
+        <p class="overview__note">Especificaciones conceptuales de una marca ficticia, creadas para este proyecto de portafolio.</p>
+      </section>
+
+      <section class="architecture" id="arquitectura" aria-labelledby="arq-title">
+        <header class="section-head">
+          <p class="section-head__index" aria-hidden="true">04</p>
+          <p class="eyebrow">Arquitectura</p>
+          <h2 class="section-head__title" id="arq-title">Once piezas. Una sola intención.</h2>
+          <p class="section-head__lead">
+            Cada componente del X1 es un objeto independiente con su propio material. Esta es la ficha completa de lo que viste
+            desmontarse en la sección de ingeniería.
+          </p>
+        </header>
+
+        <ol class="parts" role="list">
+          <li class="parts__item" data-part="frontGlass"><span class="parts__id">X1-01</span><h3>Vidrio protector</h3><p>Cristal endurecido de 0,4 mm con acabado antirreflejo.</p><p class="parts__spec">0,4 mm · antirreflejo</p></li>
+          <li class="parts__item" data-part="display"><span class="parts__id">X1-02</span><h3>Pantalla frontal</h3><p>Panel OLED de bordes uniformes y perforación central.</p><p class="parts__spec">6,5″ OLED · 1–144 Hz</p></li>
+          <li class="parts__item" data-part="frame"><span class="parts__id">X1-03</span><h3>Marco metálico</h3><p>Aluminio aeroespacial con cantos biselados.</p><p class="parts__spec">Aluminio serie 7000</p></li>
+          <li class="parts__item" data-part="battery"><span class="parts__id">X1-04</span><h3>Batería</h3><p>Celda de 5200 mAh que ocupa el corazón del chasis.</p><p class="parts__spec">5200 mAh · silicio-carbono</p></li>
+          <li class="parts__item" data-part="mainboard"><span class="parts__id">X1-05</span><h3>Placa principal</h3><p>Circuito apilado que libera espacio para la batería.</p><p class="parts__spec">10 capas apiladas</p></li>
+          <li class="parts__item" data-part="processor"><span class="parts__id">X1-06</span><h3>Procesador BX-1</h3><p>Ocho núcleos y un núcleo neuronal dedicado.</p><p class="parts__spec">3 nm · 8 núcleos + NPU</p></li>
+          <li class="parts__item" data-part="cameraModule"><span class="parts__id">X1-07</span><h3>Módulo de cámara</h3><p>Tres sensores alineados bajo la placa de Corte X.</p><p class="parts__spec">50 MP + 50 MP + 12 MP</p></li>
+          <li class="parts__item" data-part="lenses"><span class="parts__id">X1-08</span><h3>Lentes</h3><p>Ópticas con recubrimiento iridiscente multicapa.</p><p class="parts__spec">ƒ/1,6 · ƒ/2,2 · ƒ/3,2</p></li>
+          <li class="parts__item" data-part="backCover"><span class="parts__id">X1-09</span><h3>Carcasa trasera</h3><p>Vidrio con la placa de cámara y su línea de luz.</p><p class="parts__spec">Vidrio mate · Corte X</p></li>
+          <li class="parts__item" data-part="buttons"><span class="parts__id">X1-10</span><h3>Botones laterales</h3><p>Volumen, encendido y la Pulse Key programable.</p><p class="parts__spec">Pulse Key programable</p></li>
+          <li class="parts__item" data-part="port"><span class="parts__id">X1-11</span><h3>Puerto de carga</h3><p>USB-C flanqueado por las rejillas de los altavoces.</p><p class="parts__spec">USB-C 3.2 · 65 W</p></li>
+        </ol>
+      </section>
+
+      <!-- Demo de cámara: ilustración generada en el navegador. No usa la cámara del dispositivo. -->
+      <section class="camera" id="camara" aria-labelledby="cam-title" data-camera>
+        <header class="section-head">
+          <p class="section-head__index" aria-hidden="true">05</p>
+          <p class="eyebrow">Explora la imagen</p>
+          <h2 class="section-head__title" id="cam-title">Acércate a lo que el ojo no alcanza.</h2>
+          <p class="section-head__lead">
+            Recorre los cinco niveles de ampliación del sistema triple del X1 y compara una escena nocturna con y sin modo noche.
+            Es una simulación visual: la escena se dibuja en tu navegador.
+          </p>
+        </header>
+
+        <div class="camera__layout">
+          <figure class="viewfinder" aria-labelledby="vf-caption">
+            <div class="viewfinder__frame" data-vf-frame>
+              <canvas class="viewfinder__canvas" data-vf-standard aria-hidden="true"></canvas>
+              <span class="viewfinder__grain" aria-hidden="true"></span>
+              <div class="viewfinder__night" data-vf-night aria-hidden="true">
+                <canvas class="viewfinder__canvas" data-vf-night-canvas></canvas>
+              </div>
+
+              <!-- Interfaz del visor (decorativa: los mismos datos están en el panel en texto). -->
+              <div class="viewfinder__hud" aria-hidden="true">
+                <span class="hud__tag">Simulación</span>
+                <span class="hud__lens" data-hud-lens>Principal · 1×</span>
+                <span class="hud__reticle" data-hud-reticle><span></span></span>
+                <span class="hud__zoom" data-hud-zoom>1,0×</span>
+                <span class="hud__label hud__label--std">Estándar</span>
+                <span class="hud__label hud__label--night">Modo noche</span>
+                <span class="hud__divider" data-vf-divider><span class="hud__handle"></span></span>
+              </div>
+              <p class="viewfinder__fallback">
+                La demo interactiva necesita JavaScript. Muestra una escena nocturna ilustrada con cinco niveles de zoom y modo noche.
+              </p>
+            </div>
+            <figcaption class="viewfinder__caption" id="vf-caption">
+              Ilustración original generada por código: un valle de noche con una torre de comunicaciones. No es una fotografía
+              ni usa la cámara de tu dispositivo.
+            </figcaption>
+          </figure>
+
+          <div class="camera__panel">
+            <fieldset class="camera__group">
+              <legend>Nivel de zoom</legend>
+              <div class="zoom-levels" data-zoom-levels></div>
+              <label class="camera__range">
+                <span>Zoom continuo</span>
+                <input type="range" min="0" max="1000" step="1" value="231" data-zoom-range />
+              </label>
+            </fieldset>
+
+            <fieldset class="camera__group">
+              <legend>Iluminación</legend>
+              <div class="light-modes" data-light-modes>
+                <label class="light-mode"><input class="visually-hidden" type="radio" name="bunema-light" value="standard" checked /><span>Estándar</span></label>
+                <label class="light-mode"><input class="visually-hidden" type="radio" name="bunema-light" value="night" /><span>Modo noche</span></label>
+                <label class="light-mode"><input class="visually-hidden" type="radio" name="bunema-light" value="compare" /><span>Comparar</span></label>
+              </div>
+              <label class="camera__range" data-compare-control hidden>
+                <span>Divisor de la comparación</span>
+                <input type="range" min="0" max="100" step="1" value="50" data-compare-range />
+              </label>
+            </fieldset>
+
+            <div class="readout">
+              <p class="readout__title">Lectura del sistema <span>· valores simulados</span></p>
+              <dl class="readout__grid">
+                <div><dt>Lente</dt><dd data-readout="lens">Principal</dd></div>
+                <div><dt>Focal equiv.</dt><dd data-readout="focal">24 mm</dd></div>
+                <div><dt>Apertura</dt><dd data-readout="aperture">ƒ/1,6</dd></div>
+                <div><dt>ISO</dt><dd data-readout="iso">3200</dd></div>
+                <div><dt>Obturación</dt><dd data-readout="shutter">1/30 s</dd></div>
+                <div><dt>Ruido</dt><dd data-readout="noise">Alto</dd></div>
+              </dl>
+              <div class="histogram">
+                <canvas class="histogram__canvas" data-histogram aria-hidden="true"></canvas>
+                <p class="histogram__label">Histograma de luminancia de la escena</p>
+              </div>
+            </div>
+
+            <p class="visually-hidden" aria-live="polite" data-camera-status></p>
+            <p class="camera__note">
+              Los niveles, la exposición y el modo noche se simulan con filtros visuales sobre una ilustración. El sitio no controla
+              ninguna cámara ni realiza fotografía computacional.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Comparador: la tabla y la vitrina se generan desde src/data/products.js. -->
+      <section class="comparison" id="modelos" aria-labelledby="cmp-title" data-comparison>
+        <div class="comparison__intro">
+          <header class="section-head">
+            <p class="section-head__index" aria-hidden="true">06</p>
+            <p class="eyebrow">Encuentra tu modelo</p>
+            <h2 class="section-head__title" id="cmp-title">Tres formas de llevar el futuro.</h2>
+            <p class="section-head__lead">
+              X1, Pro y Lite comparten el mismo lenguaje de diseño: el Corte X, la línea de luz y la Pulse Key. Cambian el tamaño,
+              la cámara y lo que hay dentro.
+            </p>
+          </header>
+        </div>
+
+        <!-- Vitrina: el lienzo 3D se ve a través de esta zona. Arrastra para girar los tres modelos a la vez. -->
+        <div class="lineup" data-lineup>
+          <span class="lineup__readout" aria-hidden="true"><span>Giro sincronizado</span> <span data-lineup-angle>000°</span></span>
+          <div class="lineup__models" role="group" aria-label="Destacar un modelo en la tabla" data-lineup-models>
+            <p>Bunema X1 (gama alta), Bunema Pro (gama media-alta) y Bunema Lite (gama media).</p>
+          </div>
+          <div class="lineup__views" role="group" aria-label="Vista de los tres modelos 3D">
+            <button class="view-btn" type="button" data-lineup-view="back" aria-pressed="true">Trasera</button>
+            <button class="view-btn" type="button" data-lineup-view="side" aria-pressed="false">Lateral</button>
+            <button class="view-btn" type="button" data-lineup-view="front" aria-pressed="false">Frontal</button>
+            <button class="view-btn view-btn--spin" type="button" data-lineup-spin aria-pressed="false">
+              <span class="view-btn__icon" aria-hidden="true"></span>
+              <span class="view-btn__label">Rotación automática</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="comparison__table">
+          <div class="specs-toolbar">
+            <button class="toggle-btn" type="button" data-specs-details aria-pressed="false">Ver detalles</button>
+            <button class="toggle-btn" type="button" data-specs-diff aria-pressed="false">Solo diferencias</button>
+            <p class="specs-toolbar__hint" aria-hidden="true">Desliza para ver los tres modelos →</p>
+          </div>
+          <div class="specs-scroll" role="region" aria-labelledby="specs-caption" tabindex="0" data-specs-scroll>
+            <table class="specs" data-specs>
+              <caption id="specs-caption">Especificaciones conceptuales de Bunema X1, Bunema Pro y Bunema Lite</caption>
+            </table>
+          </div>
+          <p class="visually-hidden" aria-live="polite" data-specs-status></p>
+          <p class="comparison__note">
+            Modelos, especificaciones y precios ficticios de una marca conceptual. Los precios en pesos colombianos (COP) son
+            ilustrativos y no corresponden a una oferta comercial.
+          </p>
+        </div>
+      </section>
+      <!-- Reserva conceptual: no hay servidor ni pagos. Los datos solo viven en la página mientras está abierta. -->
+      <section class="reservation" id="reserva" aria-labelledby="res-title" data-reservation>
+        <div class="reservation__intro">
+          <p class="section-head__index" aria-hidden="true">07</p>
+          <p class="eyebrow">Reserva</p>
+          <h2 class="reservation__title" id="res-title">Tu próxima forma de ver el mundo.</h2>
+          <p class="section-head__lead">
+            Aparta tu Bunema en una reserva de demostración. Es un formulario conceptual: no se cobra nada y no se envía ningún dato.
+          </p>
+          <a class="btn btn--primary" href="#reserva-form" data-reservation-cta>Reservar ahora</a>
+        </div>
+
+        <div class="reservation__panel">
+          <noscript>
+            <p class="reservation__nojs">El formulario de reserva necesita JavaScript. Actívalo para probar la demostración.</p>
+          </noscript>
+          <form class="reservation__form" id="reserva-form" novalidate data-reservation-form aria-describedby="res-note">
+            <div class="form-summary" role="alert" tabindex="-1" data-form-summary hidden></div>
+
+            <div class="field" data-field="name">
+              <label for="res-name">Nombre</label>
+              <input id="res-name" name="name" type="text" autocomplete="name" required minlength="2" maxlength="60" aria-describedby="res-name-error" />
+              <p class="field__error" id="res-name-error" data-error></p>
+            </div>
+
+            <div class="field" data-field="email">
+              <label for="res-email">Correo electrónico</label>
+              <input id="res-email" name="email" type="email" autocomplete="email" inputmode="email" required maxlength="120" aria-describedby="res-email-hint res-email-error" />
+              <p class="field__hint" id="res-email-hint">Ejemplo: nombre@dominio.com</p>
+              <p class="field__error" id="res-email-error" data-error></p>
+            </div>
+
+            <div class="field" data-field="model">
+              <label for="res-model">Modelo de interés</label>
+              <select id="res-model" name="model" required aria-describedby="res-model-error" data-res-model>
+                <option value="">Elige un modelo</option>
+              </select>
+              <p class="field__error" id="res-model-error" data-error></p>
+            </div>
+
+            <div class="field" data-field="color">
+              <label for="res-color">Color preferido</label>
+              <select id="res-color" name="color" required aria-describedby="res-color-error" data-res-color disabled>
+                <option value="">Primero elige un modelo</option>
+              </select>
+              <p class="field__error" id="res-color-error" data-error></p>
+            </div>
+
+            <button class="btn btn--primary reservation__submit" type="submit">Reservar ahora</button>
+            <p class="reservation__note" id="res-note">Demostración: los datos se quedan en esta página y se borran al recargarla.</p>
+          </form>
+
+          <div class="reservation__done" tabindex="-1" data-reservation-done hidden>
+            <p class="reservation__code" data-done-code>BNM-RSV-0000</p>
+            <h3 class="reservation__done-title" data-done-title>Reserva de demostración lista.</h3>
+            <p data-done-text></p>
+            <p class="reservation__note">
+              No se envió nada a ningún servidor y no existe una reserva comercial: es una confirmación de demostración.
+            </p>
+            <button class="btn btn--ghost" type="button" data-reservation-reset>Hacer otra reserva</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__brand">
+        <a class="brand" href="#inicio" aria-label="BUNEMA TECHNOLOGY, volver al inicio">
+          <svg class="brand__mark" aria-hidden="true"><use href="#bunema-mark" /></svg>
+          <span class="brand__word">BUNEMA</span>
+        </a>
+        <p class="site-footer__claim">Tecnología que se siente.</p>
+      </div>
+
+      <nav class="site-footer__nav" aria-label="Secciones">
+        <ul role="list">
+          <li><a href="#ingenieria">Ingeniería</a></li>
+          <li><a href="#configurador">Configurador</a></li>
+          <li><a href="#camara">Cámara</a></li>
+          <li><a href="#modelos">Modelos</a></li>
+          <li><a href="#reserva">Reserva</a></li>
+        </ul>
+      </nav>
+
+      <!-- Redes ficticias: texto, no enlaces, porque los perfiles no existen. -->
+      <div class="site-footer__social">
+        <p class="site-footer__label" id="social-label">Redes · demostrativas</p>
+        <ul role="list" aria-labelledby="social-label">
+          <li>Instagram <span>@bunema.tech</span></li>
+          <li>YouTube <span>/bunematech</span></li>
+          <li>LinkedIn <span>/bunema-technology</span></li>
+        </ul>
+        <p class="site-footer__hint">Perfiles inventados para el concepto: no existen.</p>
+      </div>
+
+      <p class="site-footer__legal">
+        BUNEMA TECHNOLOGY es una marca conceptual. Sus productos, especificaciones y precios no existen comercialmente.
+        Proyecto de portafolio por Sebastián Jaimes · <span data-year>2026</span>
+      </p>
+      <a class="site-footer__top" href="#inicio">Volver al inicio <span aria-hidden="true">↑</span></a>
+    </footer>
+
+    <script type="module" src="/src/concepto-x1/main.js"></script>
+  </body>
+</html>

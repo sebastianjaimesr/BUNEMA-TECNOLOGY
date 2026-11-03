@@ -1,8 +1,8 @@
 {
   "name": "bunema-technology",
   "private": true,
-  "version": "0.1.0",
-  "description": "Experiencia web 3D conceptual para la marca ficticia BUNEMA TECHNOLOGY y su teléfono Bunema X1.",
+  "version": "1.0.0",
+  "description": "BUNEMA · The iPhone Experience: catálogo de iPhone, fichas 3D, comparador, tienda en COP y panel administrativo.",
   "type": "module",
   "scripts": {
     "dev": "vite",
