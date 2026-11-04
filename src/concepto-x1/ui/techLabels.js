@@ -70,7 +70,7 @@ export function createTechLabels({ container, phone, sceneManager, source, getBo
       </span>`;
     // textContent (no innerHTML) para los textos: nunca se interpreta como HTML.
     el.querySelector('.tech-label__code').textContent = item.querySelector('.parts__id')?.textContent ?? '';
-    el.querySelector('.tech-label__name').textContent = item.querySelector('h3')?.textContent ?? '';
+    el.querySelector('.tech-label__name').textContent = item.querySelector('h4')?.textContent ?? '';
     el.querySelector('.tech-label__spec').textContent = item.querySelector('.parts__spec')?.textContent ?? '';
     container.append(el);
 

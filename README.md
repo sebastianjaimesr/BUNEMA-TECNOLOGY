@@ -1,87 +1,96 @@
-# BUNEMA · The iPhone Experience
+# BUNEMA TECHNOLOGY · Bunema X1
 
-**Technology Beyond Limits.** Plataforma web premium dedicada al universo iPhone para el mercado colombiano: presentación cinematográfica en 3D, catálogo completo por generaciones, fichas técnicas verificadas, configurador 3D, comparador, galería tecnológica, tienda con carrito en pesos colombianos y panel administrativo.
+**Tecnología que se siente.** Experiencia web de producto para el **Bunema X1**, el smartphone de una marca conceptual: modelo 3D construido por código, despiece pieza a pieza controlado por scroll, configurador de color y acabado, especificaciones en composición editorial, comparador de la familia X Series y una reserva de demostración.
 
-Proyecto de **Sebastián Jaimes**.
+Proyecto de portafolio de **Sebastián Jaimes**.
 
 > **Sitio:** [sebastianjaimesr.github.io/BUNEMA-TECNOLOGY](https://sebastianjaimesr.github.io/BUNEMA-TECNOLOGY/) · **Repositorio:** [github.com/sebastianjaimesr/BUNEMA-TECNOLOGY](https://github.com/sebastianjaimesr/BUNEMA-TECNOLOGY)
 
-> BUNEMA es una tienda independiente. No es Apple Inc. ni distribuidor autorizado de Apple. iPhone es una marca registrada de Apple Inc.
+> BUNEMA TECHNOLOGY es una marca ficticia. El Bunema X1, sus especificaciones y sus precios no existen comercialmente.
 
-![Inicio: el iPhone 18 Pro Max en 3D bajo el titular «El futuro está en tus manos.»](docs/capturas/inicio.jpg)
+![Hero: el Bunema X1 en 3D bajo una luz azul, junto al titular «Bunema X1»](docs/capturas/bunema-x1/hero.jpg)
 
-## Qué incluye
+## Recorrido
 
-| Sección | Ruta | Qué hace |
+| Sección | Ancla | Qué hace |
 | --- | --- | --- |
-| Inicio | `#/` | iPhone 18 Pro Max en 3D con entrada animada, parallax con el ratón y recorrido por scroll (frontal → lateral → trasera) con datos oficiales. Línea actual de Apple, cifras del 18 Pro, recorrido horizontal por generaciones. |
-| Catálogo | `#/catalogo` | 42 modelos, del iPhone 7 al iPhone 18 Pro Max y el iPhone Duo, agrupados por generación. Buscador en tiempo real y filtros por generación, familia, estado en Apple (vigente/descontinuado), condición (nuevo/usado/reacondicionado), disponibilidad, almacenamiento, color y precio. Los filtros viajan en la URL. Archivo histórico desde el iPhone de 2007. |
-| Ficha | `#/iphone/<id>` | Configurador 3D (girar con ratón o gestos, acercar, vistas frontal/trasera/lateral/cámaras, rotación automática, inspección de materiales), selección de color, almacenamiento, condición y cantidad, precio de la combinación exacta, ficha técnica completa con su fuente oficial. |
-| Comparador | `#/comparar?m=a,b,c` | Hasta tres modelos lado a lado; marca las filas con diferencias y el mejor valor numérico; «solo diferencias»; enlace para compartir. |
-| Galería tecnológica | `#/galeria` | Un capítulo visual por generación con parallax, filtro por tema (cámaras, pantallas, materiales, procesadores, diseño, conectividad). |
-| Carrito y pedido | `#/carrito`, `#/pedido/<id>` | Cantidades, total en COP, productos con precio por confirmar, formulario validado y solicitud de pedido con número. Envío por WhatsApp, correo o endpoint, impresión/PDF. **No hay cobros**: la solicitud se confirma con la tienda. |
-| Contacto | `#/contacto` | Consulta de disponibilidad, prellenada desde la ficha. |
-| Panel administrativo | `admin.html` | Productos, inventario y precios, pedidos y consultas, imágenes y modelos 3D, ajustes (WhatsApp, correo, pasarela), estadísticas y publicación de `store.json`. |
-| BUNEMA Lab | `concepto-x1.html` | La experiencia anterior del teléfono conceptual Bunema X1, conservada y marcada como concepto. |
+| Hero | `#inicio` | El X1 entra girando cuando la escena está lista; sigue al cursor, flota y se gira con el dedo en móvil. Dos acciones: *Explore Bunema X1* y *Discover the Engineering*. |
+| Ingeniería | `#ingenieria` | Despiece de las 11 piezas del modelo sincronizado con el scroll, en 9 pasos, con etiquetas técnicas ancladas a cada pieza, indicador de progreso y control manual (anterior, siguiente y un botón por paso). |
+| Configurador | `#configurador` | 4 colores y 2 acabados que cambian los materiales del mismo modelo 3D; vistas trasera/lateral/frontal, giro con arrastre o flechas del teclado, rotación automática y *Restablecer*. |
+| Tecnología | `#tecnologia` | Pantalla, procesador, cámara, batería, materiales, diseño y rendimiento en una composición editorial. |
+| Cámara | `#camara` | Demo simulada en Canvas 2D: zoom de 0,5× a 10×, modo noche y comparación con divisor. No usa la cámara del dispositivo. |
+| Modelos | `#modelos` | X1, Pro y Lite en 3D a escala real con giro sincronizado y una comparación de 7 filas; el X1 conserva el protagonismo. |
+| Reserva | `#reserva` | Cierre con formulario validado y accesible. Es una demostración: no hay servidor ni cobros. |
 
 <table>
   <tr>
-    <td><img src="docs/capturas/catalogo.jpg" alt="Catálogo con filtros y tarjetas por generación" /></td>
-    <td><img src="docs/capturas/ficha-3d.jpg" alt="Ficha del iPhone 18 Pro Max en Borgoña con el configurador 3D" /></td>
+    <td><img src="docs/capturas/bunema-x1/despiece.jpg" alt="Despiece completo del Bunema X1 con etiquetas técnicas" /></td>
+    <td><img src="docs/capturas/bunema-x1/configurador.jpg" alt="Configurador con colores, acabados y vistas" /></td>
   </tr>
   <tr>
-    <td><img src="docs/capturas/comparador.jpg" alt="Comparador entre iPhone 18 Pro Max, 18 Pro y 17 Pro Max" /></td>
-    <td><img src="docs/capturas/galeria.jpg" alt="Galería tecnológica: capítulo del iPhone 18 Pro y el iPhone Duo" /></td>
-  </tr>
-  <tr>
-    <td><img src="docs/capturas/carrito.jpg" alt="Carrito con resumen del pedido" /></td>
-    <td><img src="docs/capturas/admin.jpg" alt="Acceso al panel administrativo" /></td>
+    <td><img src="docs/capturas/bunema-x1/tecnologia.jpg" alt="Especificaciones en composición editorial" /></td>
+    <td><img src="docs/capturas/bunema-x1/modelos.jpg" alt="Comparación entre X1, Pro y Lite" /></td>
   </tr>
 </table>
 
-<p>
-  <img src="docs/capturas/movil-inicio.jpg" width="260" alt="Inicio en móvil" />
-  <img src="docs/capturas/movil-catalogo.jpg" width="260" alt="Catálogo en móvil a dos columnas" />
-</p>
+<p><img src="docs/capturas/bunema-x1/movil.jpg" width="260" alt="Hero en móvil" /></p>
 
-## Datos y verificación
+## Tecnologías
 
-- **Especificaciones** (`src/data/iphones.js`): una sola base de datos para catálogo, fichas, comparador, galería, carrito y panel. Se revisaron el 2 de noviembre de 2026 contra el comparador oficial de Apple Colombia (<https://www.apple.com/co/iphone/compare/>) y las páginas de especificaciones del iPhone Duo, iPhone 18 Pro / Pro Max, iPhone 17e y iPhone 16. Cada modelo guarda su fuente y la ficha la muestra.
-- **Nombres de colores**: los oficiales. Las muestras y el 3D usan tonos aproximados (se indica en la ficha).
-- **Precios, inventario y canales** (`public/data/store.json`): vacíos por defecto. Nada se inventa: sin precio se muestra «Precio a consultar» y sin WhatsApp configurado el botón lleva al formulario de contacto.
-- **Imágenes**: este entorno no tuvo acceso a los servidores de imágenes de Apple, así que **no se descargaron fotografías oficiales**. Cada modelo y color muestra un **render 3D** generado con el mismo modelo del visor (medidas oficiales, módulo de cámaras, acabado), marcado «Render 3D ilustrativo · foto oficial pendiente». Los renders se regeneran con `npm run renders` (requiere Playwright con Chromium) y quedan en `public/assets/renders/`. La lista está en [`docs/RECURSOS-PENDIENTES.md`](docs/RECURSOS-PENDIENTES.md).
-- **3D**: modelo paramétrico generado con Three.js a partir de las **medidas oficiales** y el diseño del módulo de cámaras de cada modelo; se rotula como ilustrativo. El visor carga un `.glb` real si se registra en el panel.
+- **Vite 8** (build y servidor de desarrollo), JavaScript con módulos ES, sin framework.
+- **Three.js** para el modelo y la escena; **GSAP + ScrollTrigger** para la entrada y el scroll.
+- CSS propio con variables de diseño; tipografías **Geist** y **Geist Mono** (Google Fonts).
+
+## Identidad visual
+
+| Token | Valor | Uso |
+| --- | --- | --- |
+| Fondo | `#05060A` | Base de toda la página |
+| Azul eléctrico | `#2F6BFF` | Acciones, progreso, luz de contorno del 3D |
+| Blanco | `#F5F7FA` | Texto principal |
+| Gris metálico | `#8B929E` | Texto secundario, marco Titanium Gray |
+| Superficies | `#0A0C12` · `#10131B` · `#171B25` | Secciones alternas, paneles y estados |
+
+La firma de la marca es el **Corte X**: la esquina a 45° de la placa de cámara, que se repite en los botones, el panel de reserva y el logotipo.
 
 ## Arquitectura
 
 ```
-index.html            Tienda (SPA con rutas #/…)
-admin.html            Panel administrativo (entrada independiente)
-concepto-x1.html      BUNEMA Lab · concepto Bunema X1
-public/
-  data/store.json     Precios, inventario, canales, fotos (lo edita el panel)
-  assets/images/…     Fotografías por modelo (pendientes)
-  assets/models-3d/   Modelos .glb opcionales
-src/
-  main.js · router.js           Arranque y enrutador por hash (import() por página)
-  config/site.config.js         Marca y valores por defecto
-  data/                         iphones.js (42 modelos) · generations.js (galería)
-  services/                     catálogo, tienda, carrito, pedidos, contacto, comparador,
-                                estadísticas, formato COP, almacenamiento, pago (preparado)
-  components/                   cabecera, tarjeta, ilustraciones SVG, bandeja del comparador,
-                                formularios, avisos
-  pages/                        home, catalog, product, compare, gallery, cart, order,
-                                contact, legal, notFound
-  three/                        PhoneModel (paramétrico) · PhoneViewer (visor reutilizable)
-  animations/                   GSAP + ScrollTrigger, apariciones al desplazarse
-  admin/                        panel
-  styles/                       tokens, base, layout, componentes y una hoja por página
-  concepto-x1/                  código del Bunema X1
+index.html                  Bunema X1 (experiencia principal)
+tienda.html · admin.html    Archivo: The iPhone Experience (proyecto anterior) y su panel
+concepto-x1.html            Redirección de la URL antigua del concepto a index.html
+src/concepto-x1/
+  main.js                   Orquesta: navegación, secciones y carga diferida del 3D
+  experience.js             Arranque de la escena (se descarga con import() dinámico)
+  scene/                    Renderer, estudio de luz (mapa de entorno), luces, sombra de contacto
+  models/                   BunemaPhone (11 piezas), materiales compartidos, texturas por código, LineupPhone
+  animations/               Hero, guion del despiece (función pura), scroll, configurador, vitrina
+  sections/                 Interfaz del configurador, comparador, demo de cámara y reserva (sin Three.js)
+  ui/                       Menú, control de pasos, etiquetas técnicas, apariciones, progreso de carga
+  data/products.js          Colores, acabados, modelos y especificaciones: fuente única
+  styles/                   Una hoja por sección + base y responsive
 ```
 
-Detalle técnico, limitaciones de GitHub Pages y la arquitectura de backend propuesta: [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md).
+- **Un solo `WebGLRenderer` y un solo lienzo fijo** para toda la página: hero, despiece, configurador y vitrina mueven el mismo modelo (o los tres de la vitrina) en lugar de crear escenas nuevas.
+- **Renderizado bajo demanda**: solo se dibuja un fotograma cuando algo cambia; con la escena quieta el coste de GPU es cero. Fuera de las secciones con 3D el bucle se pausa.
+- **El despiece es una función pura del progreso de scroll** (`sequenceAt(p)`): subir, bajar o saltar con los botones produce siempre la misma pose.
+- **Interfaz desacoplada del 3D**: configurador, comparador y reserva funcionan sin WebGL; el 3D se suscribe a su estado cuando está listo.
 
-**Rendimiento**: cada página y su CSS se cargan bajo demanda; Three.js solo se descarga en las vistas con 3D; el visor dibuja únicamente cuando algo se mueve y se pausa fuera de pantalla; renders en WebP de unos 10 KB con carga diferida; `prefers-reduced-motion` desactiva el recorrido animado. Sin WebGL se muestran las ilustraciones de cada vista.
+## Rendimiento
+
+- Three.js (unos 150 kB gzip) **no bloquea el primer pintado**: se descarga con `import()` mientras el titular ya es visible. No hay pantalla de introducción que retrase el contenido.
+- Sin modelos ni texturas descargadas: geometría paramétrica y texturas dibujadas en `<canvas>` (0 peticiones de recursos 3D). El mapa de entorno se genera una vez en la GPU.
+- Materiales compartidos entre las piezas y entre los modelos de la vitrina; geometrías reutilizadas para componentes repetidos.
+- Pixel ratio limitado (1,75 en móvil, 2 en escritorio) y animación ambiental a 30 FPS en móvil.
+- Recuperación de contexto WebGL perdido y liberación de geometrías, materiales y texturas al desmontar.
+
+## Accesibilidad
+
+- Navegación completa por teclado, foco visible, enlace para saltar al contenido.
+- El giro del configurador es un `role="slider"` (flechas, Inicio y Fin) que anuncia los grados.
+- Radios nativos para color y acabado, `aria-pressed` en vistas, `aria-current` en el paso activo del despiece, regiones `aria-live` para los cambios.
+- `prefers-reduced-motion`: sin flotación, sin transiciones y despiece estático con todas las etiquetas.
+- Sin WebGL: ilustraciones SVG que siguen al configurador y la ficha de piezas visible.
 
 ## Ejecutar en local
 
@@ -94,23 +103,20 @@ npm install
 npm run dev          # http://localhost:5173
 npm run build        # genera dist/
 npm run preview      # sirve dist/ en http://localhost:4173
-npm run renders      # regenera los renders 3D (npm i -D playwright && npx playwright install chromium)
 ```
-
-Panel: `http://localhost:5173/admin.html` (la primera vez pide crear un PIN).
 
 ## Publicar en GitHub Pages
 
-1. **Settings → Pages → Source: GitHub Actions** (ya configurado).
-2. Cada push a `main` ejecuta `.github/workflows/deploy.yml`: `npm ci`, `npm run build` y despliegue de `dist/`.
-3. Para publicar precios, inventario, WhatsApp o fotos: en `admin.html` → **Publicar → Descargar store.json**, y sustituir `public/data/store.json` en `main`. El sitio se actualiza en unos minutos.
+1. En el repositorio: **Settings → Pages → Source: GitHub Actions** (ya configurado).
+2. Cada push a `main` ejecuta `.github/workflows/deploy.yml`: `npm ci`, `npm run build` y despliegue de `dist/`. En los pull requests solo se ejecuta el build.
+3. `vite.config.js` usa `base: './'`, así el mismo `dist/` funciona en la raíz o en `/BUNEMA-TECNOLOGY/`.
 
-## Pendiente y dependencias
+## Archivo: The iPhone Experience
 
-| Pendiente | Depende de |
-| --- | --- |
-| Fotografías oficiales de cada modelo | Descargar los recursos de prensa con permiso de uso y guardarlos en `public/assets/images/<modelo>/` |
-| Precios, inventario, número de WhatsApp, correo | Datos del negocio (panel → Publicar) |
-| Cobros en línea | Backend + cuenta en Wompi, ePayco o Mercado Pago |
-| Pedidos centralizados, autenticación segura, varios administradores | Backend con base de datos (ver `docs/ARQUITECTURA.md`) |
-| Modelos 3D `.glb` detallados | Archivos con licencia de uso |
+El proyecto anterior (catálogo de iPhone en COP, fichas 3D, comparador, carrito y panel) sigue disponible en [`tienda.html`](https://sebastianjaimesr.github.io/BUNEMA-TECNOLOGY/tienda.html). Los enlaces antiguos del tipo `/#/catalogo` redirigen allí. Su documentación técnica está en [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md) y [`docs/RECURSOS-PENDIENTES.md`](docs/RECURSOS-PENDIENTES.md); se regeneran sus renders con `npm run renders`.
+
+## Limitaciones conocidas
+
+- El modelo 3D es paramétrico (geometría generada por código), no un CAD ni un escaneo: es una representación conceptual y así se indica en la página.
+- La demo de cámara es una ilustración con filtros; no realiza fotografía computacional.
+- La reserva es una demostración sin servidor: los datos se borran al recargar.

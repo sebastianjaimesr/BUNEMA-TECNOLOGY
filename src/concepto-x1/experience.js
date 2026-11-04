@@ -16,7 +16,7 @@ const nextFrame = () => new Promise((resolve) => requestAnimationFrame(() => res
  * texto del hero ya es visible y navegable.
  *
  * Cada etapa informa a `tracker` cuando termina de verdad. No revela el
- * teléfono: devuelve `reveal()` para que la introducción decida cuándo.
+ * teléfono: devuelve `reveal()` para que main.js decida cuándo.
  */
 export async function startExperience({ canvas, heroEl, configurator, comparison, reducedMotion, tracker, onContextLost, onContextRestored }) {
   const quality = detectQuality();
@@ -39,7 +39,7 @@ export async function startExperience({ canvas, heroEl, configurator, comparison
     hero = createHeroPresentation({ sceneManager, phone, heroEl, reducedMotion, quality });
     // Ingeniería en movimiento: el scroll de su sección controla el despiece.
     const sectionEl = document.querySelector('[data-engineering]');
-    const sourceList = document.querySelector('#arquitectura');
+    const sourceList = document.querySelector('[data-parts]'); // ficha de piezas: fuente de las etiquetas
     if (sectionEl && sourceList) {
       story = createScrollExperience({ sceneManager, phone, hero, sectionEl, sourceList, reducedMotion });
     }

@@ -11,8 +11,8 @@ import * as THREE from 'three';
  *    así la placa base se ve igual en cada carga.
  */
 
-const FONT_DISPLAY = '"Space Grotesk", "Inter", system-ui, sans-serif';
-const FONT_UI = '"Inter", system-ui, sans-serif';
+const FONT_DISPLAY = '"Geist", system-ui, sans-serif';
+const FONT_UI = '"Geist", system-ui, sans-serif';
 
 /** Generador pseudoaleatorio con semilla (mulberry32). */
 function seededRandom(seed) {
@@ -40,7 +40,7 @@ function toTexture(canvas, anisotropy) {
   return texture;
 }
 
-/** Pantalla de bloqueo: ondas de luz azul-violeta sobre negro profundo. */
+/** Pantalla de bloqueo: ondas de luz azul eléctrico sobre negro profundo. */
 function drawDisplay(anisotropy) {
   const W = 540;
   const H = 1208;
@@ -52,7 +52,7 @@ function drawDisplay(anisotropy) {
   // Halo inferior: la luz parece nacer desde dentro de la pantalla.
   const glow = ctx.createRadialGradient(W * 0.5, H * 0.78, 10, W * 0.5, H * 0.78, H * 0.6);
   glow.addColorStop(0, 'rgba(47,107,255,0.55)');
-  glow.addColorStop(0.45, 'rgba(139,92,246,0.18)');
+  glow.addColorStop(0.45, 'rgba(120,160,255,0.14)');
   glow.addColorStop(1, 'rgba(5,6,10,0)');
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, W, H);
@@ -66,8 +66,9 @@ function drawDisplay(anisotropy) {
       if (x === -10) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     }
-    const r = Math.round(47 + (139 - 47) * t);
-    const g = Math.round(107 + (92 - 107) * t);
+    // Del azul de marca (#2F6BFF) a un azul hielo: una sola familia de color.
+    const r = Math.round(47 + (176 - 47) * t);
+    const g = Math.round(107 + (200 - 107) * t);
     ctx.strokeStyle = `rgba(${r},${g},255,${0.16 + (1 - Math.abs(t - 0.5) * 2) * 0.5})`;
     ctx.lineWidth = 1.4;
     ctx.stroke();

@@ -48,7 +48,8 @@ export function createReservation({ root, configurator, comparison }) {
   const colorSelect = root.querySelector('[data-res-color]');
   const done = root.querySelector('[data-reservation-done]');
   const resetBtn = root.querySelector('[data-reservation-reset]');
-  const cta = root.querySelector('[data-reservation-cta]');
+  // Accesos directos a la reserva (el botón "Reservar" de la cabecera): llevan al formulario y enfocan el primer campo.
+  const ctas = [...document.querySelectorAll('[data-reservation-cta]')];
   const submitBtn = form.querySelector('[type="submit"]');
   const fields = Object.fromEntries(
     Object.keys(RULES).map((name) => [name, { input: form.elements[name], error: root.querySelector(`#res-${name}-error`) }]),
@@ -226,6 +227,10 @@ export function createReservation({ root, configurator, comparison }) {
   // El botón "Reservar ahora" de la cabecera de la sección lleva al primer campo.
   function onCta(event) {
     event.preventDefault();
+    if (form.hidden) {
+      done.scrollIntoView({ block: 'center' });
+      return;
+    }
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     form.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
     fields.name.input.focus({ preventScroll: true });
@@ -252,7 +257,7 @@ export function createReservation({ root, configurator, comparison }) {
   submitBtn.addEventListener('pointercancel', onSubmitRelease);
   submitBtn.addEventListener('click', onSubmitRelease);
   resetBtn.addEventListener('click', onReset);
-  cta.addEventListener('click', onCta);
+  ctas.forEach((cta) => cta.addEventListener('click', onCta));
 
   return {
     get state() {
@@ -270,7 +275,7 @@ export function createReservation({ root, configurator, comparison }) {
       submitBtn.removeEventListener('pointercancel', onSubmitRelease);
       submitBtn.removeEventListener('click', onSubmitRelease);
       resetBtn.removeEventListener('click', onReset);
-      cta.removeEventListener('click', onCta);
+      ctas.forEach((cta) => cta.removeEventListener('click', onCta));
     },
   };
 }

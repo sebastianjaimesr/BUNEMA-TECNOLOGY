@@ -13,8 +13,10 @@ gsap.registerPlugin(ScrollTrigger);
  *    no se crea ni una geometría ni un material nuevo.
  * 2. Pose: escribe la capa `'config'` del hero (posición, escala y giro)
  *    mientras la sección está en pantalla.
- * 3. Giro: vistas predefinidas (botones), arrastre con el dedo o el ratón
- *    y una rotación automática que el usuario puede detener.
+ * 3. Giro: vistas predefinidas (botones), arrastre con el dedo o el ratón,
+ *    flechas del teclado (la zona del teléfono es un `role="slider"`) y una
+ *    rotación automática que el usuario puede detener.
+ * 4. Restablecer: vuelve a la vista trasera y detiene la rotación.
  */
 
 const damp = (current, target, k, dt) => current + (target - current) * (1 - Math.exp(-k * dt));
@@ -29,11 +31,12 @@ const VIEWS = {
 const SPIN_SPEED = 0.45; // rad/s de la rotación automática (una vuelta cada ~14 s)
 const DRAG_SPEED = 0.011; // rad por píxel arrastrado
 const TRANSITION = 0.9; // s del cambio de material
+const KEY_STEP = Math.PI / 12; // 15° por pulsación de flecha
 
 export function createConfiguratorPresentation({ sceneManager, phone, hero, sectionEl, configurator, reducedMotion }) {
   const root = document.documentElement;
   const stageEl = sectionEl.querySelector('[data-config-stage]');
-  const angleEl = sectionEl.querySelector('[data-config-angle]');
+  const hintEl = sectionEl.querySelector('[data-config-hint]');
   const sweepEl = sectionEl.querySelector('[data-config-sweep]');
   const viewButtons = [...sectionEl.querySelectorAll('[data-view]')];
   const spinButton = sectionEl.querySelector('[data-config-spin]');
@@ -153,7 +156,12 @@ export function createConfiguratorPresentation({ sceneManager, phone, hero, sect
       },
       request,
     );
-    angleEl.textContent = `${String(Math.round(toDegrees(turn.heading))).padStart(3, '0')}°`;
+    // El ángulo se publica en el slider: lectores de pantalla y pruebas leen el mismo valor.
+    const degrees = Math.round(toDegrees(turn.heading)) % 360;
+    if (stageEl.getAttribute('aria-valuenow') !== String(degrees)) {
+      stageEl.setAttribute('aria-valuenow', String(degrees));
+      stageEl.setAttribute('aria-valuetext', `${degrees} grados`);
+    }
   }
 
   function tick(dt) {
@@ -229,8 +237,14 @@ export function createConfiguratorPresentation({ sceneManager, phone, hero, sect
     wake();
   }
 
+  /** La pista "Arrastra para girar" desaparece en cuanto el usuario ya giró el teléfono. */
+  function dismissHint() {
+    hintEl?.classList.add('is-dismissed');
+  }
+
   function onPointerDown(event) {
     if (event.button !== 0 || !root.classList.contains('is-3d-ready')) return;
+    dismissHint();
     dragging = { id: event.pointerId, x: event.clientX };
     // Durante el arrastre la pose sigue al dedo 1:1, partiendo de donde está ahora.
     turn.headingTarget = turn.heading;
@@ -254,6 +268,38 @@ export function createConfiguratorPresentation({ sceneManager, phone, hero, sect
     wake();
   }
 
+  /** Teclado: flechas giran 15°, Inicio/Fin llevan a la trasera o al frente. */
+  function onKeyDown(event) {
+    const actions = {
+      ArrowLeft: () => (turn.headingTarget -= KEY_STEP),
+      ArrowDown: () => (turn.headingTarget -= KEY_STEP),
+      ArrowRight: () => (turn.headingTarget += KEY_STEP),
+      ArrowUp: () => (turn.headingTarget += KEY_STEP),
+      Home: () => (turn.headingTarget = turn.heading + shortestDelta(VIEWS.back)),
+      End: () => (turn.headingTarget = turn.heading + shortestDelta(VIEWS.front)),
+    };
+    const action = actions[event.key];
+    if (!action) return;
+    event.preventDefault();
+    if (spinning) setSpinning(false);
+    action();
+    setPressedView(null);
+    dismissHint();
+    wake();
+  }
+
+  const shortestDelta = (target) =>
+    ((((target - turn.heading + Math.PI) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)) - Math.PI;
+
+  function onReset() {
+    if (spinning) setSpinning(false);
+    turn.headingTarget = turn.heading + shortestDelta(VIEWS.back);
+    setPressedView('back');
+    wake();
+  }
+  const offReset = configurator.onReset?.(onReset);
+
+  stageEl.addEventListener('keydown', onKeyDown);
   viewButtons.forEach((btn) => btn.addEventListener('click', onViewClick));
   const onSpinClick = () => setSpinning(!spinning);
   spinButton.addEventListener('click', onSpinClick);
@@ -297,6 +343,8 @@ export function createConfiguratorPresentation({ sceneManager, phone, hero, sect
       materialTween?.kill();
       removeAnimator?.();
       offConfig();
+      offReset?.();
+      stageEl.removeEventListener('keydown', onKeyDown);
       handoff.kill();
       visibility.kill();
       offRegion();

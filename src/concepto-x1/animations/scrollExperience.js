@@ -3,6 +3,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { BunemaPhone } from '../models/BunemaPhone.js';
 import { STEPS, PART_MOTION, EXPLODED_CENTER_Z, sequenceAt } from './explodeSequence.js';
 import { createTechLabels } from '../ui/techLabels.js';
+import { createStepNav } from '../ui/stepNav.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -30,6 +31,8 @@ export function createScrollExperience({ sceneManager, phone, hero, sectionEl, s
   const root = document.documentElement;
   const stepEls = [...sectionEl.querySelectorAll('[data-step]')];
   const countEl = sectionEl.querySelector('[data-step-count]');
+  const totalEl = sectionEl.querySelector('[data-step-total]');
+  if (totalEl) totalEl.textContent = String(STEPS.length).padStart(2, '0');
   const barEl = sectionEl.querySelector('[data-step-bar]');
   const headEl = sectionEl.querySelector('.engineering__head');
   const labelsEl = sectionEl.querySelector('[data-tech-labels]');
@@ -50,6 +53,7 @@ export function createScrollExperience({ sceneManager, phone, hero, sectionEl, s
   const layout = { x: 0, y: 0, scale: 1 };
   let removeAnimator = null;
   let lastStep = -1;
+  let stepNav = null; // control manual (se crea cuando existe el ScrollTrigger del recorrido)
   let lastLabelsKey = '';
 
   root.classList.toggle('has-story', !reducedMotion);
@@ -158,6 +162,7 @@ export function createScrollExperience({ sceneManager, phone, hero, sectionEl, s
       lastStep = seq.step;
       stepEls.forEach((el, i) => el.classList.toggle('is-active', i === seq.step));
       countEl.textContent = String(seq.step + 1).padStart(2, '0');
+      stepNav?.setActive(seq.step);
       // En móvil el alto del paso activo cambia: también cambia el hueco para las fichas.
       measureBounds();
     }
@@ -245,6 +250,20 @@ export function createScrollExperience({ sceneManager, phone, hero, sectionEl, s
     },
   });
 
+  // Control manual: lleva el scroll al centro del tramo de cada paso (el primero, a su inicio).
+  // Con movimiento reducido no hay recorrido: el despiece completo se ve de una vez.
+  stepNav = reducedMotion
+    ? null
+    : createStepNav({
+        nav: sectionEl.querySelector('[data-step-nav]'),
+        titles: stepEls.map((el) => el.querySelector('.step__index')?.textContent.trim() ?? ''),
+        onSelect(index) {
+          const [a, b] = STEPS[index].range;
+          const p = index === 0 ? 0.02 : (a + b) / 2;
+          window.scrollTo({ top: story.start + (story.end - story.start) * p, behavior: 'smooth' });
+        },
+      });
+
   // Estado inicial correcto aunque la página se cargue a mitad del scroll.
   progress.target = progress.current = story.progress;
   blend.target = blend.current = reducedMotion ? (handoff.progress > 0.5 ? 1 : 0) : handoff.progress;
@@ -278,6 +297,7 @@ export function createScrollExperience({ sceneManager, phone, hero, sectionEl, s
       offActive();
       offResize();
       labels.dispose();
+      stepNav?.dispose();
       root.classList.remove('has-story', 'story-static');
       // Devuelve todas las piezas a su reposo exacto.
       BunemaPhone.PART_ORDER.forEach((key) => {

@@ -1,10 +1,12 @@
-# Arquitectura de BUNEMA · The iPhone Experience
+# Arquitectura de BUNEMA · The iPhone Experience (archivo)
+
+> Este documento describe el proyecto anterior, que ahora vive en `tienda.html`. La experiencia principal del sitio es el Bunema X1 (`index.html`); su arquitectura está en el README.
 
 ## 1. Situación actual (sitio estático en GitHub Pages)
 
 | Capa | Implementación | Límite honesto |
 | --- | --- | --- |
-| Interfaz | Vite + JavaScript modular, sin framework. Enrutador por hash (`#/ruta`) porque Pages no admite reescrituras de URL. | Las rutas internas no se indexan como páginas separadas. |
+| Interfaz | Vite + JavaScript modular, sin framework. Página `tienda.html` con enrutador por hash (`#/ruta`) porque Pages no admite reescrituras de URL. | Las rutas internas no se indexan como páginas separadas. |
 | 3D | Three.js (`src/three/`). Un visor reutilizable con controles táctiles, renderizado bajo demanda y recuperación de contexto WebGL. | Modelo paramétrico ilustrativo hasta tener `.glb` con licencia. |
 | Animación | GSAP + ScrollTrigger (`src/animations/`), contexto por página que se revierte al salir. | — |
 | Especificaciones | `src/data/iphones.js`, fuente única verificada con Apple Colombia. | Se actualiza con un cambio de código (o «Agregar iPhone» en el panel). |
