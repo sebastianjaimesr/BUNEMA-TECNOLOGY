@@ -26,7 +26,7 @@ const lowPower = () =>
   window.matchMedia('(pointer: coarse)').matches || (navigator.hardwareConcurrency || 4) <= 4 || window.innerWidth < 768;
 
 export class PhoneViewer {
-  constructor(container, { product, colorId, interactive = true, autoRotate = false, distance = 34, fov = 26, onReady } = {}) {
+  constructor(container, { product, colorId, interactive = true, autoRotate = false, distance = 34, fov = 26, shadow = true, preserveDrawingBuffer = false, onReady } = {}) {
     this.container = container;
     this.interactive = interactive;
     this.reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -36,7 +36,7 @@ export class PhoneViewer {
     container.appendChild(this.canvas);
 
     const low = lowPower();
-    this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: !low || devicePixelRatio < 2, alpha: true, powerPreference: 'high-performance' });
+    this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: !low || devicePixelRatio < 2, alpha: true, powerPreference: 'high-performance', preserveDrawingBuffer });
     this.renderer.setPixelRatio(Math.min(devicePixelRatio, low ? 1.75 : 2));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     // Tono neutro (Khronos PBR Neutral): conserva los colores reales de los acabados.
@@ -54,6 +54,7 @@ export class PhoneViewer {
     this.stage = new THREE.Group(); // la escena mueve `stage`; el modelo vive dentro
     this.scene.add(this.stage);
     this.buildShadow();
+    this.shadow.visible = shadow;
 
     this.needsRender = true;
     this.running = false;
@@ -118,7 +119,7 @@ export class PhoneViewer {
       return mesh;
     };
     const glow = (hex, k) => new THREE.MeshBasicMaterial({ color: new THREE.Color(hex).multiplyScalar(k), side: THREE.DoubleSide });
-    add(new THREE.BoxGeometry(60, 40, 60), new THREE.MeshBasicMaterial({ color: '#0a0b10', side: THREE.BackSide }));
+    add(new THREE.BoxGeometry(60, 40, 60), new THREE.MeshBasicMaterial({ color: '#1c1d23', side: THREE.BackSide }));
     // Degradado vertical para las caras planas (frente y espalda).
     const c = document.createElement('canvas');
     c.width = 4;
@@ -138,7 +139,11 @@ export class PhoneViewer {
     front.position.set(0, 2, 22);
     const back = add(new THREE.PlaneGeometry(30, 22), new THREE.MeshBasicMaterial({ map: gradTex, color: new THREE.Color(1.1, 1.1, 1.2), side: THREE.DoubleSide }));
     back.position.set(0, 2, -22);
-    const top = add(new THREE.PlaneGeometry(18, 10), glow('#ffffff', 5));
+    // Caja de luz grande y difusa delante-arriba: da el brillo suave de foto de estudio.
+    const soft = add(new THREE.PlaneGeometry(26, 14), glow('#ffffff', 1.6));
+    soft.position.set(0, 12, 16);
+    soft.lookAt(0, 0, 0);
+    const top = add(new THREE.PlaneGeometry(18, 10), glow('#ffffff', 4));
     top.position.set(0, 18, 4);
     top.rotation.x = Math.PI / 2;
     const left = add(new THREE.PlaneGeometry(3, 26), glow('#fff6ec', 9));

@@ -4,7 +4,7 @@ import { createReveals } from '../animations/reveal.js';
 import { getAllProducts, getProduct } from '../services/catalogService.js';
 import { productCard } from '../components/productCard.js';
 import { mountCompareTray } from '../components/compareTray.js';
-import { phoneSVG } from '../components/phoneArt.js';
+import { phoneSVG, productVisual } from '../components/phoneArt.js';
 import { GENERATION_STORIES } from '../data/generations.js';
 import { channelsConfigured, whatsappLink } from '../services/contactService.js';
 
@@ -107,7 +107,7 @@ export async function render({ root }) {
         ${GENERATION_STORIES.map((g) => {
           const p = getProduct(g.hero);
           return `<article class="gen-card" style="--accent:${g.accent}">
-            <div class="gen-card__art" aria-hidden="true">${p ? phoneSVG(p, { view: 'back' }) : ''}</div>
+            <div class="gen-card__art" aria-hidden="true">${p ? productVisual(p, { view: 'back' }) : ''}</div>
             <div class="gen-card__body">
               <p class="gen-card__year">${g.year}</p>
               <h3>${g.title}</h3>

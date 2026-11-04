@@ -2,7 +2,7 @@ import '../styles/product.css';
 import { gsap, prefersReduced } from '../animations/gsap.js';
 import { createReveals } from '../animations/reveal.js';
 import { getProduct, getAllProducts, findOffer } from '../services/catalogService.js';
-import { productVisual, phoneSVG } from '../components/phoneArt.js';
+import { productVisual, phoneSVG, visualKind, VISUAL_TAG } from '../components/phoneArt.js';
 import { productCard, lifecycleBadge } from '../components/productCard.js';
 import { mountCompareTray } from '../components/compareTray.js';
 import { addToCart } from '../services/cartService.js';
@@ -177,8 +177,8 @@ export async function render({ root, params, query }) {
   const renderViews = () => {
     $('[data-views-grid]').innerHTML = ['front', 'back', 'side']
       .map((v) => {
-        const isPhoto = Boolean(product.images?.[v]);
-        return `<figure class="view-card"><div class="view-card__art">${productVisual(product, { view: v, colorId: state.colorId })}${isPhoto ? '' : '<span class="tag-illustration">Ilustración</span>'}</div><figcaption>${{ front: 'Vista frontal', back: 'Vista trasera', side: 'Vista lateral' }[v]}</figcaption></figure>`;
+        const kind = visualKind(product, v, state.colorId);
+        return `<figure class="view-card"><div class="view-card__art">${productVisual(product, { view: v, colorId: state.colorId })}${kind === 'photo' ? '' : `<span class="tag-illustration">${VISUAL_TAG[kind]}</span>`}</div><figcaption>${{ front: 'Vista frontal', back: 'Vista trasera', side: 'Vista lateral' }[v]}</figcaption></figure>`;
       })
       .join('');
     const gallery = product.images?.gallery || [];

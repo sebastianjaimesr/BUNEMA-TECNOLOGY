@@ -371,7 +371,8 @@
   place-items: center;
   padding-top: 24px;
 }
-.gen-card__art svg {
+.gen-card__art svg,
+.gen-card__art img {
   height: 220px;
   width: auto;
   filter: drop-shadow(0 30px 30px rgba(0, 0, 0, 0.6));

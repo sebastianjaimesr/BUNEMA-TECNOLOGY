@@ -49,7 +49,7 @@ Proyecto de **Sebastián Jaimes**.
 - **Especificaciones** (`src/data/iphones.js`): una sola base de datos para catálogo, fichas, comparador, galería, carrito y panel. Se revisaron el 2 de noviembre de 2026 contra el comparador oficial de Apple Colombia (<https://www.apple.com/co/iphone/compare/>) y las páginas de especificaciones del iPhone Duo, iPhone 18 Pro / Pro Max, iPhone 17e y iPhone 16. Cada modelo guarda su fuente y la ficha la muestra.
 - **Nombres de colores**: los oficiales. Las muestras y el 3D usan tonos aproximados (se indica en la ficha).
 - **Precios, inventario y canales** (`public/data/store.json`): vacíos por defecto. Nada se inventa: sin precio se muestra «Precio a consultar» y sin WhatsApp configurado el botón lleva al formulario de contacto.
-- **Imágenes**: este entorno no tuvo acceso a los servidores de imágenes de Apple, así que **no se descargaron fotografías oficiales**. Cada modelo muestra una ilustración vectorial generada con su forma y proporciones, marcada «Ilustración · foto oficial pendiente». La lista está en [`docs/RECURSOS-PENDIENTES.md`](docs/RECURSOS-PENDIENTES.md).
+- **Imágenes**: este entorno no tuvo acceso a los servidores de imágenes de Apple, así que **no se descargaron fotografías oficiales**. Cada modelo y color muestra un **render 3D** generado con el mismo modelo del visor (medidas oficiales, módulo de cámaras, acabado), marcado «Render 3D ilustrativo · foto oficial pendiente». Los renders se regeneran con `npm run renders` (requiere Playwright con Chromium) y quedan en `public/assets/renders/`. La lista está en [`docs/RECURSOS-PENDIENTES.md`](docs/RECURSOS-PENDIENTES.md).
 - **3D**: modelo paramétrico generado con Three.js a partir de las **medidas oficiales** y el diseño del módulo de cámaras de cada modelo; se rotula como ilustrativo. El visor carga un `.glb` real si se registra en el panel.
 
 ## Arquitectura
@@ -81,7 +81,7 @@ src/
 
 Detalle técnico, limitaciones de GitHub Pages y la arquitectura de backend propuesta: [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md).
 
-**Rendimiento**: cada página y su CSS se cargan bajo demanda; Three.js solo se descarga en las vistas con 3D; el visor dibuja únicamente cuando algo se mueve y se pausa fuera de pantalla; ilustraciones en SVG (sin peso de imagen); `prefers-reduced-motion` desactiva el recorrido animado. Sin WebGL se muestran las ilustraciones de cada vista.
+**Rendimiento**: cada página y su CSS se cargan bajo demanda; Three.js solo se descarga en las vistas con 3D; el visor dibuja únicamente cuando algo se mueve y se pausa fuera de pantalla; renders en WebP de unos 10 KB con carga diferida; `prefers-reduced-motion` desactiva el recorrido animado. Sin WebGL se muestran las ilustraciones de cada vista.
 
 ## Ejecutar en local
 
@@ -94,6 +94,7 @@ npm install
 npm run dev          # http://localhost:5173
 npm run build        # genera dist/
 npm run preview      # sirve dist/ en http://localhost:4173
+npm run renders      # regenera los renders 3D (npm i -D playwright && npx playwright install chromium)
 ```
 
 Panel: `http://localhost:5173/admin.html` (la primera vez pide crear un PIN).

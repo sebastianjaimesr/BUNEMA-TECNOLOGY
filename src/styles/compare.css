@@ -179,7 +179,8 @@
   .cmp-col-head__art {
     height: 130px;
   }
-  .cmp-col-head__art svg {
+  .cmp-col-head__art svg,
+  .cmp-col-head__art img {
     height: 120px;
   }
   .compare__controls {

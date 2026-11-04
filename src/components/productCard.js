@@ -1,4 +1,4 @@
-import { phoneSVG, hasPhoto, productVisual } from './phoneArt.js';
+import { productVisual, visualKind, VISUAL_TAG } from './phoneArt.js';
 import { esc, formatCOP, storageLabel, AVAILABILITY } from '../services/format.js';
 import { getCompare } from '../services/compareService.js';
 
@@ -24,10 +24,9 @@ export function priceBlock(product) {
 /** Tarjeta premium del catálogo. Los botones funcionan por delegación en la página. */
 export function productCard(product, { headingLevel = 3 } = {}) {
   const inCompare = getCompare().includes(product.id);
-  const photo = hasPhoto(product);
-  const media = photo
-    ? `${productVisual(product, { view: 'back', className: 'phone-art--back' })}${productVisual(product, { view: 'front', className: 'phone-art--front' })}`
-    : `${phoneSVG(product, { view: 'back', className: 'phone-art--back' })}${phoneSVG(product, { view: 'front', className: 'phone-art--front' })}<span class="tag-illustration">Ilustración · foto oficial pendiente</span>`;
+  const kind = visualKind(product, 'back');
+  const tag = kind === 'photo' ? '' : `<span class="tag-illustration">${VISUAL_TAG[kind]} · foto oficial pendiente</span>`;
+  const media = `${productVisual(product, { view: 'back', className: 'phone-art--back' })}${productVisual(product, { view: 'front', className: 'phone-art--front' })}${tag}`;
   const h = `h${headingLevel}`;
   return `<article class="product-card" data-product="${product.id}">
     <div class="product-card__media" aria-hidden="true">${media}</div>
