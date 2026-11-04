@@ -18,7 +18,7 @@ export async function render({ root }) {
     <ul>${sources.map((s) => `<li><a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a></li>`).join('')}</ul>
 
     <h2>Imágenes y modelos 3D</h2>
-    <p>Mientras no haya una fotografía oficial registrada para un modelo, BUNEMA muestra una <strong>ilustración vectorial</strong> generada a partir de su forma y sus medidas, marcada siempre como «Ilustración». Los visores 3D usan un <strong>modelo ilustrativo generado por código</strong> con las dimensiones oficiales; no son fotografías ni renders de Apple.</p>
+    <p>Mientras no haya una fotografía oficial registrada para un modelo, BUNEMA muestra un <strong>render 3D ilustrativo</strong> generado por código a partir de sus medidas oficiales y su diseño (o, si no existe, una ilustración vectorial), marcado siempre como «Render 3D ilustrativo» o «Ilustración». Los visores 3D usan un <strong>modelo ilustrativo generado por código</strong> con las dimensiones oficiales; no son fotografías ni renders de Apple.</p>
 
     <h2>Precios, disponibilidad y pagos</h2>
     <p>Los precios en pesos colombianos y el inventario los define BUNEMA. Si un producto no tiene precio publicado, aparece como «Precio a consultar». El sitio no procesa pagos: un pedido es una <strong>solicitud</strong> que BUNEMA confirma por los canales de contacto antes de cualquier cobro.</p>

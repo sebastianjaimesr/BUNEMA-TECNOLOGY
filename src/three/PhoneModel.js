@@ -14,7 +14,7 @@ import { shade, frameColor, luminance } from '../components/phoneArt.js';
  * Detalle: lentes por capas (bisel metálico, cilindro interior, óptica con
  * anillos y tratamiento antirreflejo, vidrio de zafiro con reflejos), flash,
  * LiDAR y micrófono, botones redondeados, bandas de antena, puerto USB‑C,
- * rejillas de altavoz y un vidrio frontal que refleja el entorno.
+ * rejillas de altavoz y un fondo de pantalla teñido con el color del acabado.
  */
 const MM = 0.1;
 
@@ -48,43 +48,88 @@ function canvasTexture(w, h, draw) {
   return t;
 }
 
-/** Fondo de pantalla abstracto con los colores de BUNEMA (no es un fondo de Apple). */
-function wallpaperTexture() {
-  return canvasTexture(512, 1024, (g, w, h) => {
-    g.fillStyle = '#020309';
-    g.fillRect(0, 0, w, h);
-    const blob = (x, y, r, c0, c1) => {
-      const grad = g.createRadialGradient(x, y, 0, x, y, r);
-      grad.addColorStop(0, c0);
-      grad.addColorStop(1, c1);
-      g.fillStyle = grad;
-      g.fillRect(0, 0, w, h);
-    };
-    g.globalCompositeOperation = 'lighter';
-    blob(120, 760, 520, 'rgba(36,99,255,.85)', 'rgba(36,99,255,0)');
-    blob(430, 960, 380, 'rgba(120,70,255,.55)', 'rgba(120,70,255,0)');
-    blob(420, 380, 300, 'rgba(70,160,255,.35)', 'rgba(70,160,255,0)');
-    blob(60, 220, 260, 'rgba(201,205,213,.12)', 'rgba(201,205,213,0)');
-    g.globalCompositeOperation = 'source-over';
-    // Ondas suaves
-    g.lineWidth = 2;
-    for (let i = 0; i < 14; i++) {
-      g.strokeStyle = `rgba(160,190,255,${0.03 + i * 0.006})`;
-      g.beginPath();
-      for (let x = -10; x <= w + 10; x += 8) {
-        const y = 640 + i * 22 + Math.sin(x / 70 + i * 0.5) * 36 + Math.cos(x / 130 - i) * 18;
-        x < 0 ? g.moveTo(x, y) : g.lineTo(x, y);
-      }
-      g.stroke();
+/**
+ * Fondo de pantalla abstracto teñido con el color del acabado (diseño propio
+ * de BUNEMA, no es un fondo de Apple): cintas de luz curvas sobre un fondo
+ * oscuro del mismo tono, como en una foto de producto.
+ */
+function hexRGB(hex) {
+  const n = parseInt(hex.replace('#', ''), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function mix(rgb, to, t) {
+  return rgb.map((v, i) => Math.round(v + (to[i] - v) * t));
+}
+const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+
+function drawWallpaper(g, w, h, hex) {
+  let base = hexRGB(hex);
+  // Acabados casi blancos o casi negros: se usa el azul de BUNEMA para que la pantalla tenga vida.
+  const lum = (0.299 * base[0] + 0.587 * base[1] + 0.114 * base[2]) / 255;
+  const sat = Math.max(...base) - Math.min(...base);
+  if (sat < 22) base = lum > 0.5 ? [70, 120, 255] : [36, 80, 210];
+  const deep = mix(base, [0, 0, 0], 0.82);
+  const mid = mix(base, [0, 0, 0], 0.45);
+  const glow = mix(base, [255, 255, 255], 0.55);
+  g.fillStyle = rgba(deep, 1);
+  g.fillRect(0, 0, w, h);
+  const vg = g.createLinearGradient(0, 0, w, h);
+  vg.addColorStop(0, rgba(mid, 0.55));
+  vg.addColorStop(0.5, rgba(deep, 0));
+  vg.addColorStop(1, rgba(mid, 0.45));
+  g.fillStyle = vg;
+  g.fillRect(0, 0, w, h);
+  // Cintas de luz: franjas redondeadas alternadas, con el borde curvo iluminado.
+  const bands = 7;
+  const bh = h / bands;
+  for (let i = 0; i < bands; i++) {
+    const y = i * bh + bh * 0.06;
+    const hh = bh * 0.88;
+    const r = hh / 2;
+    const left = i % 2 === 0;
+    const x0 = left ? -w * 0.4 : w * 0.3;
+    const x1 = left ? w * 0.7 : w * 1.4;
+    const grad = g.createLinearGradient(0, y, 0, y + hh);
+    grad.addColorStop(0, rgba(mid, 0.95));
+    grad.addColorStop(0.55, rgba(mix(mid, deep, 0.5), 0.9));
+    grad.addColorStop(1, rgba(deep, 0.6));
+    g.save();
+    g.beginPath();
+    g.roundRect(x0, y, x1 - x0, hh, r);
+    g.fillStyle = grad;
+    g.shadowColor = rgba([0, 0, 0], 0.6);
+    g.shadowBlur = 30;
+    g.shadowOffsetY = 12;
+    g.fill();
+    g.restore();
+    // Borde iluminado
+    g.save();
+    g.shadowColor = rgba(glow, 0.95);
+    g.shadowBlur = 22;
+    g.strokeStyle = rgba(glow, 0.85);
+    g.lineWidth = 2.5;
+    g.beginPath();
+    if (left) {
+      g.moveTo(x1 - r - w * 0.25, y);
+      g.lineTo(x1 - r, y);
+      g.arc(x1 - r, y + r, r, -Math.PI / 2, Math.PI / 2);
+    } else {
+      g.moveTo(x0 + r + w * 0.25, y);
+      g.lineTo(x0 + r, y);
+      g.arc(x0 + r, y + r, r, -Math.PI / 2, -Math.PI * 1.5, true);
     }
-    g.fillStyle = 'rgba(245,245,247,.72)';
-    g.font = '500 30px Inter, system-ui, sans-serif';
-    g.textAlign = 'center';
-    g.fillText('martes, 3 de noviembre', w / 2, 200);
-    g.fillStyle = 'rgba(245,245,247,.95)';
-    g.font = '600 168px Inter, system-ui, sans-serif';
-    g.fillText('9:41', w / 2, 360);
-  });
+    g.stroke();
+    g.restore();
+  }
+}
+
+function wallpaperTexture(hex = '#2463ff') {
+  const t = canvasTexture(512, 1024, (g, w, h) => drawWallpaper(g, w, h, hex));
+  t.redraw = (c) => {
+    drawWallpaper(t.image.getContext('2d'), t.image.width, t.image.height, c);
+    t.needsUpdate = true;
+  };
+  return t;
 }
 
 /** Óptica interior del lente: anillos concéntricos y tratamiento antirreflejo. */
@@ -95,8 +140,8 @@ function lensTexture() {
     g.fillStyle = '#000';
     g.fillRect(0, 0, w, w);
     const grad = g.createRadialGradient(c, c, 0, c, c, r);
-    grad.addColorStop(0, '#0b0f24');
-    grad.addColorStop(0.32, '#121a3c');
+    grad.addColorStop(0, '#08090d');
+    grad.addColorStop(0.32, '#1b1e2a');
     grad.addColorStop(0.55, '#06070f');
     grad.addColorStop(0.8, '#0d0e13');
     grad.addColorStop(1, '#020203');
@@ -124,8 +169,8 @@ function lensTexture() {
       g.arc(c, c, rr * r, a0, a1);
       g.stroke();
     };
-    arc(0.55, Math.PI * 1.05, Math.PI * 1.45, 'rgba(150,90,255,.55)', 10);
-    arc(0.38, Math.PI * 0.1, Math.PI * 0.45, 'rgba(90,255,190,.28)', 7);
+    arc(0.55, Math.PI * 1.05, Math.PI * 1.45, 'rgba(130,110,220,.28)', 8);
+    arc(0.38, Math.PI * 0.1, Math.PI * 0.45, 'rgba(90,220,190,.16)', 6);
     arc(0.8, Math.PI * 1.15, Math.PI * 1.3, 'rgba(120,160,255,.35)', 4);
     // Pupila
     const p = g.createRadialGradient(c, c, 0, c, c, r * 0.2);
@@ -218,22 +263,26 @@ export class PhoneModel {
     const R = design.front === 'home' ? W * 0.13 : W * 0.17;
     this.R = R;
     const frame = design.frame || 'aluminio';
-    const rough = { aluminio: 0.34, acero: 0.14, titanio: 0.27 }[frame] ?? 0.32;
+    const rough = { aluminio: 0.46, acero: 0.16, titanio: 0.38 }[frame] ?? 0.42;
+    this.frameKind = frame;
 
     // Materiales
     const m = (o) => this.track(new THREE.MeshPhysicalMaterial(o));
-    this.frameMat = m({ metalness: 1, roughness: rough, envMapIntensity: 1.15 });
+    // Metal satinado: el color del acabado domina, con reflejos suaves.
+    this.frameMat = m({ metalness: frame === 'acero' ? 1 : 0.85, roughness: rough, envMapIntensity: 1.1 });
     // Unibody: la placa de cámaras es del mismo aluminio, un poco más pulida en el borde.
     this.backMat = m(
       this.unibody
-        ? { metalness: 0, roughness: 0.36, clearcoat: 0.5, clearcoatRoughness: 0.38, envMapIntensity: 0.9 }
-        : { metalness: 0, roughness: 0.4, clearcoat: 0.7, clearcoatRoughness: 0.32, envMapIntensity: 0.9 },
+        ? { metalness: 0.05, roughness: 0.62, clearcoat: 0.25, clearcoatRoughness: 0.55, envMapIntensity: 0.8 }
+        : { metalness: 0.05, roughness: 0.58, clearcoat: 0.35, clearcoatRoughness: 0.5, envMapIntensity: 0.85 },
     );
     this.plateMat = this.unibody
-      ? m({ metalness: 1, roughness: rough * 0.9, envMapIntensity: 1.2 })
+      ? m({ metalness: 0.85, roughness: rough * 0.92, envMapIntensity: 1.15 })
       : m({ metalness: 0, roughness: 0.12, clearcoat: 1, clearcoatRoughness: 0.08, envMapIntensity: 1 });
-    this.ringMat = m({ metalness: 1, roughness: 0.16, envMapIntensity: 1.3, side: THREE.DoubleSide });
-    this.btnMat = m({ metalness: 1, roughness: rough * 0.8, envMapIntensity: 1.2 });
+    this.ringMat = m({ metalness: 0.9, roughness: 0.3, envMapIntensity: 1.2, side: THREE.DoubleSide });
+    this.btnMat = m({ metalness: 0.85, roughness: rough * 0.85, envMapIntensity: 1.15 });
+    // Frente: negro, o blanco en los modelos con botón de inicio y acabado claro.
+    this.frontMat = m({ color: '#030305', metalness: 0, roughness: 0.08, clearcoat: 0.5, clearcoatRoughness: 0.05, envMapIntensity: 0.25 });
     this.mats = {
       glassBlack: m({ color: '#030305', metalness: 0, roughness: 0.06, clearcoat: 1, clearcoatRoughness: 0.03, envMapIntensity: 1 }),
       // Reflejos aditivos: solo suma el brillo especular (vidrio transparente barato).
@@ -248,22 +297,14 @@ export class PhoneModel {
         blending: THREE.AdditiveBlending,
         depthWrite: false,
       }),
-      screenGlass: m({
-        color: '#000',
-        metalness: 0,
-        roughness: 0.05,
-        envMapIntensity: 0.4,
-        transparent: true,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      }),
+      island: m({ color: '#020203', metalness: 0, roughness: 0.1, envMapIntensity: 0.15 }),
       barrel: m({ color: '#060608', metalness: 0.2, roughness: 0.55, side: THREE.DoubleSide }),
       dark: m({ color: '#0b0b0e', metalness: 0.3, roughness: 0.6 }),
       antenna: m({ color: '#3a3b40', metalness: 0, roughness: 0.55 }),
       sapphire: m({ color: '#121318', metalness: 0.2, roughness: 0.1, clearcoat: 1, clearcoatRoughness: 0.05 }),
     };
     this.lensTex = this.track(lensTexture());
-    this.mats.lens = m({ map: this.lensTex, metalness: 0.1, roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.05, iridescence: 0.6, iridescenceIOR: 1.8 });
+    this.mats.lens = m({ map: this.lensTex, metalness: 0.1, roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.05, iridescence: 0.3, iridescenceIOR: 1.6 });
     this.flashTex = this.track(flashTexture());
     this.mats.flash = m({ map: this.flashTex, roughness: 0.55, emissive: '#2a2416', emissiveIntensity: 0.4 });
     this.screenTex = this.track(wallpaperTexture());
@@ -294,8 +335,8 @@ export class PhoneModel {
       this.group.add(back);
     }
 
-    // Frente: vidrio negro, pantalla y un vidrio que refleja el entorno.
-    const front = new THREE.Mesh(faceGeo, this.mats.glassBlack);
+    // Frente: vidrio negro y pantalla.
+    const front = new THREE.Mesh(faceGeo, this.frontMat);
     front.position.z = D / 2 + 0.004;
     this.group.add(front);
 
@@ -310,17 +351,13 @@ export class PhoneModel {
     const pos = screenGeo.attributes.position;
     for (let i = 0; i < uv.count; i++) uv.setXY(i, pos.getX(i) / sw + 0.5, pos.getY(i) / sh + 0.5);
 
-    const cover = new THREE.Mesh(faceGeo, this.mats.screenGlass);
-    cover.position.z = D / 2 + 0.03;
-    cover.renderOrder = 2;
-    this.group.add(cover);
 
     if (design.front === 'island') {
-      const island = new THREE.Mesh(this.track(new THREE.ShapeGeometry(roundedRectShape(W * 0.3, W * 0.085, W * 0.0425), 16)), this.mats.glassBlack);
+      const island = new THREE.Mesh(this.track(new THREE.ShapeGeometry(roundedRectShape(W * 0.3, W * 0.085, W * 0.0425), 16)), this.mats.island);
       island.position.set(0, H / 2 - W * 0.12, D / 2 + 0.022);
       this.group.add(island);
     } else if (design.front === 'notch') {
-      const notch = new THREE.Mesh(this.track(new THREE.ShapeGeometry(roundedRectShape(W * 0.46, W * 0.12, W * 0.05), 16)), this.mats.glassBlack);
+      const notch = new THREE.Mesh(this.track(new THREE.ShapeGeometry(roundedRectShape(W * 0.46, W * 0.12, W * 0.05), 16)), this.mats.island);
       notch.position.set(0, H / 2 - 0.18 - W * 0.04, D / 2 + 0.022);
       this.group.add(notch);
     } else if (homeLayout) {
@@ -349,15 +386,15 @@ export class PhoneModel {
     if (this.product.features?.includes('Control de la Cámara')) addBtn(1, -H * 0.13, 0.9, this.mats.sapphire);
 
     // Bandas de antena: cortes finos en el marco.
-    const bandGeo = this.track(new THREE.BoxGeometry(0.03, 0.07, D * 0.6));
+    const bandGeo = this.track(new THREE.BoxGeometry(0.03, 0.07, D * 0.42));
     [-1, 1].forEach((side) =>
-      [H / 2 - this.R * 0.55, -H / 2 + this.R * 0.55].forEach((y) => {
+      [H / 2 - this.R * 1.25, -H / 2 + this.R * 1.25].forEach((y) => {
         const band = new THREE.Mesh(bandGeo, this.mats.antenna);
-        band.position.set(side * (W / 2 - 0.012), y, 0);
+        band.position.set(side * (W / 2 - 0.01), y, 0);
         this.group.add(band);
       }),
     );
-    const topBand = new THREE.Mesh(this.track(new THREE.BoxGeometry(0.07, 0.03, D * 0.6)), this.mats.antenna);
+    const topBand = new THREE.Mesh(this.track(new THREE.BoxGeometry(0.07, 0.03, D * 0.42)), this.mats.antenna);
     topBand.position.set(W * 0.22, H / 2 - 0.012, 0);
     this.group.add(topBand);
 
@@ -574,8 +611,11 @@ export class PhoneModel {
       [this.frameMat.color, frame],
       [this.btnMat.color, shade(frame, light ? -0.03 : 0.05)],
       [this.plateMat.color, this.unibody ? frame : shade(hex, light ? -0.03 : -0.01)],
-      [this.ringMat.color, this.unibody ? shade(frame, light ? -0.08 : 0.1) : shade(frame, -0.05)],
+      // Los biseles de las cámaras llevan el color del acabado, como en el equipo real.
+      [this.ringMat.color, shade(frame, light ? -0.05 : 0.03)],
+      [this.frontMat.color, this.product.design?.front === 'home' && light ? '#ecebe8' : '#030305'],
     ];
+    this.screenTex.redraw?.(hex);
     targets.forEach(([target, value]) => {
       const to = new THREE.Color(value);
       if (immediate || !gsap) target.copy(to);

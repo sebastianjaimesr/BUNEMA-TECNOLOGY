@@ -1,6 +1,6 @@
 # Recursos gráficos pendientes
 
-Estado al 3 de noviembre de 2026. **No se descargó ninguna fotografía**: el entorno de desarrollo no tuvo acceso a los servidores de imágenes de Apple (apple.com, Apple Newsroom). Mientras tanto cada modelo muestra una ilustración vectorial generada por código y marcada como «Ilustración».
+Estado al 3 de noviembre de 2026. **No se descargó ninguna fotografía**: el entorno de desarrollo no tuvo acceso a los servidores de imágenes de Apple (apple.com, Apple Newsroom). Mientras tanto cada modelo muestra, en cada uno de sus colores, un render 3D generado por código con sus medidas oficiales (`npm run renders`), marcado como «Render 3D ilustrativo». Una fotografía registrada en el panel siempre tiene prioridad.
 
 ## Dónde conseguirlas
 

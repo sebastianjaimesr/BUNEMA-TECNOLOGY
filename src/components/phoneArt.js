@@ -6,7 +6,12 @@
  * botón de inicio) y del tono aproximado del color. Se usan mientras no haya
  * fotografía oficial registrada para el modelo (ver docs/RECURSOS-PENDIENTES.md)
  * y siempre van acompañadas de la etiqueta «Ilustración».
+ *
+ * Si existe un render 3D pregenerado (src/data/renders.json, `npm run renders`),
+ * `productVisual` lo usa en lugar de la ilustración.
  */
+import RENDERS from '../data/renders.json';
+
 let uid = 0;
 
 export function shade(hex, amount) {
@@ -149,15 +154,55 @@ export function phoneSVG(product, { view = 'back', colorId, className = '' } = {
     <rect x="1.6" y="1.6" width="96.8" height="${H - 3.2}" rx="${rx - 1.1}" fill="url(#sheen${id})"/></svg>`;
 }
 
+const VIEW_LABEL = { front: 'frontal', back: 'trasera', side: 'lateral' };
+
 /**
- * Imagen del producto: la fotografía registrada en el panel si existe;
- * si no, la ilustración con su etiqueta.
+ * Color de vitrina: el acabado con más color (p. ej. Borgoña antes que Negro)
+ * para que el catálogo muestre los equipos en un tono real y vistoso.
+ */
+export function showcaseColor(product) {
+  const sat = (hex) => {
+    const n = parseInt(hex.replace('#', ''), 16);
+    const c = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    return Math.max(...c) - Math.min(...c);
+  };
+  const colors = product.colors || [];
+  if (!colors.length) return undefined;
+  const best = colors.reduce((a, c) => (sat(c.hex) > sat(a.hex) ? c : a), colors[0]);
+  if (sat(best.hex) >= 30) return best.id;
+  return colors.reduce((a, c) => (Math.abs(luminance(c.hex) - 0.75) < Math.abs(luminance(a.hex) - 0.75) ? c : a), colors[0]).id;
+}
+
+/** Render 3D pregenerado (npm run renders) para ese modelo y color, si existe. */
+export function renderSrc(product, view, colorId) {
+  const colors = RENDERS[product.id];
+  if (!colors?.length) return null;
+  const color = colorId && colors.includes(colorId) ? colorId : colors.includes(product.colors[0]?.id) ? product.colors[0].id : colors[0];
+  return `./assets/renders/${product.id}/${color}-${view}.webp`;
+}
+
+/** 'photo' (fotografía registrada), 'render' (render 3D ilustrativo) o 'illustration' (SVG). */
+export function visualKind(product, view = 'back', colorId) {
+  if (product.images?.[view]) return 'photo';
+  if (renderSrc(product, view, colorId)) return 'render';
+  return 'illustration';
+}
+
+export const VISUAL_TAG = { photo: '', render: 'Render 3D ilustrativo', illustration: 'Ilustración' };
+
+/**
+ * Imagen del producto: la fotografía registrada en el panel si existe; si no,
+ * el render 3D generado con las medidas oficiales; si tampoco, la ilustración.
  */
 export function productVisual(product, { view = 'back', colorId, className = '', eager = false } = {}) {
+  colorId = colorId || showcaseColor(product);
   const photo = product.images?.[view];
-  if (photo) {
-    return `<img class="phone-photo ${className}" src="${photo}" alt="${product.name}, vista ${view === 'front' ? 'frontal' : view === 'side' ? 'lateral' : 'trasera'}" loading="${eager ? 'eager' : 'lazy'}" decoding="async" />`;
-  }
+  const color = product.colors.find((c) => c.id === colorId) || product.colors[0];
+  const alt = `${product.name}${color?.name ? ` en ${color.name}` : ''}, vista ${VIEW_LABEL[view] || view}`;
+  const loading = `loading="${eager ? 'eager' : 'lazy'}" decoding="async"`;
+  if (photo) return `<img class="phone-photo ${className}" src="${photo}" alt="${alt}" ${loading} />`;
+  const render = renderSrc(product, view, colorId);
+  if (render) return `<img class="phone-photo phone-render ${className}" src="${render}" alt="${alt} (render 3D ilustrativo)" ${loading} />`;
   return phoneSVG(product, { view, colorId, className });
 }
 

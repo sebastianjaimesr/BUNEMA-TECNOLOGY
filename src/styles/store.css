@@ -256,7 +256,8 @@
     grid-area: art;
     height: 100px;
   }
-  .cart-line__art svg {
+  .cart-line__art svg,
+  .cart-line__art img {
     height: 84px;
   }
   .cart-line__info {
