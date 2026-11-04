@@ -51,7 +51,8 @@ export class SceneManager {
     this.scene = new THREE.Scene();
     this.environmentTarget = createEnvironment(this.renderer);
     this.scene.environment = this.environmentTarget.texture;
-    this.scene.environmentIntensity = 0.38;
+    // Los reflejos del estudio hacen casi todo el trabajo en metal y vidrio.
+    this.scene.environmentIntensity = 0.85;
     this.lighting = createLighting(this.scene);
 
     this.camera = new THREE.PerspectiveCamera(28, 1, 0.1, 200);

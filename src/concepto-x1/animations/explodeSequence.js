@@ -17,7 +17,10 @@
  * nunca la alcanza: ninguna pieza atraviesa a otra.
  */
 
-/** Pasos narrativos. `range` = tramo del progreso total en el que ocurre. */
+/**
+ * Pasos narrativos. `range` = tramo del progreso total en el que ocurre.
+ * `range` también sirve al control manual: cada botón lleva el scroll al centro del tramo.
+ */
 export const STEPS = [
   { id: 'approach', range: [0.0, 0.1], labels: [] },
   { id: 'back', range: [0.1, 0.2], labels: ['backCover'] },
@@ -26,8 +29,8 @@ export const STEPS = [
   { id: 'board', range: [0.39, 0.49], labels: ['mainboard', 'processor'] },
   { id: 'frame', range: [0.49, 0.58], labels: ['frame', 'buttons', 'port'] },
   { id: 'display', range: [0.58, 0.67], labels: ['display', 'frontGlass'] },
-  { id: 'exploded', range: [0.67, 0.77], labels: [] },
-  { id: 'specs', range: [0.77, 0.87], labels: 'all' },
+  // Despiece completo: todas las piezas separadas y todas las etiquetas a la vista.
+  { id: 'exploded', range: [0.67, 0.87], labels: 'all' },
   { id: 'rebuild', range: [0.87, 1.0], labels: [] },
 ];
 

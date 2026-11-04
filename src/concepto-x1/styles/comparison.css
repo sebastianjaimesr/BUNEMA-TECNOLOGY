@@ -43,7 +43,7 @@
   touch-action: pan-y; /* el gesto horizontal gira los modelos; el vertical sigue desplazando la página */
 }
 
-/* Suelo de estudio bajo los tres modelos: halo azul, retícula fina y línea de horizonte. */
+/* Suelo de estudio bajo los tres modelos: halo azul y línea de horizonte. */
 .lineup::before {
   content: '';
   position: absolute;
@@ -52,8 +52,7 @@
   pointer-events: none;
   background:
     radial-gradient(50% 42% at 50% 62%, rgb(47 107 255 / 0.1), transparent 75%),
-    linear-gradient(to bottom, transparent calc(var(--floor, 70%) - 1px), var(--c-line-strong) var(--floor, 70%), transparent calc(var(--floor, 70%) + 1px)),
-    linear-gradient(to right, var(--c-line) 1px, transparent 1px) center / 8.33% 100%;
+    linear-gradient(to bottom, transparent calc(var(--floor, 70%) - 1px), var(--c-line-strong) var(--floor, 70%), transparent calc(var(--floor, 70%) + 1px));
   mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
   opacity: 0.7;
 }
@@ -66,25 +65,10 @@
   cursor: grabbing;
 }
 
-.lineup__readout,
 .lineup__models,
 .lineup__views {
   position: relative;
   z-index: 2;
-}
-
-.lineup__readout {
-  justify-self: end;
-  font-family: var(--f-display);
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
-  color: var(--c-muted);
-  text-transform: uppercase;
-}
-
-.lineup__readout [data-lineup-angle] {
-  color: var(--c-text);
-  font-variant-numeric: tabular-nums;
 }
 
 .lineup__models {
@@ -131,9 +115,7 @@
   visibility: visible;
 }
 
-html:not(.has-lineup-3d) .lineup__readout,
 html:not(.has-lineup-3d) .lineup__views,
-.no-webgl .lineup__readout,
 .no-webgl .lineup__views {
   display: none;
 }
@@ -156,8 +138,9 @@ html:not(.has-lineup-3d) .lineup__views,
 
 .model-pick__tier {
   font-size: 0.62rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
+  font-family: var(--f-mono);
+  font-weight: 400;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--c-muted);
 }
@@ -210,52 +193,6 @@ html:not(.has-lineup-3d) .lineup__views,
 /* --------------------------------------------------------------------------
    Tabla
    -------------------------------------------------------------------------- */
-.specs-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.toggle-btn {
-  min-height: 44px;
-  padding: 0 1rem;
-  border: 0;
-  background: none;
-  color: var(--c-muted);
-  font: inherit;
-  font-size: 0.8rem;
-  font-weight: 600;
-  box-shadow: inset 0 0 0 1px var(--c-line-strong);
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
-  cursor: pointer;
-  transition: color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
-}
-
-.toggle-btn:hover {
-  color: var(--c-text);
-}
-
-.toggle-btn[aria-pressed='true'] {
-  color: var(--c-text);
-  box-shadow: inset 0 0 0 1px var(--c-blue);
-}
-
-.toggle-btn:focus-visible {
-  outline-offset: -4px;
-}
-
-.specs-toolbar__hint {
-  display: none;
-  margin-left: auto;
-  font-size: 0.72rem;
-  color: var(--c-muted);
-}
-
-.specs-overflow .specs-toolbar__hint {
-  display: block;
-}
-
 .specs-scroll {
   overflow-x: auto;
   overscroll-behavior-x: contain;
@@ -328,18 +265,9 @@ html:not(.has-lineup-3d) .lineup__views,
 .specs__tier {
   display: block;
   font-size: 0.62rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--c-muted);
-}
-
-.specs__same {
-  display: block;
-  margin-top: 0.2rem;
-  font-size: 0.62rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
+  font-family: var(--f-mono);
+  font-weight: 400;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--c-muted);
 }
@@ -368,7 +296,6 @@ html:not(.has-lineup-3d) .lineup__views,
 
 .specs .is-lead .specs__meter::after {
   background: var(--c-blue);
-  box-shadow: 0 0 8px rgb(47 107 255 / 0.7);
 }
 
 .specs .is-lead .specs__value::after {
@@ -376,22 +303,6 @@ html:not(.has-lineup-3d) .lineup__views,
   font-size: 0.6em;
   color: var(--c-blue-text);
   vertical-align: 0.2em;
-}
-
-.specs__detail {
-  display: none;
-  margin-top: 0.4rem;
-  font-size: 0.76rem;
-  line-height: 1.45;
-  color: var(--c-muted);
-}
-
-.show-details .specs__detail {
-  display: block;
-}
-
-.only-diff .specs .is-same {
-  display: none;
 }
 
 /* Modelo destacado: su columna se ilumina. Las demás NO se atenúan con opacidad:
@@ -444,4 +355,14 @@ html:not(.has-lineup-3d) .lineup__views,
   .specs__model {
     font-size: 1.35rem;
   }
+}
+
+/* El X1 conserva el protagonismo: su columna lleva una superficie apenas más clara
+   y su nombre en azul, aunque no haya ningún modelo destacado. */
+.specs [data-model='x1'] {
+  background: rgb(47 107 255 / 0.045);
+}
+
+.specs thead [data-model='x1'] .specs__model {
+  color: var(--c-blue-text);
 }

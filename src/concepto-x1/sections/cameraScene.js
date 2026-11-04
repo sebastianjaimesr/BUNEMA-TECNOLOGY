@@ -178,7 +178,7 @@ export function createCameraScene(seed = 707) {
     ctx.fillStyle = '#0a0c16';
     ctx.fillRect(cx - 28, 936, 56, 14);
     ctx.fillStyle = '#8fb0ff';
-    ctx.font = '600 9px "Space Grotesk", sans-serif';
+    ctx.font = '600 9px "Geist Mono", monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('BNM · 07', cx, 943.5);

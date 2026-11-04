@@ -1,7 +1,6 @@
 import './styles/base.css';
 import './styles/layout.css';
 import './styles/hero.css';
-import './styles/intro.css';
 import './styles/engineering.css';
 import './styles/configurator.css';
 import './styles/camera.css';
@@ -16,7 +15,7 @@ import { createCameraDemo } from './sections/cameraDemo.js';
 import { createReservation } from './sections/reservation.js';
 import { bindHeroLoading } from './ui/heroLoading.js';
 import { revealInterface } from './animations/transitions.js';
-import { playIntro } from './animations/intro.js';
+import { initInView } from './ui/inView.js';
 import { LoadTracker } from './loading/LoadTracker.js';
 
 /**
@@ -30,6 +29,10 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matc
 function showFallback(reason) {
   root.classList.add('no-webgl');
   root.classList.remove('is-3d-ready');
+  // Sin 3D, la zona del configurador ya no se puede girar: deja de anunciarse como control.
+  const stage = document.querySelector('[data-config-stage]');
+  stage?.removeAttribute('role');
+  stage?.removeAttribute('tabindex');
   console.warn('[BUNEMA] Vista 3D no disponible:', reason);
 }
 
@@ -37,8 +40,8 @@ function showFallback(reason) {
 function fontsReady() {
   if (!document.fonts) return Promise.resolve();
   const wanted = Promise.all([
-    document.fonts.load('500 40px "Space Grotesk"'),
-    document.fonts.load('500 20px "Inter"'),
+    document.fonts.load('500 40px "Geist"'),
+    document.fonts.load('500 20px "Geist Mono"'),
   ]);
   return Promise.race([wanted, new Promise((r) => setTimeout(r, 1500))]).catch(() => {});
 }
@@ -60,6 +63,7 @@ async function boot() {
   });
 
   app.disposers.push(initNavigation().dispose);
+  app.disposers.push(initInView({ reducedMotion }));
 
   // El configurador funciona desde el primer momento, con o sin 3D: el modelo se suscribe cuando está listo.
   const configurator = createConfigurator({ root: document.querySelector('[data-configurator]') });
@@ -92,12 +96,16 @@ async function boot() {
   ]);
   app.tracker = tracker;
 
-  const intro = playIntro({ overlay: document.querySelector('[data-intro]'), tracker, reducedMotion });
-  app.intro = intro;
-  app.disposers.push(bindHeroLoading({ element: heroEl.querySelector('[data-hero-loading]'), tracker, after: intro.done }));
-
-  // La interfaz se compone en cuanto se abre la cortina (o de inmediato con movimiento reducido).
-  intro.done.then(() => revealInterface({ reducedMotion }));
+  // Sin pantalla de introducción: el texto del hero (el elemento LCP) aparece de inmediato y el
+  // producto entra cuando la escena está lista. Si la carga tarda, el hero muestra su progreso real.
+  app.disposers.push(
+    bindHeroLoading({
+      element: heroEl.querySelector('[data-hero-loading]'),
+      tracker,
+      after: new Promise((resolve) => setTimeout(resolve, 900)),
+    }),
+  );
+  revealInterface({ reducedMotion });
 
   try {
     const [{ startExperience }] = await Promise.all([
@@ -119,8 +127,6 @@ async function boot() {
     });
     if (import.meta.env.DEV) window.__bunemaDebug = app.experience; // inspección manual en desarrollo
 
-    // El producto entra cuando la intro ya se abrió; si cargó tarde, entra en cuanto está listo.
-    await intro.done;
     root.classList.add('is-3d-ready');
     app.experience.reveal();
   } catch (error) {

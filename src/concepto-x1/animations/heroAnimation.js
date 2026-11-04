@@ -47,11 +47,11 @@ export function createHeroPresentation({ sceneManager, phone, heroEl, reducedMot
     LAYER_ORDER.map((name) => [name, { blend: 0, x: 0, y: 0, scale: 1, rx: 0, ry: 0, rz: 0 }]),
   );
   const pose = { x: 0, y: 0, scale: 1, rx: 0, ry: 0, rz: 0 };
-  // Cuánto atenúa cada capa las luces de contorno (azul, violeta). En el despiece la carcasa
-  // queda de frente a ellas y se teñiría de violeta; en el configurador el color debe verse fiel.
-  const RIM_DIM = { story: { blue: 0.35, violet: 0.8 }, config: { blue: 0.6, violet: 0.7 } };
+  // Cuánto atenúa cada capa las luces de contorno. En el despiece las piezas internas quedan
+  // de frente a ellas; en el configurador el color elegido debe verse fiel, sin tinte azul.
+  const RIM_DIM = { story: { blue: 0.35, cool: 0.3 }, config: { blue: 0.6, cool: 0.2 } };
   const { rims } = sceneManager.lighting;
-  const rimBase = { blue: rims.blue.intensity, violet: rims.violet.intensity };
+  const rimBase = { blue: rims.blue.intensity, cool: rims.cool.intensity };
   const TAU = Math.PI * 2;
   // Diferencia angular más corta (−π..π): una capa con varias vueltas acumuladas no hace girar de más al mezclar.
   const shortest = (from, to) => from + ((((to - from + Math.PI) % TAU) + TAU) % TAU) - Math.PI;
@@ -87,13 +87,13 @@ export function createHeroPresentation({ sceneManager, phone, heroEl, reducedMot
     // 2. Capas de las secciones, una sobre otra.
     let presence = 0; // cuánto mandan las secciones en conjunto (0..1)
     let rimBlue = rimBase.blue;
-    let rimViolet = rimBase.violet;
+    let rimCool = rimBase.cool;
     LAYER_ORDER.forEach((name) => {
       const layer = layers[name];
       const t = layer.blend;
       if (t <= 0) return;
       rimBlue *= 1 - RIM_DIM[name].blue * t;
-      rimViolet *= 1 - RIM_DIM[name].violet * t;
+      rimCool *= 1 - RIM_DIM[name].cool * t;
       pose.rx += (layer.rx - pose.rx) * t;
       pose.ry += (shortest(pose.ry, layer.ry) - pose.ry) * t;
       pose.rz += (layer.rz - pose.rz) * t;
@@ -104,7 +104,7 @@ export function createHeroPresentation({ sceneManager, phone, heroEl, reducedMot
     });
 
     rims.blue.intensity = rimBlue;
-    rims.violet.intensity = rimViolet;
+    rims.cool.intensity = rimCool;
     // Con una sección al mando, la flotación no se ve: su bucle deja de pedir fotogramas.
     live.setIdle(presence > 0.999);
 
@@ -226,7 +226,7 @@ export function createHeroPresentation({ sceneManager, phone, heroEl, reducedMot
       live.dispose();
       accent.emissiveIntensity = accentIntensity;
       rims.blue.intensity = rimBase.blue;
-      rims.violet.intensity = rimBase.violet;
+      rims.cool.intensity = rimBase.cool;
       exitTween?.scrollTrigger?.kill();
       exitTween?.kill();
       offRegion();

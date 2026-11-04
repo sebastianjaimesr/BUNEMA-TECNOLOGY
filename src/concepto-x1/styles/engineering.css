@@ -4,7 +4,7 @@
    Tres estados, según lo que el navegador puede hacer:
    · sin clase       → sin 3D (o todavía cargando): lista de pasos en flujo normal.
    · .has-story      → sección alta con panel fijo (sticky); el scroll recorre
-                       los 10 pasos y el lienzo 3D se ve a través de ella.
+                       los 9 pasos y el lienzo 3D se ve a través de ella.
    · .story-static   → movimiento reducido: una sola pantalla con el despiece
                        completo y sus etiquetas, sin animación ligada al scroll.
 
@@ -39,9 +39,9 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  font-family: var(--f-display);
+  font-family: var(--f-mono);
   font-size: 0.75rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   color: var(--c-muted);
 }
 
@@ -60,7 +60,6 @@
   position: absolute;
   inset: 0;
   background: var(--c-blue);
-  box-shadow: 0 0 8px var(--c-blue);
   transform: scaleX(0);
   transform-origin: left;
 }
@@ -83,9 +82,9 @@ html:not(.has-story) .engineering__meter {
 }
 
 .step__index {
+  font-family: var(--f-mono);
   font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--c-blue-text);
 }
@@ -140,11 +139,7 @@ html:not(.has-story) .engineering__meter {
   height: 100svh;
   pointer-events: none;
   background:
-    radial-gradient(42% 36% at var(--story-x, 50%) var(--story-y, 40%), rgb(47 107 255 / 0.12), rgb(139 92 246 / 0.04) 55%, transparent 75%),
-    linear-gradient(to right, var(--c-line) 1px, transparent 1px) center / 12.5% 100%,
-    linear-gradient(to bottom, var(--c-line) 1px, transparent 1px) center / 100% 12.5%;
-  mask-image: radial-gradient(ellipse 70% 65% at var(--story-x, 50%) var(--story-y, 40%), #000 20%, transparent 85%);
-  opacity: 0.6;
+    radial-gradient(40% 38% at var(--story-x, 50%) var(--story-y, 45%), rgb(47 107 255 / 0.14), rgb(47 107 255 / 0.03) 55%, transparent 75%);
 }
 
 .has-story .engineering__sticky,
@@ -243,7 +238,6 @@ html:not(.has-story) .engineering__meter {
   height: 8px;
   border: 1px solid var(--c-blue);
   background: var(--c-bg);
-  box-shadow: 0 0 10px rgb(47 107 255 / 0.8);
   transform: rotate(45deg) scale(0);
   transition: transform 0.35s var(--ease-out);
 }
@@ -277,7 +271,9 @@ html:not(.has-story) .engineering__meter {
   gap: 0.1rem;
   min-width: max-content;
   padding: 0.45rem 0.7rem 0.5rem;
-  background: rgb(11 14 22 / 0.82);
+  background: rgb(10 12 18 / 0.86);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   box-shadow: inset 0 0 0 1px var(--c-line-strong);
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%);
   opacity: 0;
@@ -288,9 +284,9 @@ html:not(.has-story) .engineering__meter {
 }
 
 .tech-label__code {
+  font-family: var(--f-mono);
   font-size: 0.62rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.1em;
   color: var(--c-blue-text);
 }
 
@@ -345,13 +341,205 @@ html:not(.has-story) .engineering__meter {
   display: none;
 }
 
-/* La ficha de cada pieza en Arquitectura (también es la fuente de las etiquetas). */
-.parts__item .parts__spec {
-  grid-column: 2;
-  font-size: 0.75rem;
-  letter-spacing: 0.04em;
+/* --------------------------------------------------------------------------
+   Control manual: anterior · un punto por paso · siguiente
+   -------------------------------------------------------------------------- */
+.step-nav {
+  display: none;
+}
+
+.has-story .step-nav:not([hidden]) {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  pointer-events: auto;
+}
+
+.step-nav__list {
+  display: flex;
+  align-items: center;
+}
+
+
+.step-nav__arrow,
+.step-nav__dot {
+  display: inline-grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
   color: var(--c-text);
-  opacity: 0.7;
+  cursor: pointer;
+}
+
+.step-nav__list {
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+}
+
+.step-nav__dot {
+  min-width: 26px;
+}
+
+/* Pantallas muy estrechas: solo anterior / siguiente (el contador ya indica el paso). */
+@media (max-width: 359px) {
+  .step-nav__list {
+    visibility: hidden;
+  }
+}
+
+.step-nav__arrow svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+.step-nav__arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* Cada paso es una marca corta; el activo se alarga y se vuelve azul. */
+.step-nav__dot::before {
+  content: '';
+  width: 12px;
+  height: 2px;
+  background: var(--c-line-strong);
+  transition:
+    width 0.45s var(--ease-out),
+    background-color 0.3s var(--ease-out);
+}
+
+.step-nav__dot:hover::before {
+  background: var(--c-text);
+}
+
+.step-nav__dot[aria-current='step']::before {
+  width: 26px;
+  background: var(--c-blue);
+}
+
+.step-nav__label {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Ficha de piezas: visible sin 3D; con el despiece 3D la leen los lectores de pantalla
+   (las mismas piezas ya se ven como etiquetas sobre el modelo).
+   -------------------------------------------------------------------------- */
+.parts-sheet {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  gap: 1.5rem;
+  padding: 0 var(--gutter) clamp(4rem, 10vw, 6rem);
+}
+
+.has-story .parts-sheet,
+.story-static .parts-sheet {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.parts-sheet__title {
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.parts {
+  display: grid;
+  border-top: 1px solid var(--c-line);
+}
+
+.parts__item {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  column-gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--c-line);
+}
+
+.parts__id {
+  grid-row: span 2;
+  padding-top: 0.15rem;
+  font-family: var(--f-mono);
+  font-size: 0.72rem;
+  color: var(--c-blue-text);
+}
+
+.parts__item h4 {
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
+}
+
+.parts__spec {
+  font-size: 0.85rem;
+  color: var(--c-muted);
+}
+
+.parts-sheet__note {
+  max-width: 40rem;
+  font-size: 0.8rem;
+  color: var(--c-muted);
+}
+
+/* Con 3D, la aclaración del despiece se queda visible, discreta, bajo el título
+   (sin 3D la da la nota completa de la ficha de piezas). */
+.engineering__disclaimer {
+  display: none;
+}
+
+.has-story .engineering__disclaimer,
+.story-static .engineering__disclaimer {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--c-muted);
+}
+
+/* Móvil: el control manual queda fijo al pie del panel, bajo el texto del paso.
+   La columna se fija al ancho disponible: sin esto, el ancho natural del control
+   ensancharía la rejilla y el texto se saldría de la pantalla en 320 px. */
+.has-story .engineering__sticky {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto 1fr auto;
+  padding-bottom: 0;
+}
+
+.has-story .engineering__steps {
+  margin-bottom: 0;
+  padding-bottom: 0.5rem;
+}
+
+.has-story .step-nav:not([hidden]) {
+  grid-row: 3;
+  justify-content: space-between;
+  margin: 0 calc(var(--gutter) * -1);
+  padding: 0 calc(var(--gutter) - 0.75rem) calc(0.5rem + env(safe-area-inset-bottom));
+  background: rgb(5 6 10 / 0.92);
+}
+
+@media (min-width: 600px) {
+  .parts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2rem;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -392,6 +580,18 @@ html:not(.has-story) .engineering__meter {
   .has-story .step h3,
   .story-static .step h3 {
     font-size: clamp(1.75rem, 2.6vw, 2.5rem);
+  }
+
+  .has-story .engineering__sticky {
+    padding-bottom: 2rem;
+  }
+
+  .has-story .step-nav:not([hidden]) {
+    grid-column: 1;
+    justify-content: flex-start;
+    margin: 0 0 0 -0.75rem;
+    padding: 0;
+    background: none;
   }
 
   .tech-label__name {

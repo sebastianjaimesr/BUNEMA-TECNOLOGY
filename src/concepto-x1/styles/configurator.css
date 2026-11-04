@@ -73,26 +73,44 @@
   cursor: grabbing;
 }
 
-.configurator__readout {
+/* El slider de giro recibe foco con el teclado: el contorno se dibuja hacia dentro. */
+.configurator__stage:focus-visible {
+  outline-offset: -6px;
+}
+
+/* Pista de interacción: desaparece en cuanto el usuario gira el teléfono. */
+.configurator__hint {
   position: absolute;
   top: 0.25rem;
   left: 0;
-  display: flex;
-  gap: 0.6rem;
-  font-family: var(--f-display);
-  font-size: 0.68rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--c-muted);
-}
-
-.configurator__readout [data-config-angle] {
-  color: var(--c-text);
-  font-variant-numeric: tabular-nums;
-}
-
-html:not(.has-config-3d) .configurator__readout {
   display: none;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--f-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--c-muted);
+  pointer-events: none;
+  transition: opacity 0.5s var(--ease-out);
+}
+
+.configurator__hint svg {
+  width: 22px;
+  height: 11px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+}
+
+.is-3d-ready .has-config-3d .configurator__hint,
+.has-config-3d.is-3d-ready .configurator__hint {
+  display: inline-flex;
+}
+
+.configurator__hint.is-dismissed {
+  opacity: 0;
 }
 
 /* Barrido de luz al cambiar de opción. */
@@ -174,13 +192,6 @@ html:not(.js) .configurator__fallback {
   gap: 0.2rem;
 }
 
-.configurator__code {
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  color: var(--c-blue-text);
-}
-
 .configurator__selection {
   display: flex;
   flex-wrap: wrap;
@@ -213,11 +224,20 @@ html:not(.js) .configurator__fallback {
 .configurator__group legend {
   margin-bottom: 0.5rem;
   padding: 0;
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.22em;
+  font-family: var(--f-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--c-muted);
+}
+
+/* Restablecer + nota, en una línea. */
+.configurator__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
 }
 
 /* Muestras de color: radio nativo oculto + muestra con el "Corte X". */
@@ -403,8 +423,7 @@ html:not(.has-config-3d) .configurator__views {
 
 /* Muy bajas (p. ej. 320 × 568): lo imprescindible. Los nombres siguen ahí para lectores de pantalla. */
 @media (max-height: 640px) and (max-width: 899px) {
-  .configurator__head .eyebrow,
-  .configurator__code {
+  .configurator__head .eyebrow {
     display: none;
   }
 

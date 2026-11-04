@@ -1,7 +1,7 @@
 /* ==========================================================================
-   RESERVA — "Tu próxima forma de ver el mundo" (mobile first)
+   CIERRE Y RESERVA (mobile first)
 
-   Cierre de la narrativa: un titular grande a la izquierda y el formulario
+   Cierre de la narrativa: la frase final grande a la izquierda y el formulario
    a la derecha, sobre una línea de horizonte azul. Sección opaca (z 3).
    ========================================================================== */
 
@@ -13,8 +13,7 @@
   padding: clamp(5rem, 14vw, 10rem) var(--gutter);
   border-top: 1px solid var(--c-line);
   background:
-    radial-gradient(70% 55% at 50% 100%, rgb(47 107 255 / 0.16), transparent 70%),
-    linear-gradient(to top, rgb(139 92 246 / 0.06), transparent 40%),
+    radial-gradient(70% 55% at 50% 100%, rgb(47 107 255 / 0.14), transparent 70%),
     var(--c-bg);
   overflow: hidden;
 }
@@ -25,8 +24,7 @@
   position: absolute;
   inset: auto 0 0;
   height: 1px;
-  background: linear-gradient(to right, transparent, var(--c-blue) 30%, var(--c-violet) 70%, transparent);
-  box-shadow: 0 0 18px var(--c-blue);
+  background: linear-gradient(to right, transparent, var(--c-blue) 50%, transparent);
   pointer-events: none;
 }
 
@@ -38,10 +36,15 @@
 }
 
 .reservation__title {
-  max-width: 14ch;
-  font-size: clamp(2.6rem, 9vw, 5.75rem);
-  line-height: 0.95;
-  letter-spacing: -0.045em;
+  max-width: 13ch;
+  font-size: clamp(2.6rem, 8.5vw, 5.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+}
+
+.reservation__title span {
+  display: block;
+  color: var(--c-muted);
 }
 
 /* --------------------------------------------------------------------------
@@ -65,9 +68,8 @@
 }
 
 .field label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  font-size: 0.82rem;
+  font-weight: 500;
 }
 
 .field input,

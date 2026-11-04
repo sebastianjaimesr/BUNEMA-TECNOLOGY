@@ -14,6 +14,8 @@ import { BUNEMA_X1, MODELS, SPEC_ROWS, findColorway, formatCOP } from '../data/p
  */
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
+/** Filas de SPEC_ROWS que se muestran en la comparación. */
+const KEY_ROWS = ['display', 'processor', 'camera', 'battery', 'charging', 'build'];
 
 /** Ilustración vectorial de la trasera (alternativa sin WebGL), a partir de las mismas medidas que el 3D. */
 function modelIllustration(model) {
@@ -46,11 +48,9 @@ export function createComparison({ root }) {
   const modelsEl = root.querySelector('[data-lineup-models]');
   const table = root.querySelector('[data-specs]');
   const scroller = root.querySelector('[data-specs-scroll]');
-  const detailsBtn = root.querySelector('[data-specs-details]');
-  const diffBtn = root.querySelector('[data-specs-diff]');
   const statusEl = root.querySelector('[data-specs-status]');
 
-  const state = { highlight: null, details: false, onlyDiff: false };
+  const state = { highlight: null };
   const listeners = new Set();
   const pickButtons = [];
 
@@ -87,13 +87,12 @@ export function createComparison({ root }) {
   const caption = document.createElement('caption');
   caption.id = 'specs-caption';
   caption.className = 'visually-hidden';
-  caption.textContent = 'Especificaciones conceptuales de Bunema X1, Bunema Pro y Bunema Lite';
+  caption.textContent = 'Diferencias clave entre Bunema X1, Bunema Pro y Bunema Lite (especificaciones conceptuales)';
 
   const thead = document.createElement('thead');
   const headRow = thead.insertRow();
   const corner = document.createElement('td');
   corner.className = 'specs__corner';
-  corner.innerHTML = '<span aria-hidden="true">BNM · X SERIES</span>';
   headRow.append(corner);
   MODELS.forEach((model) => {
     const th = document.createElement('th');
@@ -106,16 +105,10 @@ export function createComparison({ root }) {
   });
 
   const tbody = document.createElement('tbody');
-  // Dos filas más que no son especificaciones técnicas, pero también se comparan.
+  // Solo las filas que de verdad distinguen a los modelos (la ficha completa vive en products.js)
+  // y el precio conceptual al final. Menos filas: la diferencia se lee de un vistazo.
   const rows = [
-    ...SPEC_ROWS,
-    {
-      id: 'colors',
-      label: 'Colores',
-      values: Object.fromEntries(
-        MODELS.map((m) => [m.id, { value: `${m.colors.length} colores`, detail: m.colors.join(', ') + '.' }]),
-      ),
-    },
+    ...SPEC_ROWS.filter((row) => KEY_ROWS.includes(row.id)),
     {
       id: 'price',
       label: 'Precio conceptual',
@@ -123,28 +116,16 @@ export function createComparison({ root }) {
     },
   ];
 
-  let sameCount = 0;
   rows.forEach((row) => {
     const tr = tbody.insertRow();
     tr.dataset.row = row.id;
     const values = MODELS.map((m) => row.values[m.id]);
-    const same = values.every((v) => v.value === values[0].value);
-    if (same) {
-      tr.classList.add('is-same');
-      sameCount += 1;
-    }
     const metrics = values.map((v) => v.metric).filter((n) => typeof n === 'number');
     const max = metrics.length === values.length ? Math.max(...metrics) : null;
 
     const th = document.createElement('th');
     th.scope = 'row';
     th.textContent = row.label;
-    if (same) {
-      const tag = document.createElement('span');
-      tag.className = 'specs__same';
-      tag.textContent = 'Igual en los tres';
-      th.append(tag);
-    }
     tr.append(th);
 
     MODELS.forEach((model, i) => {
@@ -171,10 +152,6 @@ export function createComparison({ root }) {
           value.append(note);
         }
       }
-      const detail = document.createElement('span');
-      detail.className = 'specs__detail';
-      detail.textContent = v.detail;
-      td.append(detail);
     });
   });
 
@@ -186,10 +163,6 @@ export function createComparison({ root }) {
     table.querySelectorAll('[data-model]').forEach((cell) => {
       cell.classList.toggle('is-highlighted', cell.dataset.model === state.highlight);
     });
-    root.classList.toggle('show-details', state.details);
-    root.classList.toggle('only-diff', state.onlyDiff);
-    detailsBtn.setAttribute('aria-pressed', String(state.details));
-    diffBtn.setAttribute('aria-pressed', String(state.onlyDiff));
     pickButtons.forEach((btn) => btn.setAttribute('aria-pressed', String(btn.dataset.model === state.highlight)));
   }
 
@@ -216,22 +189,7 @@ export function createComparison({ root }) {
     notify();
   }
 
-  function onDetails() {
-    state.details = !state.details;
-    render();
-    statusEl.textContent = state.details ? 'Detalles técnicos visibles.' : 'Detalles técnicos ocultos.';
-  }
-
-  function onDiff() {
-    state.onlyDiff = !state.onlyDiff;
-    render();
-    const visible = rows.length - (state.onlyDiff ? sameCount : 0);
-    statusEl.textContent = `Mostrando ${visible} de ${rows.length} filas.`;
-  }
-
   pickButtons.forEach((btn) => btn.addEventListener('click', onPick));
-  detailsBtn.addEventListener('click', onDetails);
-  diffBtn.addEventListener('click', onDiff);
 
   // Pista "desliza" solo cuando la tabla realmente no cabe.
   const overflowObserver = new ResizeObserver(() => {
@@ -251,8 +209,6 @@ export function createComparison({ root }) {
     },
     dispose() {
       pickButtons.forEach((btn) => btn.removeEventListener('click', onPick));
-      detailsBtn.removeEventListener('click', onDetails);
-      diffBtn.removeEventListener('click', onDiff);
       overflowObserver.disconnect();
       listeners.clear();
     },

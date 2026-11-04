@@ -1,14 +1,21 @@
 /* ==========================================================================
-   HERO — el producto como protagonista (mobile first)
-   El teléfono vive en el lienzo fijo (z 1). El fondo decorativo queda
-   debajo (z 0) y el texto encima (z 2): la interfaz y el 3D comparten
-   el mismo espacio en lugar de estar en columnas separadas.
+   HERO — el Bunema X1 como protagonista absoluto (mobile first)
+   El teléfono vive en el lienzo fijo (z 1). El fondo queda debajo (z 0) y
+   el texto encima (z 2): interfaz y 3D comparten el mismo encuadre.
+   Composición: nombre del producto grande, una frase, una línea de apoyo y
+   dos acciones. Nada más compite con el teléfono.
    ========================================================================== */
 
 /* Estado inicial de los elementos que revela GSAP (solo si hay JS). */
 .js [data-reveal] {
   visibility: hidden;
   opacity: 0;
+}
+
+/* Si el JS falla (red de seguridad del <head>), el contenido revelable se muestra igualmente. */
+.boot-failed [data-reveal] {
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .hero {
@@ -19,113 +26,41 @@
   display: flex;
   flex-direction: column;
   min-height: 100svh;
-  padding: calc(var(--header-h) + 1.5rem) var(--gutter) 1.5rem;
+  padding: calc(var(--header-h) + 1.25rem) var(--gutter) 1.5rem;
   overflow: clip;
 }
 
 /* --------------------------------------------------------------------------
-   Fondo técnico
+   Fondo: un halo de luz detrás del producto y una línea de horizonte.
+   Profundidad con dos capas, sin cuadrículas ni texto decorativo.
    -------------------------------------------------------------------------- */
 .hero__backdrop {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  background: radial-gradient(120% 70% at 50% 110%, #0b1020 0%, transparent 60%);
 }
 
-.hero__grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(to right, var(--c-line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--c-line) 1px, transparent 1px);
-  background-size: 25% 100%, 100% 20%;
-  background-position: center;
-  /* La cuadrícula se desvanece hacia los bordes: se intuye, no compite. */
-  mask-image: radial-gradient(ellipse 75% 65% at 50% 52%, #000 25%, transparent 80%);
-  opacity: 0.55;
-  /* Capa más lejana todavía: se mueve menos que el monograma. */
-  transform: translate(calc(var(--pointer-x, 0) * -8px), calc(var(--pointer-y, 0) * -6px));
-}
-
-/* Halo de luz detrás del producto: misma posición que el teléfono 3D. */
-.hero__backdrop::after {
-  content: '';
+.hero__halo {
   position: absolute;
   left: var(--stage-x, 50%);
-  top: var(--stage-y, 50%);
-  width: min(130vw, 900px);
+  top: var(--stage-y, 55%);
+  width: min(140vw, 1100px);
   aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgb(47 107 255 / 0.18), rgb(139 92 246 / 0.06) 40%, transparent 68%);
+  /* Parallax mínimo con el cursor: la luz se queda un poco atrás del producto. */
+  transform: translate(calc(-50% - var(--pointer-x, 0) * 14px), calc(-50% - var(--pointer-y, 0) * 10px));
+  background: radial-gradient(circle, rgb(47 107 255 / 0.2) 0%, rgb(47 107 255 / 0.06) 32%, transparent 62%);
 }
 
-.hero__monogram {
+.hero__horizon {
   position: absolute;
-  left: var(--stage-x, 50%);
-  top: var(--stage-y, 50%);
-  /* Parallax: el monograma se desplaza en sentido contrario al cursor (capa lejana). */
-  transform: translate(
-    calc(-50% - var(--pointer-x, 0) * 22px),
-    calc(-52% - var(--pointer-y, 0) * 14px)
-  );
-  font-family: var(--f-display);
-  font-size: clamp(16rem, 92vw, 44rem);
-  font-weight: 700;
-  line-height: 0.8;
-  letter-spacing: -0.08em;
-  color: transparent;
-  -webkit-text-stroke: 1px rgb(146 152 170 / 0.2);
-  user-select: none;
-}
-
-.hero__coord {
-  position: absolute;
-  font-size: 0.62rem;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgb(146 152 170 / 0.75);
-}
-
-.hero__coord--tl {
-  top: calc(var(--header-h) + 0.5rem);
-  left: var(--gutter);
-  display: none;
-}
-
-.hero__coord--tr {
-  top: calc(var(--header-h) + 0.5rem);
-  right: var(--gutter);
-  display: none;
-}
-
-.hero__coord--bl {
-  bottom: 1.6rem;
-  right: var(--gutter);
-  display: none;
-}
-
-/* Retícula de enfoque: una referencia de "laboratorio" alrededor del producto. */
-.hero__crosshair {
-  position: absolute;
-  left: var(--stage-x, 50%);
-  top: var(--stage-y, 50%);
-  width: 72vmin;
-  height: 72vmin;
-  max-width: 560px;
-  max-height: 560px;
-  transform: translate(-50%, -50%);
-  background:
-    linear-gradient(var(--c-line-strong), var(--c-line-strong)) top left / 18px 1px,
-    linear-gradient(var(--c-line-strong), var(--c-line-strong)) top left / 1px 18px,
-    linear-gradient(var(--c-line-strong), var(--c-line-strong)) top right / 18px 1px,
-    linear-gradient(var(--c-line-strong), var(--c-line-strong)) top right / 1px 18px,
-    linear-gradient(var(--c-line-strong), var(--c-line-strong)) bottom left / 18px 1px,
-    linear-gradient(var(--c-line-strong), var(--c-line-strong)) bottom left / 1px 18px,
-    linear-gradient(var(--c-line-strong), var(--c-line-strong)) bottom right / 18px 1px,
-    linear-gradient(var(--c-line-strong), var(--c-line-strong)) bottom right / 1px 18px;
-  background-repeat: no-repeat;
+  left: 0;
+  right: 0;
+  top: calc(var(--stage-y, 55%) + min(34vh, 300px));
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgb(139 146 158 / 0.28) 30%, rgb(47 107 255 / 0.5) 50%, rgb(139 146 158 / 0.28) 70%, transparent);
+  opacity: 0.7;
 }
 
 /* --------------------------------------------------------------------------
@@ -139,81 +74,47 @@
   flex-direction: column;
 }
 
-.hero__content .eyebrow span {
-  color: var(--c-blue-text);
-}
-
 .hero__title {
-  margin-top: 0.9rem;
-  font-size: clamp(2.4rem, 11vw, 3.4rem);
+  margin-top: 1rem;
+  font-size: clamp(3.25rem, 17vw, 5rem);
   font-weight: 500;
-  line-height: 0.96;
+  line-height: 0.92;
+  letter-spacing: -0.055em;
 }
 
-.hero__title-line {
+.hero__claim {
   display: block;
+  max-width: 18ch;
+  margin-top: 0.9rem;
+  font-size: clamp(1.15rem, 5vw, 1.5rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
   color: var(--c-muted);
 }
 
 .hero__lead {
-  max-width: 20rem;
-  margin-top: 1rem;
+  max-width: 22rem;
   font-size: 0.95rem;
+  line-height: 1.55;
   color: var(--c-muted);
 }
 
-/* En móvil el producto ocupa un hueco real del flujo, entre el texto y los botones.
+/* En móvil el producto ocupa un hueco real del flujo, entre el titular y el texto de apoyo.
    Así nunca queda tapado, ni siquiera en pantallas de 320 × 568. */
 .hero__slot {
   flex: 1;
-  min-height: clamp(15rem, 46svh, 26rem);
+  min-height: clamp(15rem, 44svh, 26rem);
 }
 
 .hero__actions {
   display: grid;
   gap: 0.625rem;
+  margin-top: 1.25rem;
 }
 
 /* --------------------------------------------------------------------------
-   Ficha técnica
-   -------------------------------------------------------------------------- */
-.hero__specs {
-  position: relative;
-  z-index: 2;
-  margin-top: 1rem;
-}
-
-.hero__specs dl {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  border-top: 1px solid var(--c-line);
-}
-
-.spec {
-  padding: 0.6rem 0;
-}
-
-.spec:nth-child(1),
-.spec:nth-child(4) {
-  display: none;
-}
-
-.spec dt {
-  font-size: 0.6rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--c-muted);
-}
-
-.spec dd {
-  font-family: var(--f-display);
-  font-size: 0.85rem;
-  letter-spacing: -0.01em;
-}
-
-/* --------------------------------------------------------------------------
-   Indicador de exploración
+   Indicador de exploración (escritorio)
    -------------------------------------------------------------------------- */
 .hero__scroll {
   position: relative;
@@ -222,11 +123,12 @@
   align-items: center;
   gap: 1rem;
   min-height: 44px;
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
+  font-family: var(--f-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--c-muted);
+  transition: color 0.3s var(--ease-out);
 }
 
 .hero__scroll:hover {
@@ -248,11 +150,7 @@
   inset: 0;
   background: var(--c-blue);
   transform: translateX(-100%);
-  animation: scroll-pulse 2.4s var(--ease-out) infinite;
-}
-
-.hero__scroll-index {
-  color: var(--c-blue-text);
+  animation: scroll-pulse 2.6s var(--ease-out) infinite;
 }
 
 @keyframes scroll-pulse {
@@ -263,9 +161,53 @@
 }
 
 /* --------------------------------------------------------------------------
+   Progreso de carga del 3D (solo si tarda): sobre el lugar del teléfono
+   -------------------------------------------------------------------------- */
+.hero__loading {
+  position: absolute;
+  left: var(--stage-x, 50%);
+  top: var(--stage-y, 50%);
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  transform: translate(-50%, -50%);
+  font-family: var(--f-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  pointer-events: none;
+}
+
+.hero__loading[hidden] {
+  display: none;
+}
+
+.hero__loading-bar {
+  width: 7rem;
+  height: 1px;
+  background: var(--c-line-strong);
+  overflow: hidden;
+}
+
+.hero__loading-bar span {
+  display: block;
+  height: 100%;
+  background: var(--c-blue);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--ease-out);
+}
+
+/* --------------------------------------------------------------------------
    Alternativa sin WebGL
    -------------------------------------------------------------------------- */
 .hero__fallback {
+  display: none;
+}
+
+.no-webgl .hero__slot {
   display: none;
 }
 
@@ -275,7 +217,7 @@
   display: grid;
   justify-items: center;
   gap: 1rem;
-  margin: 1.5rem auto 0;
+  margin: 2rem auto 0;
   max-width: 22rem;
   text-align: center;
 }
@@ -288,4 +230,106 @@
 .no-webgl .hero__fallback figcaption {
   font-size: 0.8rem;
   color: var(--c-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Escritorio: texto a la izquierda, producto grande a la derecha
+   -------------------------------------------------------------------------- */
+@media (min-width: 900px) {
+  .hero {
+    /* Posición prevista del teléfono antes de que el 3D la confirme (evita un salto del halo). */
+    --stage-x: 66%;
+    --stage-y: 52%;
+    padding-bottom: 2rem;
+  }
+
+  .hero__content {
+    justify-content: center;
+    max-width: min(40rem, 46vw);
+  }
+
+  .hero__slot {
+    display: none;
+  }
+
+  .hero__title {
+    font-size: clamp(5rem, 9.2vw, 9.5rem);
+  }
+
+  .hero__claim {
+    margin-top: 1.5rem;
+    font-size: clamp(1.4rem, 2vw, 1.9rem);
+  }
+
+  .hero__lead {
+    margin-top: 1.25rem;
+    font-size: 1rem;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2.5rem;
+  }
+
+  .hero__scroll {
+    display: inline-flex;
+    align-self: flex-start;
+  }
+
+  .no-webgl .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .no-webgl .hero__fallback {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    margin: 0 4vw 0 0;
+  }
+}
+
+@media (min-width: 1200px) {
+  .hero {
+    --stage-x: 64%;
+  }
+}
+
+/* Móvil en horizontal: el teléfono no cabe debajo del texto. Sin el hueco del flujo,
+   heroAnimation lo coloca a la derecha, como en escritorio. */
+@media (max-width: 899px) and (max-height: 520px) and (orientation: landscape) {
+  .hero {
+    min-height: 32rem;
+  }
+
+  .hero__slot {
+    display: none;
+  }
+
+  .hero__content {
+    justify-content: center;
+    max-width: 50%;
+  }
+
+  .hero__title {
+    font-size: clamp(2.6rem, 8vw, 3.6rem);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+  }
+}
+
+/* Móviles muy pequeños (≤ 360 px). */
+@media (max-width: 360px) {
+  .hero__title {
+    font-size: 3rem;
+  }
+
+  .hero__claim {
+    font-size: 1.05rem;
+  }
 }

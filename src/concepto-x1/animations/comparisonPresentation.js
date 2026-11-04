@@ -30,7 +30,6 @@ const MM = 0.1;
 export function createComparisonPresentation({ sceneManager, phone, hero, sectionEl, comparison, reducedMotion }) {
   const root = document.documentElement;
   const stageEl = sectionEl.querySelector('[data-lineup]');
-  const angleEl = sectionEl.querySelector('[data-lineup-angle]');
   const viewButtons = [...sectionEl.querySelectorAll('[data-lineup-view]')];
   const spinButton = sectionEl.querySelector('[data-lineup-spin]');
   root.classList.add('has-lineup-3d');
@@ -123,8 +122,6 @@ export function createComparisonPresentation({ sceneManager, phone, hero, sectio
       const sight = Math.atan2(sceneManager.camera.position.x - item.holder.position.x, distance);
       item.pivot.rotation.set(-0.08, turn.heading + sight, 0);
     });
-    const deg = ((((turn.heading * 180) / Math.PI) % 360) + 360) % 360;
-    angleEl.textContent = `${String(Math.round(deg)).padStart(3, '0')}°`;
   }
 
   /* Bucle --------------------------------------------------------------- */

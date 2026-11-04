@@ -49,15 +49,15 @@ export const COLORWAYS = [
     swatch: '#2a4fb8',
   },
   {
-    id: 'nebula',
-    code: 'NV',
-    name: 'Nebula Violet',
-    description: 'Violeta denso con marco lavanda.',
-    body: '#4a2f85',
-    frame: '#9a86c0',
-    plate: '#33205c',
-    logo: '#cbbcef',
-    swatch: '#5a3a9e',
+    id: 'titanium',
+    code: 'TG',
+    name: 'Titanium Gray',
+    description: 'Gris metálico cálido con marco de titanio cepillado.',
+    body: '#5d626c',
+    frame: '#9aa0aa',
+    plate: '#474b53',
+    logo: '#d9dce2',
+    swatch: '#8b929e',
   },
 ];
 
@@ -102,8 +102,6 @@ export const BUNEMA_X1 = {
 export const findColorway = (id) => COLORWAYS.find((c) => c.id === id) ?? COLORWAYS[0];
 export const findFinish = (id) => FINISHES.find((f) => f.id === id) ?? FINISHES[0];
 
-/** Referencia técnica de una configuración, p. ej. `BNM-X1-GS-B`. */
-export const configurationCode = (colorway, finish) => `${BUNEMA_X1.serial}-${colorway.code}-${finish.code}`;
 
 /* -------------------------------------------------------------------------- */
 /* Comparador "Encuentra tu modelo"                                           */
@@ -131,7 +129,7 @@ export const MODELS = [
     tier: 'Gama alta',
     tagline: 'El sistema completo: tres cámaras, 144 Hz y carga de 65 W.',
     price: 4899000,
-    colors: ['Obsidian Black', 'Glacier Silver', 'Electric Blue', 'Nebula Violet'],
+    colors: ['Obsidian Black', 'Glacier Silver', 'Electric Blue', 'Titanium Gray'],
     body: {
       width: 72,
       height: 154,

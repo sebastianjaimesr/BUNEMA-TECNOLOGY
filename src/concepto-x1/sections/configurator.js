@@ -1,4 +1,4 @@
-import { BUNEMA_X1, COLORWAYS, FINISHES, configurationCode, findColorway, findFinish } from '../data/products.js';
+import { BUNEMA_X1, COLORWAYS, FINISHES, findColorway, findFinish } from '../data/products.js';
 
 /**
  * Configurador "Personaliza tu Bunema" — la parte de interfaz.
@@ -17,7 +17,7 @@ export function createConfigurator({ root }) {
   const finishList = root.querySelector('[data-config-finishes]');
   const nameEl = root.querySelector('[data-config-name]');
   const finishNameEl = root.querySelector('[data-config-finish-name]');
-  const codeEl = root.querySelector('[data-config-code]');
+  const resetBtn = root.querySelector('[data-config-reset]');
   const descriptionEl = root.querySelector('[data-config-description]');
   const statusEl = root.querySelector('[data-config-status]');
   // Otros lugares de la página que muestran la configuración actual (ficha del hero, texto alternativo).
@@ -76,7 +76,6 @@ export function createConfigurator({ root }) {
     const { colorway, finish } = state;
     nameEl.textContent = colorway.name;
     finishNameEl.textContent = finish.name;
-    codeEl.textContent = configurationCode(colorway, finish);
     descriptionEl.textContent = `${colorway.description} ${finish.description}`;
     mirrors.summary.forEach((el) => {
       el.textContent = `${colorway.name} · ${finish.name}`;
@@ -102,7 +101,22 @@ export function createConfigurator({ root }) {
     listeners.forEach((listener) => listener(state));
   }
 
+  /** Vuelve a la configuración inicial. La vista 3D se suscribe con `onReset` para volver a su pose. */
+  const resetListeners = new Set();
+  function reset() {
+    state.colorway = findColorway(BUNEMA_X1.defaultColorway);
+    state.finish = findFinish(BUNEMA_X1.defaultFinish);
+    root.querySelectorAll('input[type="radio"]').forEach((input) => {
+      input.checked = input.value === state.colorway.id || input.value === state.finish.id;
+    });
+    render();
+    statusEl.textContent = `Configuración restablecida: ${state.colorway.name}, acabado ${state.finish.name.toLowerCase()}, vista trasera.`;
+    listeners.forEach((listener) => listener(state));
+    resetListeners.forEach((listener) => listener());
+  }
+
   root.addEventListener('change', onInput);
+  resetBtn?.addEventListener('click', reset);
   render();
 
   return {
@@ -114,7 +128,15 @@ export function createConfigurator({ root }) {
       listeners.add(listener);
       return () => listeners.delete(listener);
     },
+    /** Avisa cuando el usuario restablece la configuración. */
+    onReset(listener) {
+      resetListeners.add(listener);
+      return () => resetListeners.delete(listener);
+    },
+    reset,
     dispose() {
+      resetBtn?.removeEventListener('click', reset);
+      resetListeners.clear();
       root.removeEventListener('change', onInput);
       listeners.clear();
     },

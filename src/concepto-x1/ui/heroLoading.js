@@ -1,9 +1,9 @@
 /**
  * Indicador de carga dentro del hero.
  *
- * Solo aparece si la introducción terminó (u se omitió) antes de que la
- * vista 3D estuviera lista: así el usuario ya puede leer y navegar, y
- * sigue viendo cuánto falta, con el mismo progreso real de la intro.
+ * Solo aparece si la vista 3D no estuvo lista en el primer instante
+ * (`after`): en una carga rápida no hay ningún indicador que parpadee; en
+ * una lenta, el usuario ya puede leer y navegar y ve el progreso real.
  */
 export function bindHeroLoading({ element, tracker, after }) {
   if (!element) return () => {};
