@@ -68,7 +68,7 @@ async function render() {
     return;
   }
   current = page || null;
-  document.title = page?.title ? `${page.title} · BUNEMA` : 'BUNEMA — The iPhone Experience · Technology Beyond Limits';
+  document.title = page?.title ? `${page.title} · BUNEMA` : 'BUNEMA — Tienda de iPhone en Colombia';
   const desc = document.querySelector('meta[name="description"]');
   if (page?.description) desc.setAttribute('content', page.description);
   if (!reduced) gsap.fromTo(app, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.55, ease: 'power3.out', clearProps: 'transform,opacity,visibility' });

@@ -66,7 +66,7 @@ function drawLogin() {
       <div class="field"><label for="pin">${first ? 'Nuevo PIN' : 'PIN'}</label><input id="pin" class="input" type="password" inputmode="numeric" autocomplete="${first ? 'new-password' : 'current-password'}" minlength="6" required /><p class="field__error" data-err aria-live="polite"></p></div>
       ${first ? '<div class="field"><label for="pin2">Repite el PIN</label><input id="pin2" class="input" type="password" inputmode="numeric" autocomplete="new-password" minlength="6" required /></div>' : ''}
       <button class="btn btn--primary btn--block" type="submit">${first ? 'Crear PIN y entrar' : 'Entrar'}</button>
-      <a class="link-arrow" href="./tienda.html">Volver a la tienda</a>
+      <a class="link-arrow" href="./">Volver a la tienda</a>
     </form>
   </main>`;
   const form = app.querySelector('[data-login]');
@@ -110,7 +110,7 @@ function draw() {
       <nav class="admin-tabs" aria-label="Secciones del panel">${Object.entries(TABS)
         .map(([k, l]) => `<button type="button" data-tab="${k}" aria-current="${k === tab ? 'page' : 'false'}">${l}</button>`)
         .join('')}</nav>
-      <div class="admin-top__actions"><a class="btn btn--ghost btn--small" href="./tienda.html" target="_blank" rel="noopener">Ver tienda</a><button type="button" class="btn btn--ghost btn--small" data-logout>Salir</button></div>
+      <div class="admin-top__actions"><a class="btn btn--ghost btn--small" href="./" target="_blank" rel="noopener">Ver tienda</a><button type="button" class="btn btn--ghost btn--small" data-logout>Salir</button></div>
     </header>
     ${hasDraft() ? '<p class="admin-draft">Tienes cambios en borrador (solo en este navegador). Publícalos desde «Publicar».</p>' : ''}
     <main class="admin-main" data-view></main>`;
@@ -181,7 +181,7 @@ function productos(view) {
           <td>${p.inventory.items.length} art. · ${p.inventory.stock} u.</td>
           <td><input type="checkbox" aria-label="Visible ${esc(p.name)}" data-visible="${p.id}" ${o.hidden ? '' : 'checked'} /></td>
           <td><input type="checkbox" aria-label="Destacado ${esc(p.name)}" data-featured="${p.id}" ${o.featured ? 'checked' : ''} /></td>
-          <td class="admin-actions">${p.custom ? `<button type="button" class="btn btn--ghost btn--small" data-edit="${p.id}">Editar</button><button type="button" class="btn btn--ghost btn--small" data-delete="${p.id}">Eliminar</button>` : `<a class="btn btn--ghost btn--small" href="./tienda.html#/iphone/${p.id}" target="_blank" rel="noopener">Ver</a>`}</td>
+          <td class="admin-actions">${p.custom ? `<button type="button" class="btn btn--ghost btn--small" data-edit="${p.id}">Editar</button><button type="button" class="btn btn--ghost btn--small" data-delete="${p.id}">Eliminar</button>` : `<a class="btn btn--ghost btn--small" href="./#/iphone/${p.id}" target="_blank" rel="noopener">Ver</a>`}</td>
         </tr>`;
         })
         .join('')}</tbody></table></div>
@@ -407,7 +407,7 @@ function pedidos(view) {
       orders.length
         ? `<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Número</th><th>Fecha</th><th>Cliente</th><th>Productos</th><th>Total</th><th>Estado</th></tr></thead><tbody>${orders
             .map(
-              (o) => `<tr><td><a href="./tienda.html#/pedido/${o.id}" target="_blank" rel="noopener"><code>${o.id}</code></a></td><td>${formatDate(o.createdAt)}</td><td>${esc(o.customer.name)}<br><span class="admin-muted">${esc(o.customer.phone)} · ${esc(o.customer.city)}</span></td><td>${o.items.map((i) => `${i.qty} × ${esc(i.name)} ${storageLabel(i.storage)}`).join('<br>')}</td><td>${o.total ? formatCOP(o.total) : 'Por confirmar'}</td><td><select class="select input--sm" data-status="${o.id}" aria-label="Estado de ${o.id}">${Object.entries(ORDER_STATUS).map(([k, l]) => `<option value="${k}" ${o.status === k ? 'selected' : ''}>${l}</option>`).join('')}</select></td></tr>`,
+              (o) => `<tr><td><a href="./#/pedido/${o.id}" target="_blank" rel="noopener"><code>${o.id}</code></a></td><td>${formatDate(o.createdAt)}</td><td>${esc(o.customer.name)}<br><span class="admin-muted">${esc(o.customer.phone)} · ${esc(o.customer.city)}</span></td><td>${o.items.map((i) => `${i.qty} × ${esc(i.name)} ${storageLabel(i.storage)}`).join('<br>')}</td><td>${o.total ? formatCOP(o.total) : 'Por confirmar'}</td><td><select class="select input--sm" data-status="${o.id}" aria-label="Estado de ${o.id}">${Object.entries(ORDER_STATUS).map(([k, l]) => `<option value="${k}" ${o.status === k ? 'selected' : ''}>${l}</option>`).join('')}</select></td></tr>`,
             )
             .join('')}</tbody></table></div>`
         : '<p class="admin-muted">No hay solicitudes en este navegador.</p>'

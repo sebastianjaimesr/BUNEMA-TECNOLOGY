@@ -1,12 +1,32 @@
-# BUNEMA TECHNOLOGY · Bunema X1
+# BUNEMA TECHNOLOGY · Tienda de iPhone
 
-**Tecnología que se siente.** Experiencia web de producto para el **Bunema X1**, el smartphone de una marca conceptual: modelo 3D construido por código, despiece pieza a pieza controlado por scroll, configurador de color y acabado, especificaciones en composición editorial, comparador de la familia X Series y una reserva de demostración.
+**Technology Beyond Limits.** Tienda en línea de iPhone para Colombia, en pesos colombianos: catálogo completo del iPhone 7 al iPhone 18 Pro Max, fichas con visor 3D, comparador, carrito y pedido por WhatsApp, correo o endpoint propio. Incluye un panel administrativo para precios, inventario y canales de venta.
 
-Proyecto de portafolio de **Sebastián Jaimes**.
+Proyecto de **Sebastián Jaimes**.
 
 > **Sitio:** [sebastianjaimesr.github.io/BUNEMA-TECNOLOGY](https://sebastianjaimesr.github.io/BUNEMA-TECNOLOGY/) · **Repositorio:** [github.com/sebastianjaimesr/BUNEMA-TECNOLOGY](https://github.com/sebastianjaimesr/BUNEMA-TECNOLOGY)
 
-> BUNEMA TECHNOLOGY es una marca ficticia. El Bunema X1, sus especificaciones y sus precios no existen comercialmente.
+> BUNEMA es una tienda independiente. No es Apple Inc. ni distribuidor autorizado de Apple. iPhone es una marca registrada de Apple Inc.
+
+## La tienda (página principal)
+
+| Ruta | Qué hace |
+| --- | --- |
+| `#/` | Inicio: iPhone 18 Pro Max en 3D, línea actual con precios y acceso directo a comprar. |
+| `#/catalogo` | Catálogo con búsqueda y filtros por generación, familia, capacidad, color, condición, disponibilidad y precio. |
+| `#/iphone/<modelo>` | Ficha: color, capacidad y condición (nuevo, usado, reacondicionado), precio en COP, cantidad y *Agregar al carrito*. |
+| `#/comparar` | Comparador de hasta 3 modelos. |
+| `#/carrito` | Carrito persistente y formulario de pedido. |
+| `#/pedido/<id>` | Confirmación del pedido y envío por WhatsApp o correo. |
+| `#/contacto` | Consulta de disponibilidad. |
+
+- **Precios, inventario, WhatsApp y fotos** se editan en [`admin.html`](admin.html) y se publican reemplazando `public/data/store.json` (detalles en [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md)). Mientras un modelo no tenga precio, la tienda muestra «Precio a consultar».
+- **Pagos en línea**: la integración (Wompi, ePayco o Mercado Pago) está preparada en `src/services/payment/`, pero necesita un backend con la clave privada; hoy el pedido queda como solicitud que BUNEMA confirma.
+- Los enlaces antiguos (`tienda.html#/…`) redirigen a la página principal.
+
+# Bunema X1 (concepto 3D)
+
+Experiencia de producto del **Bunema X1**, el smartphone conceptual de la marca, en [`bunema-x1.html`](https://sebastianjaimesr.github.io/BUNEMA-TECNOLOGY/bunema-x1.html): modelo 3D construido por código, despiece pieza a pieza controlado por scroll, configurador de color y acabado, especificaciones en composición editorial, comparador de la familia X Series y una reserva de demostración. El Bunema X1, sus especificaciones y sus precios no existen comercialmente.
 
 ![Hero: el Bunema X1 en 3D bajo una luz azul, junto al titular «Bunema X1»](docs/capturas/bunema-x1/hero.jpg)
 
@@ -56,9 +76,10 @@ La firma de la marca es el **Corte X**: la esquina a 45° de la placa de cámara
 ## Arquitectura
 
 ```
-index.html                  Bunema X1 (experiencia principal)
-tienda.html · admin.html    Archivo: The iPhone Experience (proyecto anterior) y su panel
-concepto-x1.html            Redirección de la URL antigua del concepto a index.html
+index.html · admin.html     Tienda de iPhone (página principal) y su panel; código en src/
+bunema-x1.html              Concepto Bunema X1; código en src/concepto-x1/
+tienda.html                 Redirección de la URL antigua de la tienda a index.html
+concepto-x1.html            Redirección de la URL antigua del concepto a bunema-x1.html
 src/concepto-x1/
   main.js                   Orquesta: navegación, secciones y carga diferida del 3D
   experience.js             Arranque de la escena (se descarga con import() dinámico)
@@ -111,9 +132,9 @@ npm run preview      # sirve dist/ en http://localhost:4173
 2. Cada push a `main` ejecuta `.github/workflows/deploy.yml`: `npm ci`, `npm run build` y despliegue de `dist/`. En los pull requests solo se ejecuta el build.
 3. `vite.config.js` usa `base: './'`, así el mismo `dist/` funciona en la raíz o en `/BUNEMA-TECNOLOGY/`.
 
-## Archivo: The iPhone Experience
+## Documentación de la tienda
 
-El proyecto anterior (catálogo de iPhone en COP, fichas 3D, comparador, carrito y panel) sigue disponible en [`tienda.html`](https://sebastianjaimesr.github.io/BUNEMA-TECNOLOGY/tienda.html). Los enlaces antiguos del tipo `/#/catalogo` redirigen allí. Su documentación técnica está en [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md) y [`docs/RECURSOS-PENDIENTES.md`](docs/RECURSOS-PENDIENTES.md); se regeneran sus renders con `npm run renders`.
+Arquitectura, flujo de publicación de datos y backend propuesto para pagos: [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md). Fotos y datos pendientes: [`docs/RECURSOS-PENDIENTES.md`](docs/RECURSOS-PENDIENTES.md). Los renders del catálogo se regeneran con `npm run renders`.
 
 ## Limitaciones conocidas
 

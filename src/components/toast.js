@@ -1,4 +1,4 @@
-/** Avisos breves y accesibles (región aria-live en tienda.html). */
+/** Avisos breves y accesibles (región aria-live en index.html). */
 export function toast(message, { action, href, timeout = 4200 } = {}) {
   const region = document.querySelector('[data-toasts]');
   if (!region) return;

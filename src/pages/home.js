@@ -32,12 +32,12 @@ export async function render({ root }) {
         </div>
       </div>
       <div class="hero__copy" data-hero-copy>
-        <p class="eyebrow" data-hero-in>BUNEMA · The iPhone Experience</p>
+        <p class="eyebrow" data-hero-in>BUNEMA · Tienda de iPhone en Colombia</p>
         <h1 id="hero-title" class="hero__title" data-hero-in><span class="gradient-text">El futuro está en tus manos.</span></h1>
-        <p class="hero__subtitle" data-hero-in>Descubre una nueva generación de tecnología, diseño y fotografía.</p>
+        <p class="hero__subtitle" data-hero-in>Nuevo, usado o reacondicionado. Elige tu iPhone y cómpralo en pesos colombianos.</p>
         <div class="hero__actions" data-hero-actions>
-          <a class="btn btn--primary" href="#/catalogo">Explorar iPhone</a>
-          <a class="btn btn--ghost" href="#/iphone/${HERO_ID}">Descubrir iPhone 18 Pro</a>
+          <a class="btn btn--primary" href="#/catalogo">Comprar iPhone</a>
+          <a class="btn btn--ghost" href="#/iphone/${HERO_ID}">Ver iPhone 18 Pro Max</a>
         </div>
       </div>
       <ol class="hero__callouts" aria-label="Recorrido por el iPhone 18 Pro Max">
@@ -147,7 +147,7 @@ export async function render({ root }) {
   disposers.push(setupGenerations(root));
 
   return {
-    title: 'The iPhone Experience',
+    title: 'Tienda de iPhone en Colombia',
     description: 'BUNEMA, The iPhone Experience: iPhone 18 Pro Max en 3D, catálogo completo de iPhone, comparador y tienda en pesos colombianos.',
     dispose: () => disposers.forEach((fn) => fn()),
   };

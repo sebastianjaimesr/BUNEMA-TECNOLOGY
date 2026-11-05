@@ -2,146 +2,16 @@
 <html lang="es-CO">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>BUNEMA — The iPhone Experience · Technology Beyond Limits</title>
-    <meta
-      name="description"
-      content="BUNEMA: catálogo completo de iPhone en Colombia, del iPhone 7 al iPhone 18 Pro Max y el iPhone Duo. Fichas técnicas verificadas, visor 3D, comparador y precios en pesos colombianos."
-    />
-    <meta name="theme-color" content="#050507" />
-    <meta name="color-scheme" content="dark" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="canonical" href="https://sebastianjaimesr.github.io/BUNEMA-TECNOLOGY/tienda.html" />
-
-    <meta property="og:url" content="https://sebastianjaimesr.github.io/BUNEMA-TECNOLOGY/tienda.html" />
-    <meta property="og:type" content="website" />
-    <meta property="og:locale" content="es_CO" />
-    <meta property="og:site_name" content="BUNEMA" />
-    <meta property="og:title" content="BUNEMA — The iPhone Experience" />
-    <meta property="og:description" content="El futuro está en tus manos. Catálogo de iPhone, visor 3D, comparador y tienda en COP." />
-    <meta property="og:image" content="https://sebastianjaimesr.github.io/BUNEMA-TECNOLOGY/og-image.jpg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="BUNEMA, The iPhone Experience: un iPhone en 3D sobre fondo negro con luz azul." />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="BUNEMA — The iPhone Experience" />
-    <meta name="twitter:description" content="Catálogo de iPhone, visor 3D, comparador y tienda en pesos colombianos." />
-    <meta name="twitter:image" content="https://sebastianjaimesr.github.io/BUNEMA-TECNOLOGY/og-image.jpg" />
-    <meta name="author" content="Sebastián Jaimes" />
-
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Store",
-        "name": "BUNEMA",
-        "alternateName": "BUNEMA TECHNOLOGY",
-        "slogan": "Technology Beyond Limits",
-        "url": "https://sebastianjaimesr.github.io/BUNEMA-TECNOLOGY/tienda.html",
-        "currenciesAccepted": "COP",
-        "areaServed": "CO",
-        "description": "Tienda independiente de iPhone en Colombia. No es Apple Inc. ni distribuidor autorizado."
-      }
-    </script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BUNEMA — Tienda de iPhone</title>
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href="https://sebastianjaimesr.github.io/BUNEMA-TECNOLOGY/" />
+    <!-- URL antigua: la tienda de iPhone ahora es la página principal. Se conserva la ruta (#/catalogo…). -->
     <script>
-      document.documentElement.classList.add('js');
+      location.replace('./' + location.hash);
     </script>
   </head>
-  <body>
-    <a class="skip-link" href="#app" data-skip>Saltar al contenido</a>
-
-    <header class="site-header" data-header>
-      <div class="site-header__inner">
-        <a class="brand" href="#/" aria-label="BUNEMA, ir al inicio">
-          <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true">
-            <path d="M6 4h12.5a7 7 0 0 1 3.2 13.2A7.5 7.5 0 0 1 19 28H6Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" />
-            <path d="M6 16h13" stroke="#2463FF" stroke-width="2.4" />
-          </svg>
-          <span class="brand__name">BUNEMA</span>
-        </a>
-
-        <nav class="site-nav" id="site-nav" aria-label="Principal" data-nav>
-          <ul>
-            <li><a href="#/" data-route-link="home">Inicio</a></li>
-            <li><a href="#/catalogo" data-route-link="catalogo">iPhone</a></li>
-            <li><a href="#/iphone/iphone-18-pro-max" data-route-link="iphone">iPhone 18 Pro</a></li>
-            <li><a href="#/comparar" data-route-link="comparar">Comparar</a></li>
-            <li><a href="#/galeria" data-route-link="galeria">Tecnología</a></li>
-            <li><a href="#/contacto" data-route-link="contacto">Contacto</a></li>
-          </ul>
-        </nav>
-
-        <div class="site-header__actions">
-          <a class="icon-btn" href="#/catalogo?buscar=1" aria-label="Buscar en el catálogo">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
-          </a>
-          <a class="icon-btn cart-btn" href="#/carrito" aria-label="Carrito, 0 productos" data-cart-link>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8Z" /><path d="M9 7V6a3 3 0 0 1 6 0v1" /></svg>
-            <span class="cart-btn__count" data-cart-count hidden>0</span>
-          </a>
-          <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-menu-toggle>
-            <span></span><span></span>
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <div class="draft-banner" data-draft-banner hidden>
-      Vista previa con cambios locales del panel administrativo (solo en este navegador).
-      <a href="./admin.html">Abrir panel</a>
-    </div>
-
-    <main id="app" class="app" tabindex="-1" aria-live="polite">
-      <noscript>
-        <section class="noscript">
-          <h1>BUNEMA — The iPhone Experience</h1>
-          <p>Esta experiencia necesita JavaScript para mostrar el catálogo, el visor 3D y la tienda. Actívalo para continuar.</p>
-        </section>
-      </noscript>
-    </main>
-
-    <footer class="site-footer">
-      <div class="site-footer__inner">
-        <div class="site-footer__brand">
-          <p class="brand brand--footer"><span class="brand__name">BUNEMA</span></p>
-          <p class="site-footer__slogan">The iPhone Experience · Technology Beyond Limits</p>
-        </div>
-        <nav class="site-footer__nav" aria-label="Pie de página">
-          <div>
-            <h2>Explorar</h2>
-            <ul>
-              <li><a href="#/catalogo">Catálogo de iPhone</a></li>
-              <li><a href="#/comparar">Comparador</a></li>
-              <li><a href="#/galeria">Galería tecnológica</a></li>
-            </ul>
-          </div>
-          <div>
-            <h2>Tienda</h2>
-            <ul>
-              <li><a href="#/carrito">Carrito</a></li>
-              <li><a href="#/contacto">Contacto y disponibilidad</a></li>
-              <li><a href="#/aviso-legal">Aviso legal y fuentes</a></li>
-            </ul>
-          </div>
-          <div>
-            <h2>BUNEMA Lab</h2>
-            <ul>
-              <li><a href="./">Bunema X1 · experiencia principal</a></li>
-              <li><a href="./admin.html" rel="nofollow">Panel administrativo</a></li>
-            </ul>
-          </div>
-        </nav>
-        <p class="site-footer__legal" data-disclaimer></p>
-        <p class="site-footer__copy">© <span data-year></span> BUNEMA TECHNOLOGY · Colombia</p>
-      </div>
-    </footer>
-
-    <div class="toast-region" aria-live="polite" data-toasts></div>
-
-    <script type="module" src="/src/main.js"></script>
+  <body style="background:#050507;color:#f5f7fa;font-family:system-ui,sans-serif;padding:40px">
+    <p>La tienda de iPhone ahora es la página principal. <a style="color:#7aa0ff" href="./">Ir a la tienda</a></p>
   </body>
 </html>
